@@ -1,6 +1,6 @@
 # Cartelera Web de eventos de la ciudad de Mar del Plata
 
-Desarrollo de Sistemas Web – 2026 | Alumnos: GUARAZ Diego, MEDINA Víctor, SEGURA Melisa
+Alumnos: GUARAZ Diego, MEDINA Víctor, SEGURA Melisa |Desarrollo de Sistemas Web – 2026 | ISFT N° 204
 
 ## Descripción
 
