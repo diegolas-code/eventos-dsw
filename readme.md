@@ -1,4 +1,4 @@
-# Cartelera web de eventos locales para la ciudad de Mar del Plata
+# Cartelera Web de eventos de la ciudad de Mar del Plata
 
 Desarrollo de Sistemas Web – 2026 | Alumnos: GUARAZ Diego, MEDINA Víctor, SEGURA Melisa
 
