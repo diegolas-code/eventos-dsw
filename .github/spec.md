@@ -336,6 +336,46 @@ Para la autenticación el backend integra Supabase Auth de forma server-side. El
 * Índices sugeridos: `EVENTO(inicia_en)`, `EVENTO(estado)`, `EVENTO(lugar_id)`, `EVENTO_ARTISTA(artista_id)`, `SEGUIMIENTO(usuario_id)`, `FAVORITO(usuario_id)`, `COMENTARIO(evento_id)`, `REPORTE(estado)`.
 * Búsqueda: índice de texto para `EVENTO.titulo` y `EVENTO.descripcion` para filtros por palabra clave.
 
+### Contratos mínimos de API (ejemplos)
+
+* `POST /api/v1/eventos`
+    * Request: `titulo`, `descripcion`, `inicia_en`, `lugar_id`, `artistas[]`.
+    * Response: `id`, `estado`, `creado_en`.
+* `GET /api/v1/eventos`
+    * Response: lista con `id`, `titulo`, `inicia_en`, `lugar`, `votos`.
+* `POST /api/v1/moderacion/acciones`
+    * Request: `tipo_objetivo`, `objetivo_id`, `accion`, `nota`.
+    * Response: `id`, `estado_objetivo`.
+
+### Datos de prueba
+
+* 10 eventos con fechas futuras y pasadas.
+* 5 artistas y 5 lugares con perfiles básicos.
+* 1 moderador y 1 admin con credenciales de desarrollo.
+
+### Configuración de entorno
+
+* `DATABASE_URL`
+* `SUPABASE_URL`
+* `SUPABASE_ANON_KEY`
+* `SUPABASE_SERVICE_ROLE_KEY`
+* `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`
+
+### Mapa de UI (alto nivel)
+
+* Feed (listado + filtros)
+* Detalle de evento (info + comentarios + votos)
+* Publicar evento (formulario)
+* Panel de moderación (pendientes + acciones)
+
+## Lineamientos de frontend
+
+* Diseño base: tipografía legible, escala de espaciado consistente, paleta breve con estados (exito, error, advertencia).
+* Manejo de estado: React Query para datos remotos; estado local con hooks; cacheado por vistas principales.
+* Formularios: validación de campos obligatorios, mensajes de error claros, y estados de carga/empty/error en cada pantalla.
+* Rutas: `/` (feed), `/eventos/:id`, `/publicar`, `/artistas/:id`, `/lugares/:id`, `/moderacion`.
+* Acceso: botones y acciones visibles según rol; rutas de moderación y publicación protegidas.
+
 ### Flujos clave
 
 #### Publicación de evento con moderación
@@ -456,34 +496,3 @@ Criterios de cierre:
 * Moderación: un moderador aprueba o rechaza, y el estado se refleja en el feed.
 * Reclamo (Fase 2): un artista/lugar solicita reclamo y el admin lo aprueba, vinculando el perfil.
 
-### Contratos mínimos de API (ejemplos)
-
-* `POST /api/v1/eventos`
-    * Request: `titulo`, `descripcion`, `inicia_en`, `lugar_id`, `artistas[]`.
-    * Response: `id`, `estado`, `creado_en`.
-* `GET /api/v1/eventos`
-    * Response: lista con `id`, `titulo`, `inicia_en`, `lugar`, `votos`.
-* `POST /api/v1/moderacion/acciones`
-    * Request: `tipo_objetivo`, `objetivo_id`, `accion`, `nota`.
-    * Response: `id`, `estado_objetivo`.
-
-### Datos de prueba
-
-* 10 eventos con fechas futuras y pasadas.
-* 5 artistas y 5 lugares con perfiles básicos.
-* 1 moderador y 1 admin con credenciales de desarrollo.
-
-### Configuración de entorno
-
-* `DATABASE_URL`
-* `SUPABASE_URL`
-* `SUPABASE_ANON_KEY`
-* `SUPABASE_SERVICE_ROLE_KEY`
-* `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`
-
-### Mapa de UI (alto nivel)
-
-* Feed (listado + filtros)
-* Detalle de evento (info + comentarios + votos)
-* Publicar evento (formulario)
-* Panel de moderación (pendientes + acciones)

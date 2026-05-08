@@ -97,6 +97,13 @@
 - Privacy: minimal PII; TLS; audit log retention 180 days
 - Accessibility: WCAG 2.1 AA
 
+## Frontend guidelines
+- Design: readable typography, consistent spacing scale, small palette with states (success, error, warning)
+- State: React Query for remote data; local state with hooks; cache main views
+- Forms: required-field validation; clear errors; loading/empty/error states per screen
+- Routes: /, /eventos/:id, /publicar, /artistas/:id, /lugares/:id, /moderacion
+- Access: show/hide actions by role; protect publish/moderation routes
+
 ## Key flows (compact)
 - Publish event: validate -> duplicate warning -> create PENDIENTE -> moderation
 - Moderate: approve/reject + note; comments can hide/restore
@@ -112,3 +119,9 @@
 - Acceptance: publish -> PENDIENTE -> moderation -> visible if approved
 - Seed data: 10 events, 5 artists, 5 venues, 1 moderator, 1 admin
 - Env: DATABASE_URL, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, R2_ENDPOINT, R2_BUCKET, R2_ACCESS_KEY, R2_SECRET_KEY
+
+## Moderation policy (summary)
+- Thresholds: multiple reports -> auto-hide pending review
+- SLA: pending events reviewed within 48h (MVP)
+- Escalation: repeats/conflicts -> admin with moderation note
+- Audit: actions logged with moderator, reason, timestamp
