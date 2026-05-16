@@ -62,35 +62,20 @@ _Asimismo se intentará incluir en alguna etapa el uso de Docker con un Dockerfi
 
 #### Registro y gestión de identidad
 
-Al registrarse, el usuario selecciona obligatoriamente su tipo de perfil: Miembro, Artista/Representante o Lugar. Esta elección determina el conjunto de herramientas disponibles y los datos adicionales requeridos por el sistema. Todos los usuarios pueden administrar su información personal, mientras que Artistas y Lugares cuentan con campos extendidos (biografía, enlaces, galerías) y, en el caso de lugares, información operativa (ubicación, horarios, servicios).
+Al registrarse, el usuario selecciona su tipo de perfil: Miembro o Entidad (Artista/Lugar). Esta elección determina las herramientas disponibles. Artistas y Lugares comparten una estructura de perfil unificada (`PERFIL_ENTIDAD`) con campos para biografía, ubicación y redes.
 
 #### Ciclo de vida de eventos y entidades automáticas
 
-Los eventos creados inician en estado `PENDIENTE` y requieren validación antes de pasar a `PUBLICADO`. La moderación valida contenido, coherencia de datos y cumplimiento de normas. Si se rechaza un evento, se deja un motivo y el creador puede corregirlo y reenviarlo.
-
-La detección de duplicados se aplica al crear eventos y se detalla en la sección correspondiente.
-
-Si al cargar un evento se menciona a un artista o lugar inexistente, el sistema genera automáticamente un perfil en estado `NO_RECLAMADO`. Un usuario con rol acorde puede solicitar la titularidad; tras verificación manual, el perfil se vincula a su cuenta para otorgar control de información y estadísticas.
-
-#### Interacción y comunidad
-
-Los usuarios registrados pueden comentar en los eventos para compartir información y opiniones. Los comentarios admiten respuestas para formar hilos simples y facilitar el seguimiento de conversaciones.
-
-El sistema de votación permite votos positivos en eventos y comentarios para priorizar intervenciones útiles, sin alterar el orden general del feed. Los usuarios pueden reportar contenido inapropiado o falso; los moderadores gestionan estos reportes desde un panel centralizado y aplican ocultamiento preventivo cuando un contenido supera un umbral crítico de denuncias.
-
-#### Votos y uso en el feed
-
-El feed prioriza la recencia y no modifica el orden en función de los votos. El conteo se utiliza solo como indicador de participación, y en comentarios se mantiene el orden por recencia.
-
-El conteo de votos de eventos y comentarios se muestra en el detalle del evento y en el feed para incentivar la participación. Se incluyen indicadores visuales para eventos con alta popularidad basados en el conteo.
-
-#### Seguimiento, notificaciones y personalización
-
-Los usuarios pueden seguir artistas y lugares para personalizar su experiencia. El sistema genera alertas internas por nuevos eventos de entidades seguidas, respuestas en hilos y cambios de estado en eventos propios. Asimismo, pueden guardar configuraciones de filtros para que el feed se cargue con esos criterios al iniciar sesión. Estas alertas se pueden silenciar por entidad desde el perfil del usuario.
+Los eventos creados inician en estado `PENDIENTE` y requieren validación. Si al cargar un evento se menciona a una entidad inexistente, el sistema genera automáticamente un perfil en estado `NO_RECLAMADO`.
 
 #### Detección de duplicados
 
-Al crear un evento, el sistema calcula una confianza de duplicado a partir de señales definidas. Si la confianza es media o alta, se muestra una advertencia antes de guardar, indicando que el evento podría ya existir. Se ofrecen opciones para vincularse al evento existente o continuar creando el nuevo. Si el usuario decide crear el nuevo, se guarda con un flag de `posible_duplicado` para que un moderador verifique el caso y tome una decisión.
+Al crear un evento, el sistema realiza una comprobación básica de duplicados. Se considera un posible duplicado si coincide:
+1. El mismo **Lugar**.
+2. El mismo **Día**.
+3. Al menos un **Artista** coincidente.
+
+Si se detectan estos factores, se guarda con un flag de `posible_duplicado` para que un moderador verifique el caso. No se requieren algoritmos de puntuación complejos.
 
 ### Entidades y relaciones
 
@@ -98,31 +83,22 @@ Al crear un evento, el sistema calcula una confianza de duplicado a partir de se
         uuid id PK
         string email
         string nombre_mostrar
-        string rol "miembro|artista|lugar|admin|moderador"
+        string rol "miembro|entidad|admin|moderador"
         datetime creado_en
         datetime actualizado_en
     }
 
-    PERFIL_ARTISTA {
+    PERFIL_ENTIDAD {
         uuid id PK
         uuid usuario_id FK
         string nombre
-        text biografia
-        string redes
-        boolean reclamado
-        datetime creado_en
-    }
-
-    PERFIL_LUGAR {
-        uuid id PK
-        uuid usuario_id FK
-        string nombre
+        string tipo "artista|lugar"
         text descripcion
         string direccion
         string gmaps_url
+        string redes
         string horarios
         string servicios
-        string fotos
         boolean reclamado
         datetime creado_en
     }
@@ -135,19 +111,24 @@ Al crear un evento, el sistema calcula una confianza de duplicado a partir de se
         datetime inicia_en
         datetime termina_en
         string estado "PENDIENTE|PUBLICADO|RECHAZADO|ARCHIVADO"
-        uuid lugar_id FK
+        uuid entidad_lugar_id FK
+        boolean posible_duplicado
         datetime creado_en
         datetime actualizado_en
     }
 
     EVENTO_ARTISTA {
         uuid evento_id FK
-        uuid artista_id FK
+        uuid entidad_artista_id FK
     }
 
     EVENTO_MEDIA {
         uuid id PK
         uuid evento_id FK
+        string url
+        string tipo
+    }
+
         string url
         string tipo
     }

@@ -34,18 +34,19 @@ Fase 2 — Pool de publicaciones y moderación
   - Registrar acciones de moderación (`ACCION_MODERACION`) para auditoría.
   - Añadir tests de flujo publicación → moderación.
 
-Fase 3 — Perfiles de artistas y dashboard personal
-- Objetivo: perfiles reclamables y panel personal para artistas/lugares.
+Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
+- Objetivo: perfiles reclamables y panel personal para entidades.
 - Tareas:
-  - Crear entidades `PERFIL_ARTISTA` y `PERFIL_LUGAR` con endpoints CRUD mínimos.
+  - Crear entidad `PERFIL_ENTIDAD` (unificada para artistas y lugares) con CRUD mínimo.
   - Implementar flujo de reclamo de perfil y verificación por admin.
-  - Dashboard personal: listar eventos propios, editar perfil, ver estadísticas básicas (vistas/favoritos si aplica).
-  - Añadir endpoints y UI para subir/mostrar media (Cloudflare R2 o storage elegido).
+  - Dashboard personal: listar eventos propios y editar perfil.
+  - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
 
-Fase 4 — Votaciones y seguimiento
-- Objetivo: añadir votaciones y seguimiento de artistas/lugares.
+Fase 4 — Votaciones, Seguimiento y Duplicados
+- Objetivo: añadir interactividad y detección de duplicados simple.
 - Tareas:
-  - Diseñar tablas `VOTO_EVENTO`, `VOTO_COMENTARIO` y `SEGUIMIENTO` (únicas por usuario/objeto).
+  - Implementar detección de duplicados básica (mismo lugar + mismo día + mismo artista).
+  - Diseñar tablas `VOTO_EVENTO`, `VOTO_COMENTARIO` y `SEGUIMIENTO`.
   - Endpoints para votar/seguir y para obtener conteos.
   - UI: botones de voto y seguir, actualizaciones optimistas.
   - Considerar denormalizar `vote_count` en `EVENTO` para lecturas rápidas.
