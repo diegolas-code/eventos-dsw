@@ -1,63 +1,55 @@
-# SPEC LLM (compact)
+# LLM Development Instructions - Cartelera Eventos Mar del Plata
 
-## Context
-- Project: Cartelera web de eventos locales (DSW 2026)
-- Goal: publish/consume local events; community interaction; entities manage profiles
-- Access: read-only for visitors; actions require auth
+You are an expert full-stack developer assisting in the creation of a local event billboard app. Follow these instructions strictly to maintain architectural integrity and project scope.
 
-## Roles
-- Visitor: read feed + event detail only
-- Member: publish events, comment, vote, favorite, follow, manage profile
-- Entity (Artist/Venue): member + manage entity profile (unified)
-- Moderator: member + moderate events/comments
-- Admin: full access
+## 1. Core Project Context
+- **Goal**: A platform to publish and discover local events (concerts, workshops, etc.) in Mar del Plata.
+- **Phasing**: We are following a staged approach (Phase 0 to Phase 4). Always prioritize the current Phase's goals.
+- **Tone**: Professional, idiomatic code, and surgical updates.
 
-## Core UX
-- Feed: filters by category/date/entity; sort by recency only
-- Event detail: description, date/time, venue, artists, comments, votes
-- Profiles: entity pages with info + upcoming/past events
-- Follow: alerts for new events; alerts can be muted per entity
+## 2. Tech Stack & Standards
+- **Backend**: Node.js with **Express**. Use TypeScript.
+- **Frontend**: **React** with **Vite** and TypeScript. Use React Query for data fetching.
+- **Database**: **PostgreSQL** with **Prisma ORM**.
+- **Auth**: **Supabase Auth**. Use a centralized middleware for Role-Based Access Control (RBAC).
+- **Styling**: Vanilla CSS or a lightweight framework. Keep it clean and accessible.
+- **Images**: Use placeholder URLs or external links for now. Cloudflare R2 is deferred to the final stages.
 
-## Tech stack
-- Frontend: React + Vite
-- Backend: Node.js (Express preferred)
-- DB: PostgreSQL + Prisma
-- Auth: Supabase Auth (FE login; BE validates JWT)
-- Hosting: Vercel (FE), Render (BE), Supabase Postgres
-- Storage: External URLs (initial); Cloudflare R2 (late stage)
-- CI/CD: GitHub Actions (lint + build; tests later)
+## 3. Critical Architecture Rules
 
-## Event lifecycle
-- States: PENDIENTE -> PUBLICADO / RECHAZADO / ARCHIVADO
-- Moderation required before PUBLICADO
+### A. Unified Entity Model
+Do NOT create separate tables for Artists and Venues. Use a single `PERFIL_ENTIDAD` table with a `tipo` field ('artista' or 'lugar').
+- **Reason**: Simplifies relationships and reduces code duplication.
 
-## Duplicate detection (simplified)
-- Check: Same Venue + Same Day + Same Artist. No scores.
-- Flow: Mark `posible_duplicado` if matching.
+### B. Simplified Duplicate Detection
+When creating an event, check only for:
+1. **Same Venue** (`entidad_lugar_id`).
+2. **Same Day** (extract date from `inicia_en`).
+3. **Overlapping Artists** (check `EVENTO_ARTISTA` links).
+If these match, flag the event as `posible_duplicado`. No complex similarity scores.
 
-## Interaction
-- Comments: threaded replies (simple)
-- Votes: allowed on events and comments; do NOT affect feed order
-- Reports: users can report; auto-hide on threshold
+### C. Event Lifecycle & Moderation
+- All events start as `PENDIENTE`.
+- Only Moderators or Admins can transition an event to `PUBLICADO`.
+- Rejections must include a reason/note for the creator.
 
-## Entities (high level)
-- USUARIO(id, email, nombre_mostrar, rol, timestamps)
-- PERFIL_ENTIDAD(id, usuario_id, nombre, tipo [artista|lugar], descripcion, direccion, gmaps_url, redes, horarios, servicios, reclamado, creado_en)
-- EVENTO(id, creado_por_usuario_id, titulo, descripcion, inicia_en, termina_en, estado, entidad_lugar_id, timestamps)
-- EVENTO_ARTISTA(evento_id, entidad_artista_id)
-- SEGUIMIENTO(usuario_id, tipo_objetivo, objetivo_id, creado_en)
-- FAVORITO(usuario_id, evento_id, creado_en)
-- COMENTARIO(id, evento_id, usuario_id, padre_id, cuerpo, creado_en)
-- VOTO_EVENTO(usuario_id, evento_id, creado_en)
-- VOTO_COMENTARIO(usuario_id, comentario_id, creado_en)
-- REPORTE(id, denunciante_usuario_id, tipo_objetivo, objetivo_id, motivo, estado, creado_en)
-- ACCION_MODERACION(id, moderador_usuario_id, tipo_objetivo, objetivo_id, accion, nota, creado_en)
+### D. Centralized RBAC Middleware
+All protected routes must use a centralized middleware that:
+1. Validates the Supabase JWT.
+2. Checks the user's role against the required permissions for that route.
 
-## Auth & Authorization
-- Use a centralized Middleware for role-based access control (RBAC).
-- Validate Supabase JWT in Backend.
+## 4. Database Entities (High-Level)
+- **USUARIO**: email, nombre_mostrar, rol (miembro, entidad, moderador, admin).
+- **PERFIL_ENTIDAD**: usuario_id, nombre, tipo, descripcion, direccion, gmaps_url, reclamado.
+- **EVENTO**: creado_por_usuario_id, titulo, descripcion, inicia_en, termina_en, estado (PENDIENTE, PUBLICADO, RECHAZADO, ARCHIVADO), entidad_lugar_id, posible_duplicado.
+- **COMENTARIO**: evento_id, usuario_id, padre_id (for threads), cuerpo.
+- **Interactions**: FAVORITO, SEGUIMIENTO, VOTO_EVENTO, VOTO_COMENTARIO.
 
-## Staged plan
-- Phase 1 Prototype: feed + detail + publish + manual moderation + basic entity profiles + comments
-- Phase 2 MVP: follow/alerts, votes, simple duplicate warnings, claim profiles
-- Phase 3 Production: metrics/reporting, performance/monitoring, moderation audit
+## 5. Development Workflow
+1. **Research**: Always check `spec.md` and `TODO.md` before starting a task.
+2. **Implementation**: Focus on surgical edits. Don't refactor unrelated code.
+3. **Verification**: Always provide a plan to test the change (e.g., specific endpoints to hit or UI states to check).
+
+## 6. Current Phase: Phase 0
+- Goal: Setup repo structure, basic Express API (CRUD for Events/Comments), and a minimal React app to display them.
+- No Auth yet (handled in Phase 1).
