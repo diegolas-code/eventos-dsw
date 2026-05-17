@@ -1,3 +1,9 @@
+/**
+ * Shims de tipos para el entorno de ejecución (TypeScript).
+ *
+ * Este archivo proporciona definiciones básicas para módulos que no tienen
+ * tipos oficiales o para simplificar la compatibilidad en ciertas configuraciones.
+ */
 declare const console: {
   log: (...args: unknown[]) => void;
   error: (...args: unknown[]) => void;
