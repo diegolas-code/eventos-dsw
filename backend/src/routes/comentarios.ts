@@ -1,9 +1,12 @@
 import { Router } from 'express';
+import type { Request as ExRequest } from 'express-serve-static-core';
+import type { Response as ExpressResponse } from 'express';
+type Req = ExRequest<any, any, any>;
 import { deleteComentario, updateComentario } from '../store.js';
 
 const router = Router();
 
-router.patch('/:id', (request, response) => {
+router.patch('/:id', (request: Req, response: ExpressResponse) => {
   const { cuerpo } = request.body ?? {};
 
   if (typeof cuerpo !== 'string' || cuerpo.trim().length === 0) {
@@ -21,7 +24,7 @@ router.patch('/:id', (request, response) => {
   response.json({ data: comentario });
 });
 
-router.delete('/:id', (request, response) => {
+router.delete('/:id', (request: Req, response: ExpressResponse) => {
   const deleted = deleteComentario(request.params.id);
 
   if (!deleted) {

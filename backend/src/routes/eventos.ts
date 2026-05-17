@@ -1,4 +1,7 @@
 import { Router } from 'express';
+import type { Request as ExRequest, Response } from 'express-serve-static-core';
+import type { Response as ExpressResponse } from 'express';
+type Req = ExRequest<any, any, any>;
 import {
   createComentario,
   createEvento,
@@ -11,11 +14,11 @@ import {
 
 const router = Router();
 
-router.get('/', (_request, response) => {
+router.get('/', (_request: Request, response: Response) => {
   response.json({ data: listEventos() });
 });
 
-router.post('/', (request, response) => {
+router.post('/', (request: Req, response: ExpressResponse) => {
   const { titulo, descripcion, iniciaEn, terminaEn, entidadLugarId, creadoPorUsuarioId } =
     request.body ?? {};
 
@@ -36,7 +39,7 @@ router.post('/', (request, response) => {
   response.status(201).json({ data: evento });
 });
 
-router.get('/:id', (request, response) => {
+router.get('/:id', (request: Req, response: ExpressResponse) => {
   const evento = getEvento(request.params.id);
 
   if (!evento) {
@@ -47,7 +50,7 @@ router.get('/:id', (request, response) => {
   response.json({ data: evento });
 });
 
-router.patch('/:id', (request, response) => {
+router.patch('/:id', (request: Req, response: ExpressResponse) => {
   const patch = updateEvento(request.params.id, request.body ?? {});
 
   if (!patch) {
@@ -58,7 +61,7 @@ router.patch('/:id', (request, response) => {
   response.json({ data: patch });
 });
 
-router.delete('/:id', (request, response) => {
+router.delete('/:id', (request: Req, response: ExpressResponse) => {
   const deleted = deleteEvento(request.params.id);
 
   if (!deleted) {
@@ -69,11 +72,11 @@ router.delete('/:id', (request, response) => {
   response.status(204).send();
 });
 
-router.get('/:id/comentarios', (request, response) => {
+router.get('/:id/comentarios', (request: Req, response: ExpressResponse) => {
   response.json({ data: listComentariosByEvento(request.params.id) });
 });
 
-router.post('/:id/comentarios', (request, response) => {
+router.post('/:id/comentarios', (request: Req, response: ExpressResponse) => {
   const { cuerpo, usuarioId, padreId } = request.body ?? {};
 
   if (typeof cuerpo !== 'string' || cuerpo.trim().length === 0) {
