@@ -44,5 +44,6 @@ Thumbs.db
 /supabase/.env
 
 # Misc
+pause.md
 *.local
 *.log
