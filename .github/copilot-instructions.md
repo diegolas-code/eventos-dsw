@@ -49,6 +49,7 @@ All protected routes must use a centralized middleware that:
 1. **Research**: Always check `spec.md` and `TODO.md` before starting a task.
 2. **Implementation**: Focus on surgical edits. Don't refactor unrelated code.
 3. **Verification**: Always provide a plan to test the change (e.g., specific endpoints to hit or UI states to check).
+4. **Version control practices**: Commit early and often with small, focused changes; create feature branches for new work and open pull requests for review. Use descriptive commit messages, link PRs to issues, and push frequently to the remote repository to keep CI/CD and collaborators in sync.
 
 ## 6. Current Phase: Phase 0
 - Goal: Setup repo structure, basic Express API (CRUD for Events/Comments), and a minimal React app to display them.
