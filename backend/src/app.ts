@@ -13,8 +13,11 @@ export const createApp = () => {
   app.use(express.json());
 
   app.get('/', (_request, response) => {
-    // Proporciona una entrada útil para navegadores durante desarrollo
-    response.redirect('/api/v1/eventos');
+    // Devuelve JSON con estado y endpoints útiles para integraciones y monitoreo
+    response.json({
+      status: 'ok',
+      endpoints: ['/api/v1/eventos', '/api/v1/comentarios', '/health'],
+    });
   });
 
   app.get('/health', (_request, response) => {
