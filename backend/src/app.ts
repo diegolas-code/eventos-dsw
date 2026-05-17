@@ -12,6 +12,11 @@ export const createApp = () => {
   app.use(cors());
   app.use(express.json());
 
+  app.get('/', (_request, response) => {
+    // Proporciona una entrada útil para navegadores durante desarrollo
+    response.redirect('/api/v1/eventos');
+  });
+
   app.get('/health', (_request, response) => {
     response.json({ status: 'ok' });
   });
