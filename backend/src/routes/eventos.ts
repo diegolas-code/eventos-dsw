@@ -28,15 +28,15 @@ const router = Router();
  * GET /api/v1/eventos
  * Retorna la lista de todos los eventos.
  */
-router.get('/', (_request: Req, response: ExpressResponse) => {
-  response.json({ data: listEventos() });
+router.get('/', async (_request: Req, response: ExpressResponse) => {
+  response.json({ data: await listEventos() });
 });
 
 /**
  * POST /api/v1/eventos
  * Crea un nuevo evento. Valida campos obligatorios básicos.
  */
-router.post('/', (request: ReqCreateEvento, response: ExpressResponse) => {
+router.post('/', async (request: ReqCreateEvento, response: ExpressResponse) => {
   const { titulo, descripcion, iniciaEn, terminaEn, entidadLugarId, creadoPorUsuarioId } =
     request.body ?? ({} as CreateEventoInput);
 
@@ -46,7 +46,7 @@ router.post('/', (request: ReqCreateEvento, response: ExpressResponse) => {
     return;
   }
 
-  const evento = createEvento({
+  const evento = await createEvento({
     titulo,
     descripcion: typeof descripcion === 'string' ? descripcion : undefined,
     iniciaEn,
@@ -62,8 +62,8 @@ router.post('/', (request: ReqCreateEvento, response: ExpressResponse) => {
  * GET /api/v1/eventos/:id
  * Obtiene el detalle de un evento por su ID.
  */
-router.get('/:id', (request: Req, response: ExpressResponse) => {
-  const evento = getEvento(request.params.id);
+router.get('/:id', async (request: Req, response: ExpressResponse) => {
+  const evento = await getEvento(request.params.id);
 
   if (!evento) {
     response.status(404).json({ error: 'Evento no encontrado' });
@@ -77,8 +77,8 @@ router.get('/:id', (request: Req, response: ExpressResponse) => {
  * PATCH /api/v1/eventos/:id
  * Actualización parcial de un evento.
  */
-router.patch('/:id', (request: Req, response: ExpressResponse) => {
-  const patch = updateEvento(request.params.id, request.body ?? {});
+router.patch('/:id', async (request: Req, response: ExpressResponse) => {
+  const patch = await updateEvento(request.params.id, request.body ?? {});
 
   if (!patch) {
     response.status(404).json({ error: 'Evento no encontrado' });
@@ -92,8 +92,8 @@ router.patch('/:id', (request: Req, response: ExpressResponse) => {
  * DELETE /api/v1/eventos/:id
  * Elimina un evento.
  */
-router.delete('/:id', (request: Req, response: ExpressResponse) => {
-  const deleted = deleteEvento(request.params.id);
+router.delete('/:id', async (request: Req, response: ExpressResponse) => {
+  const deleted = await deleteEvento(request.params.id);
 
   if (!deleted) {
     response.status(404).json({ error: 'Evento no encontrado' });
@@ -109,15 +109,15 @@ router.delete('/:id', (request: Req, response: ExpressResponse) => {
  * GET /api/v1/eventos/:id/comentarios
  * Lista los comentarios de un evento específico.
  */
-router.get('/:id/comentarios', (request: Req, response: ExpressResponse) => {
-  response.json({ data: listComentariosByEvento(request.params.id) });
+router.get('/:id/comentarios', async (request: Req, response: ExpressResponse) => {
+  response.json({ data: await listComentariosByEvento(request.params.id) });
 });
 
 /**
  * POST /api/v1/eventos/:id/comentarios
  * Crea un comentario vinculado a un evento.
  */
-router.post('/:id/comentarios', (request: ReqCreateComentario, response: ExpressResponse) => {
+router.post('/:id/comentarios', async (request: ReqCreateComentario, response: ExpressResponse) => {
   const { cuerpo, usuarioId, padreId } = request.body ?? ({} as CreateComentarioInput);
 
   if (typeof cuerpo !== 'string' || cuerpo.trim().length === 0) {
@@ -125,7 +125,7 @@ router.post('/:id/comentarios', (request: ReqCreateComentario, response: Express
     return;
   }
 
-  const comentario = createComentario(request.params.id, {
+  const comentario = await createComentario(request.params.id, {
     cuerpo,
     usuarioId: typeof usuarioId === 'string' ? usuarioId : undefined,
     padreId: typeof padreId === 'string' ? padreId : undefined,

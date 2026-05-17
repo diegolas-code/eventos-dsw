@@ -1,24 +1,26 @@
 /**
- * Almacenamiento temporal en memoria.
+ * Almacenamiento persistente con Prisma.
  *
- * IMPORTANTE: Actualmente este archivo actúa como nuestra "Base de Datos" temporal.
- * Los datos se pierden cada vez que el servidor se reinicia.
- * En la siguiente fase, reemplazaremos esta lógica por llamadas a Prisma + PostgreSQL.
+ * Este archivo centraliza el acceso a la base de Datos (PostgreSQL) a través de Prisma.
  */
-import { randomUUID } from 'node:crypto';
+import { PrismaClient } from '@prisma/client';
+import type { CreateEventoInput, CreateComentarioInput } from './dtos.js';
 
-// Tipos de estado permitidos para un evento.
+// Instanciamos el cliente de Prisma
+const prisma = new PrismaClient();
+
+// Tipos de estado permitidos para un evento (coinciden con la lógica de negocio)
 export type EstadoEvento = 'PENDIENTE' | 'PUBLICADO' | 'RECHAZADO' | 'ARCHIVADO';
 
 /**
- * Interfaz que define la estructura de un Evento en el sistema.
+ * Interfaz que define la estructura de un Evento en el sistema (Formato CamelCase para el API).
  */
 export interface Evento {
   id: string;
   creadoPorUsuarioId: string | null;
   titulo: string;
   descripcion: string | null;
-  iniciaEn: string; // ISO string de fecha/hora
+  iniciaEn: string;
   terminaEn: string | null;
   estado: EstadoEvento;
   entidadLugarId: string | null;
@@ -28,185 +30,191 @@ export interface Evento {
 }
 
 /**
- * Interfaz que define la estructura de un Comentario.
+ * Interfaz que define la estructura de un Comentario (Formato CamelCase).
  */
 export interface Comentario {
   id: string;
   eventoId: string;
   usuarioId: string | null;
-  padreId: string | null; // Para hilos de comentarios (respuestas)
+  padreId: string | null;
   cuerpo: string;
   creadoEn: string;
   actualizadoEn: string;
 }
 
-// Tipos para los datos que recibimos desde la API (Inputs)
-type EventoInput = {
-  titulo: string;
-  descripcion?: string;
-  iniciaEn: string;
-  terminaEn?: string | null;
-  entidadLugarId?: string | null;
-  creadoPorUsuarioId?: string | null;
-};
-
-type EventoPatch = Partial<
-  Pick<EventoInput, 'titulo' | 'descripcion' | 'iniciaEn' | 'terminaEn' | 'entidadLugarId'>
-> & {
-  estado?: EstadoEvento;
-  posibleDuplicado?: boolean;
-};
-
-type ComentarioInput = {
-  cuerpo: string;
-  usuarioId?: string | null;
-  padreId?: string | null;
-};
-
-// Mapas para almacenar los datos (id -> objeto)
-const eventos = new Map<string, Evento>();
-const comentarios = new Map<string, Comentario>();
-
-// Función auxiliar para generar timestamps uniformes
-const now = () => new Date().toISOString();
-
 /**
- * Clonamos los objetos antes de devolverlos para evitar que modificaciones
- * accidentales fuera del "store" afecten a los datos guardados (inmutabilidad).
+ * Función mapeadora para convertir el modelo de la BD (snake_case) al formato del API (camelCase).
  */
-const cloneEvento = (evento: Evento): Evento => ({ ...evento });
-const cloneComentario = (comentario: Comentario): Comentario => ({ ...comentario });
+const mapEvento = (e: any): Evento => ({
+  id: e.id,
+  creadoPorUsuarioId: e.creado_por_usuario_id,
+  titulo: e.titulo,
+  descripcion: e.descripcion,
+  iniciaEn: e.inicia_en.toISOString(),
+  terminaEn: e.termina_en ? e.termina_en.toISOString() : null,
+  estado: e.estado as EstadoEvento,
+  entidadLugarId: e.entidad_lugar_id,
+  posibleDuplicado: e.posible_duplicado,
+  creadoEn: e.creado_en.toISOString(),
+  actualizadoEn: e.actualizado_en.toISOString(),
+});
+
+const mapComentario = (c: any): Comentario => ({
+  id: c.id,
+  eventoId: c.evento_id,
+  usuarioId: c.usuario_id,
+  padreId: c.padre_id,
+  cuerpo: c.cuerpo,
+  creadoEn: c.creado_en.toISOString(),
+  actualizadoEn: c.creado_en.toISOString(), // Comentarios no suelen tener updatedAt en el schema actual
+});
 
 // --- MÉTODOS DE EVENTOS ---
 
 /** Lista todos los eventos registrados */
-export const listEventos = (): Evento[] => Array.from(eventos.values()).map(cloneEvento);
-
-/** Obtiene un evento específico por su ID */
-export const getEvento = (eventoId: string): Evento | null => {
-  const evento = eventos.get(eventoId);
-  return evento ? cloneEvento(evento) : null;
+export const listEventos = async (): Promise<Evento[]> => {
+  const data = await prisma.evento.findMany({
+    orderBy: { inicia_en: 'asc' },
+  });
+  return data.map(mapEvento);
 };
 
-/** Crea un nuevo evento con estado inicial PENDIENTE */
-export const createEvento = (input: EventoInput): Evento => {
-  const timestamp = now();
-  const evento: Evento = {
-    id: randomUUID(),
-    creadoPorUsuarioId: input.creadoPorUsuarioId ?? null,
-    titulo: input.titulo,
-    descripcion: input.descripcion ?? null,
-    iniciaEn: input.iniciaEn,
-    terminaEn: input.terminaEn ?? null,
-    estado: 'PENDIENTE', // Por defecto, todo evento requiere moderación
-    entidadLugarId: input.entidadLugarId ?? null,
-    posibleDuplicado: false,
-    creadoEn: timestamp,
-    actualizadoEn: timestamp,
-  };
+/** Obtiene un evento específico por su ID */
+export const getEvento = async (eventoId: string): Promise<Evento | null> => {
+  const data = await prisma.evento.findUnique({
+    where: { id: eventoId },
+  });
+  return data ? mapEvento(data) : null;
+};
 
-  eventos.set(evento.id, evento);
-  return cloneEvento(evento);
+/** Crea un nuevo evento en la base de datos */
+export const createEvento = async (input: CreateEventoInput): Promise<Evento> => {
+  const data = await prisma.evento.create({
+    data: {
+      titulo: input.titulo,
+      descripcion: input.descripcion ?? null,
+      inicia_en: new Date(input.iniciaEn),
+      termina_en: input.terminaEn ? new Date(input.terminaEn) : null,
+      entidad_lugar_id: input.entidadLugarId ?? null,
+      creado_por_usuario_id: input.creadoPorUsuarioId ?? null,
+      estado: 'PENDIENTE',
+    },
+  });
+  return mapEvento(data);
 };
 
 /** Actualiza campos específicos de un evento */
-export const updateEvento = (eventoId: string, patch: EventoPatch): Evento | null => {
-  const current = eventos.get(eventoId);
-  if (!current) {
+export const updateEvento = async (eventoId: string, patch: any): Promise<Evento | null> => {
+  try {
+    const data = await prisma.evento.update({
+      where: { id: eventoId },
+      data: {
+        titulo: patch.titulo,
+        descripcion: patch.descripcion,
+        inicia_en: patch.iniciaEn ? new Date(patch.iniciaEn) : undefined,
+        termina_en: patch.terminaEn ? new Date(patch.terminaEn) : undefined,
+        entidad_lugar_id: patch.entidadLugarId,
+        estado: patch.estado,
+        posible_duplicado: patch.posibleDuplicado,
+      },
+    });
+    return mapEvento(data);
+  } catch {
     return null;
   }
-
-  // Combinamos los datos actuales con los nuevos
-  const updated: Evento = {
-    ...current,
-    ...patch,
-    descripcion:
-      patch.descripcion !== undefined ? (patch.descripcion ?? null) : current.descripcion,
-    terminaEn: patch.terminaEn !== undefined ? (patch.terminaEn ?? null) : current.terminaEn,
-    entidadLugarId:
-      patch.entidadLugarId !== undefined ? (patch.entidadLugarId ?? null) : current.entidadLugarId,
-    actualizadoEn: now(),
-  };
-
-  eventos.set(eventoId, updated);
-  return cloneEvento(updated);
 };
 
-/** Elimina un evento (esta acción es definitiva en este modelo) */
-export const deleteEvento = (eventoId: string): boolean => eventos.delete(eventoId);
+/** Elimina un evento */
+export const deleteEvento = async (eventoId: string): Promise<boolean> => {
+  try {
+    await prisma.evento.delete({ where: { id: eventoId } });
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 // --- MÉTODOS DE COMENTARIOS ---
 
-/** Lista comentarios vinculados a un evento específico, ordenados por fecha */
-export const listComentariosByEvento = (eventoId: string): Comentario[] =>
-  Array.from(comentarios.values())
-    .filter(comentario => comentario.eventoId === eventoId)
-    .map(cloneComentario)
-    .sort((left, right) => left.creadoEn.localeCompare(right.creadoEn));
+/** Lista comentarios vinculados a un evento específico */
+export const listComentariosByEvento = async (eventoId: string): Promise<Comentario[]> => {
+  const data = await prisma.comentario.findMany({
+    where: { evento_id: eventoId },
+    orderBy: { creado_en: 'asc' },
+  });
+  return data.map(mapComentario);
+};
 
 /** Crea un comentario para un evento existente */
-export const createComentario = (eventoId: string, input: ComentarioInput): Comentario | null => {
-  if (!eventos.has(eventoId)) {
-    return null; // No podemos comentar eventos que no existen
+export const createComentario = async (
+  eventoId: string,
+  input: CreateComentarioInput
+): Promise<Comentario | null> => {
+  try {
+    const data = await prisma.comentario.create({
+      data: {
+        evento_id: eventoId,
+        cuerpo: input.cuerpo,
+        usuario_id: input.usuarioId ?? null,
+        padre_id: input.padreId ?? null,
+      },
+    });
+    return mapComentario(data);
+  } catch {
+    return null;
   }
-
-  const timestamp = now();
-  const comentario: Comentario = {
-    id: randomUUID(),
-    eventoId,
-    usuarioId: input.usuarioId ?? null,
-    padreId: input.padreId ?? null,
-    cuerpo: input.cuerpo,
-    creadoEn: timestamp,
-    actualizadoEn: timestamp,
-  };
-
-  comentarios.set(comentario.id, comentario);
-  return cloneComentario(comentario);
 };
 
 /** Actualiza el texto de un comentario */
-export const updateComentario = (comentarioId: string, cuerpo: string): Comentario | null => {
-  const current = comentarios.get(comentarioId);
-  if (!current) {
+export const updateComentario = async (
+  comentarioId: string,
+  cuerpo: string
+): Promise<Comentario | null> => {
+  try {
+    const data = await prisma.comentario.update({
+      where: { id: comentarioId },
+      data: { cuerpo },
+    });
+    return mapComentario(data);
+  } catch {
     return null;
   }
-
-  const updated: Comentario = {
-    ...current,
-    cuerpo,
-    actualizadoEn: now(),
-  };
-
-  comentarios.set(comentarioId, updated);
-  return cloneComentario(updated);
 };
 
 /** Elimina un comentario */
-export const deleteComentario = (comentarioId: string): boolean => comentarios.delete(comentarioId);
+export const deleteComentario = async (comentarioId: string): Promise<boolean> => {
+  try {
+    await prisma.comentario.delete({ where: { id: comentarioId } });
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 // --- SEEDING / DATOS DE PRUEBA ---
 
 /**
- * Carga datos iniciales si la lista está vacía.
- * Útil para que los desarrolladores vean algo al entrar por primera vez.
+ * Carga datos iniciales en la BD real.
  */
-export const seedDemoData = (): void => {
-  if (eventos.size > 0) {
-    return;
-  }
+export const seedDemoData = async (): Promise<void> => {
+  const count = await prisma.evento.count();
+  if (count > 0) return;
 
-  const evento = createEvento({
-    titulo: 'Concierto de prueba',
-    descripcion: 'Evento inicial para validar la API.',
-    iniciaEn: new Date().toISOString(),
-    terminaEn: null,
-    entidadLugarId: 'lugar-demo',
-    creadoPorUsuarioId: 'usuario-demo',
+  console.log('🌱 Sembrando datos iniciales en la DB...');
+
+  const evento = await prisma.evento.create({
+    data: {
+      titulo: 'Evento Inicial Supabase',
+      descripcion: 'Este evento ya viene de la base de datos real.',
+      inicia_en: new Date(),
+      estado: 'PUBLICADO',
+    },
   });
 
-  createComentario(evento.id, {
-    cuerpo: 'Primer comentario de demo.',
-    usuarioId: 'usuario-demo',
+  await prisma.comentario.create({
+    data: {
+      evento_id: evento.id,
+      cuerpo: '¡Primer comentario persistente!',
+    },
   });
 };

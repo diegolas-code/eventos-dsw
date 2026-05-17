@@ -6,7 +6,8 @@ import eventosRouter from './routes/eventos.js';
 import { seedDemoData } from './store.js';
 
 export const createApp = () => {
-  seedDemoData();
+  // Inicializamos datos de prueba de forma asíncrona (no bloqueamos el arranque)
+  seedDemoData().catch(err => console.error('❌ Error al sembrar datos:', err));
 
   const app = express();
 
@@ -22,14 +23,14 @@ export const createApp = () => {
   });
 
   app.get('/health', (_request: Request, response: Response) => {
-    response.json({ status: 'ok' });
+    response.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   app.use('/api/v1/eventos', eventosRouter);
   app.use('/api/v1/comentarios', comentariosRouter);
 
   app.use((_request: Request, response: Response) => {
-    response.status(404).json({ error: 'Ruta no encontrada' });
+    response.status(404).json({ error: 'La ruta solicitada no existe' });
   });
 
   return app;

@@ -5,18 +5,20 @@ Este TODO describe los hitos y tareas necesarias para desarrollar el proyecto en
 Resumen de entregables por fase
 
 Fase 0 — Despliegue inicial y CRUD público
+
 - Objetivo: permitir que cualquier persona cree, modifique y elimine publicaciones en la base de datos y comente publicaciones.
 - Tareas:
-  - Inicializar repositorio y ramas: `main`, `dev`.
-  - Crear API mínima (Node.js + Express/Fastify) con endpoints: `POST /eventos`, `GET /eventos`, `GET /eventos/:id`, `PATCH /eventos/:id`, `DELETE /eventos/:id`.
-  - Añadir comentarios: `POST /eventos/:id/comentarios`, `GET /eventos/:id/comentarios`.
-  - Definir esquema de BD (Postgres + Prisma) y migraciones iniciales.
-  - Crear seed data (10 eventos, 5 artistas, 5 lugares) y script de carga.
-  - Frontend mínimo (React + Vite): formularios y vistas para CRUD y comentarios.
-  - Configurar despliegue continuo básico (GitHub Actions) y despliegue a plataformas que elijas (Vercel/Render). Empezar con variables de entorno en `env` de plataforma.
-  - Documentar cómo ejecutar localmente y variables requeridas (`.env.example`).
+  - [x] Inicializar repositorio y ramas: `main`, `dev`.
+  - [x] Crear API mínima (Node.js + Express) con endpoints: `POST /eventos`, `GET /eventos`, `GET /eventos/:id`, `PATCH /eventos/:id`, `DELETE /eventos/:id`.
+  - [x] Añadir comentarios: `POST /eventos/:id/comentarios`, `GET /eventos/:id/comentarios`.
+  - [x] Definir esquema de BD (Postgres + Prisma) y migraciones iniciales.
+  - [x] Crear seed data y script de carga persistente.
+  - [x] Frontend mínimo (React + Vite): vistas iniciales y conexión al API.
+  - [x] Configurar despliegue continuo básico (GitHub Actions).
+  - [x] Documentar cómo ejecutar localmente y variables requeridas (`.env.example`).
 
 Fase 1 — Autenticación y roles
+
 - Objetivo: añadir autenticación y roles definidos en la spec (`miembro`, `artista`, `lugar`, `moderador`, `admin`).
 - Tareas:
   - Integrar Supabase Auth (o JWT propio) en frontend y backend.
@@ -26,6 +28,7 @@ Fase 1 — Autenticación y roles
   - Añadir tests básicos de integración para auth y permisos.
 
 Fase 2 — Pool de publicaciones y moderación
+
 - Objetivo: separar flujo de publicación y añadir panel de moderación.
 - Tareas:
   - Añadir estado `PENDIENTE|PUBLICADO|RECHAZADO|ARCHIVADO` a `EVENTO`.
@@ -35,6 +38,7 @@ Fase 2 — Pool de publicaciones y moderación
   - Añadir tests de flujo publicación → moderación.
 
 Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
+
 - Objetivo: perfiles reclamables y panel personal para entidades.
 - Tareas:
   - Crear entidad `PERFIL_ENTIDAD` (unificada para artistas y lugares) con CRUD mínimo.
@@ -43,6 +47,7 @@ Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
   - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
 
 Fase 4 — Votaciones, Seguimiento y Duplicados
+
 - Objetivo: añadir interactividad y detección de duplicados simple.
 - Tareas:
   - Implementar detección de duplicados básica (mismo lugar + mismo día + mismo artista).
@@ -53,6 +58,7 @@ Fase 4 — Votaciones, Seguimiento y Duplicados
   - Tests de concurrencia y seguridad (evitar doble voto).
 
 Operaciones transversales (siempre)
+
 - Configuración de CI: GitHub Actions para lint, test y build.
 - Documentación mínima: `README.md`, `CONTRIBUTING.md`, `TODO.md`, `CHANGELOG.md` por hitos.
 - Seguridad: mantener `.env` fuera del repositorio; guardar secrets en GitHub y en los paneles de hosting.
@@ -60,9 +66,11 @@ Operaciones transversales (siempre)
 - Backups: plan simple para la base de datos en entorno productivo.
 
 Despliegue continuo desde el inicio
+
 - Recomendación: abrir repositorio en GitHub, configurar GitHub Actions y desplegar la rama `main` a un entorno público (Vercel para frontend, Render/Heroku para backend), así trabajas sobre un despliegue real desde el primer commit.
 
 Checklist rápido para comenzar (primeros pasos)
+
 1. Inicializar repo y commit inicial con `.gitignore`, `README.md`, `.env.example`.
 2. Crear proyecto backend con endpoints mínimos y esquema Prisma.
 3. Crear proyecto frontend con vistas CRUD y conexión al API.
@@ -70,5 +78,6 @@ Checklist rápido para comenzar (primeros pasos)
 5. Iterar: añadir auth, moderación, perfiles y votaciones por fases.
 
 Notas finales
+
 - Las fases priorizan el flujo visible (crear/editar/eliminar + comentarios) y la entrega continua. La votación y métricas se dejan para el final según tu plan.
 - Si quieres, puedo convertir cada tarea en issues de GitHub y/o generar plantillas de PR y de issues.

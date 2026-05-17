@@ -19,7 +19,7 @@ const router = Router();
  * PATCH /api/v1/comentarios/:id
  * Permite editar el texto de un comentario.
  */
-router.patch('/:id', (request: ReqPatchComentario, response: ExpressResponse) => {
+router.patch('/:id', async (request: ReqPatchComentario, response: ExpressResponse) => {
   const { cuerpo } = request.body ?? ({} as PatchComentarioInput);
 
   // Validación: el cuerpo no puede estar vacío
@@ -28,7 +28,7 @@ router.patch('/:id', (request: ReqPatchComentario, response: ExpressResponse) =>
     return;
   }
 
-  const comentario = updateComentario(request.params.id, cuerpo);
+  const comentario = await updateComentario(request.params.id, cuerpo);
 
   if (!comentario) {
     response.status(404).json({ error: 'Comentario no encontrado' });
@@ -42,8 +42,8 @@ router.patch('/:id', (request: ReqPatchComentario, response: ExpressResponse) =>
  * DELETE /api/v1/comentarios/:id
  * Elimina un comentario por su ID.
  */
-router.delete('/:id', (request: Req, response: ExpressResponse) => {
-  const deleted = deleteComentario(request.params.id);
+router.delete('/:id', async (request: Req, response: ExpressResponse) => {
+  const deleted = await deleteComentario(request.params.id);
 
   if (!deleted) {
     response.status(404).json({ error: 'Comentario no encontrado' });
