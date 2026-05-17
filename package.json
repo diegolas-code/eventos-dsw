@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "setup": "npm install && npm install --prefix backend && npm install --prefix web && npm run prisma:generate --prefix backend",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "format": "prettier --write .",
     "prepare": "husky install",
