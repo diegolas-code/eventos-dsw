@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  nombre_mostrar String
+  rol            String      @default("miembro")
+  creado_en      DateTime    @default(now())
+  actualizado_en DateTime    @updatedAt
+  eventos        Evento[]    @relation("EventosCreados")
+  comentarios    Comentario[]
+}
+
+model PerfilEntidad {
+  id          String   @id @default(uuid())
+  usuario_id  String   @unique
+  nombre      String
+  tipo        String
+  descripcion String?
+  direccion   String?
+  gmaps_url   String?
+  reclamado   Boolean  @default(false)
+  creado_en   DateTime @default(now())
+}
+
+model Evento {
+  id                    String          @id @default(uuid())
+  creado_por_usuario_id  String?
+  titulo                String
+  descripcion           String?
+  inicia_en             DateTime
+  termina_en            DateTime?
+  estado                String          @default("PENDIENTE")
+  entidad_lugar_id      String?
+  posible_duplicado     Boolean         @default(false)
+  creado_en             DateTime        @default(now())
+  actualizado_en        DateTime        @updatedAt
+  creador               Usuario?        @relation("EventosCreados", fields: [creado_por_usuario_id], references: [id])
+  comentarios           Comentario[]
+}
+
+model Comentario {
+  id         String   @id @default(uuid())
+  evento_id  String
+  usuario_id String?
+  padre_id   String?
+  cuerpo     String
+  creado_en  DateTime @default(now())
+  evento     Evento   @relation(fields: [evento_id], references: [id])
+  autor      Usuario? @relation(fields: [usuario_id], references: [id])
+}

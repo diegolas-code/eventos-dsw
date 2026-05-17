@@ -8,14 +8,12 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2021,
     sourceType: 'module',
-    project: ['./tsconfig.json'],
+    project: ['./backend/tsconfig.json'],
   },
-  plugins: ['@typescript-eslint', 'import'],
+  plugins: ['@typescript-eslint'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:import/errors',
-    'plugin:import/warnings',
     'prettier',
   ],
   rules: {
@@ -26,12 +24,5 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     semi: ['error', 'always'],
     'max-len': ['warn', { code: 100 }],
-  },
-  settings: {
-    'import/resolver': {
-      node: {
-        extensions: ['.js', '.ts', '.tsx', '.jsx'],
-      },
-    },
   },
 };
