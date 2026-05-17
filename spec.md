@@ -71,6 +71,7 @@ Los eventos creados inician en estado `PENDIENTE` y requieren validación. Si al
 #### Detección de duplicados
 
 Al crear un evento, el sistema realiza una comprobación básica de duplicados. Se considera un posible duplicado si coincide:
+
 1. El mismo **Lugar**.
 2. El mismo **Día**.
 3. Al menos un **Artista** coincidente.
@@ -224,20 +225,20 @@ Si se detectan estos factores, se guarda con un flag de `posible_duplicado` para
 
 Tabla resumida de capacidades por rol. Los permisos detallados se especifican en cada endpoint.
 
-| Acción | Visitante | Miembro | Artista/Rep | Lugar | Moderador | Admin |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| Ver feed y detalles | Si | Si | Si | Si | Si | Si |
-| Registrarse / iniciar sesión | Si | N/A | N/A | N/A | N/A | N/A |
-| Publicar evento | No | Si | Si | Si | Si | Si |
-| Editar / eliminar evento propio | No | Si | Si | Si | Si | Si |
-| Comentar | No | Si | Si | Si | Si | Si |
-| Votar eventos / comentarios | No | Si | Si | Si | Si | Si |
-| Favoritos / seguimiento | No | Si | Si | Si | Si | Si |
-| Gestionar perfil propio | No | Si | Si | Si | Si | Si |
-| Reclamar perfil no reclamado | No | Si | Si | Si | Si | Si |
-| Ver estadisticas propias | No | No | Si | Si | Si | Si |
-| Moderar eventos / comentarios | No | No | No | No | Si | Si |
-| Gestionar usuarios, etiquetas, categorias | No | No | No | No | No | Si |
+| Acción                                    | Visitante | Miembro | Artista/Rep | Lugar | Moderador | Admin |
+| ----------------------------------------- | :-------: | :-----: | :---------: | :---: | :-------: | :---: |
+| Ver feed y detalles                       |    Si     |   Si    |     Si      |  Si   |    Si     |  Si   |
+| Registrarse / iniciar sesión              |    Si     |   N/A   |     N/A     |  N/A  |    N/A    |  N/A  |
+| Publicar evento                           |    No     |   Si    |     Si      |  Si   |    Si     |  Si   |
+| Editar / eliminar evento propio           |    No     |   Si    |     Si      |  Si   |    Si     |  Si   |
+| Comentar                                  |    No     |   Si    |     Si      |  Si   |    Si     |  Si   |
+| Votar eventos / comentarios               |    No     |   Si    |     Si      |  Si   |    Si     |  Si   |
+| Favoritos / seguimiento                   |    No     |   Si    |     Si      |  Si   |    Si     |  Si   |
+| Gestionar perfil propio                   |    No     |   Si    |     Si      |  Si   |    Si     |  Si   |
+| Reclamar perfil no reclamado              |    No     |   Si    |     Si      |  Si   |    Si     |  Si   |
+| Ver estadisticas propias                  |    No     |   No    |     Si      |  Si   |    Si     |  Si   |
+| Moderar eventos / comentarios             |    No     |   No    |     No      |  No   |    Si     |  Si   |
+| Gestionar usuarios, etiquetas, categorias |    No     |   No    |     No      |  No   |    No     |  Si   |
 
 ### API v1 (REST)
 
@@ -245,117 +246,117 @@ Para la autenticación el backend integra Supabase Auth de forma server-side. El
 
 #### Convenciones
 
-* Base URL: `/api/v1`
-* Paginación: `?page=1&pageSize=20`
-* Ordenamiento: `?sort=recencia`
-* Filtros: `?fechaDesde&fechaHasta&categoria&lugarId&artistaId`
+- Base URL: `/api/v1`
+- Paginación: `?page=1&pageSize=20`
+- Ordenamiento: `?sort=recencia`
+- Filtros: `?fechaDesde&fechaHasta&categoria&lugarId&artistaId`
 
 #### Eventos
 
-* `GET /api/v1/eventos`
-* `GET /api/v1/eventos/{id}`
-* `POST /api/v1/eventos`
-* `PATCH /api/v1/eventos/{id}`
-* `DELETE /api/v1/eventos/{id}`
-* `POST /api/v1/eventos/{id}/publicar`
-* `POST /api/v1/eventos/{id}/rechazar`
-* `POST /api/v1/eventos/{id}/archivar`
+- `GET /api/v1/eventos`
+- `GET /api/v1/eventos/{id}`
+- `POST /api/v1/eventos`
+- `PATCH /api/v1/eventos/{id}`
+- `DELETE /api/v1/eventos/{id}`
+- `POST /api/v1/eventos/{id}/publicar`
+- `POST /api/v1/eventos/{id}/rechazar`
+- `POST /api/v1/eventos/{id}/archivar`
 
 #### Comentarios
 
-* `GET /api/v1/eventos/{id}/comentarios`
-* `POST /api/v1/eventos/{id}/comentarios`
-* `PATCH /api/v1/comentarios/{id}`
-* `DELETE /api/v1/comentarios/{id}`
+- `GET /api/v1/eventos/{id}/comentarios`
+- `POST /api/v1/eventos/{id}/comentarios`
+- `PATCH /api/v1/comentarios/{id}`
+- `DELETE /api/v1/comentarios/{id}`
 
 #### Votos
 
-* `POST /api/v1/eventos/{id}/votos`
-* `DELETE /api/v1/eventos/{id}/votos`
-* `POST /api/v1/comentarios/{id}/votos`
-* `DELETE /api/v1/comentarios/{id}/votos`
+- `POST /api/v1/eventos/{id}/votos`
+- `DELETE /api/v1/eventos/{id}/votos`
+- `POST /api/v1/comentarios/{id}/votos`
+- `DELETE /api/v1/comentarios/{id}/votos`
 
 #### Favoritos y seguimiento
 
-* `GET /api/v1/usuarios/me/favoritos`
-* `POST /api/v1/eventos/{id}/favoritos`
-* `DELETE /api/v1/eventos/{id}/favoritos`
-* `GET /api/v1/usuarios/me/seguimientos`
-* `POST /api/v1/seguimientos`
-* `DELETE /api/v1/seguimientos/{id}`
+- `GET /api/v1/usuarios/me/favoritos`
+- `POST /api/v1/eventos/{id}/favoritos`
+- `DELETE /api/v1/eventos/{id}/favoritos`
+- `GET /api/v1/usuarios/me/seguimientos`
+- `POST /api/v1/seguimientos`
+- `DELETE /api/v1/seguimientos/{id}`
 
 #### Perfiles y entidades
 
-* `GET /api/v1/artistas`
-* `GET /api/v1/artistas/{id}`
-* `PATCH /api/v1/artistas/{id}`
-* `POST /api/v1/artistas/{id}/reclamar`
-* `GET /api/v1/lugares`
-* `GET /api/v1/lugares/{id}`
-* `PATCH /api/v1/lugares/{id}`
-* `POST /api/v1/lugares/{id}/reclamar`
+- `GET /api/v1/artistas`
+- `GET /api/v1/artistas/{id}`
+- `PATCH /api/v1/artistas/{id}`
+- `POST /api/v1/artistas/{id}/reclamar`
+- `GET /api/v1/lugares`
+- `GET /api/v1/lugares/{id}`
+- `PATCH /api/v1/lugares/{id}`
+- `POST /api/v1/lugares/{id}/reclamar`
 
 #### Moderación y reportes
 
-* `GET /api/v1/moderacion/pendientes`
-* `POST /api/v1/moderacion/acciones`
-* `GET /api/v1/reportes`
-* `POST /api/v1/reportes`
+- `GET /api/v1/moderacion/pendientes`
+- `POST /api/v1/moderacion/acciones`
+- `GET /api/v1/reportes`
+- `POST /api/v1/reportes`
 
 #### Admin
 
-* `GET /api/v1/admin/usuarios`
-* `PATCH /api/v1/admin/usuarios/{id}/rol`
-* `GET /api/v1/admin/categorias`
-* `POST /api/v1/admin/categorias`
-* `DELETE /api/v1/admin/categorias/{id}`
+- `GET /api/v1/admin/usuarios`
+- `PATCH /api/v1/admin/usuarios/{id}/rol`
+- `GET /api/v1/admin/categorias`
+- `POST /api/v1/admin/categorias`
+- `DELETE /api/v1/admin/categorias/{id}`
 
 ### Restricciones de datos e índices
 
-* Unicidad: `USUARIO.email` único, `VOTO_EVENTO` y `VOTO_COMENTARIO` únicos por usuario/objeto, `SEGUIMIENTO` único por usuario/objetivo.
-* Requeridos: `EVENTO.titulo`, `EVENTO.inicia_en`, `EVENTO.lugar_id`, `COMENTARIO.cuerpo`, `USUARIO.nombre_mostrar`.
-* Índices sugeridos: `EVENTO(inicia_en)`, `EVENTO(estado)`, `EVENTO(lugar_id)`, `EVENTO_ARTISTA(artista_id)`, `SEGUIMIENTO(usuario_id)`, `FAVORITO(usuario_id)`, `COMENTARIO(evento_id)`, `REPORTE(estado)`.
-* Búsqueda: índice de texto para `EVENTO.titulo` y `EVENTO.descripcion` para filtros por palabra clave.
+- Unicidad: `USUARIO.email` único, `VOTO_EVENTO` y `VOTO_COMENTARIO` únicos por usuario/objeto, `SEGUIMIENTO` único por usuario/objetivo.
+- Requeridos: `EVENTO.titulo`, `EVENTO.inicia_en`, `EVENTO.lugar_id`, `COMENTARIO.cuerpo`, `USUARIO.nombre_mostrar`.
+- Índices sugeridos: `EVENTO(inicia_en)`, `EVENTO(estado)`, `EVENTO(lugar_id)`, `EVENTO_ARTISTA(artista_id)`, `SEGUIMIENTO(usuario_id)`, `FAVORITO(usuario_id)`, `COMENTARIO(evento_id)`, `REPORTE(estado)`.
+- Búsqueda: índice de texto para `EVENTO.titulo` y `EVENTO.descripcion` para filtros por palabra clave.
 
 ### Contratos mínimos de API (ejemplos)
 
-* `POST /api/v1/eventos`
-    * Request: `titulo`, `descripcion`, `inicia_en`, `lugar_id`, `artistas[]`.
-    * Response: `id`, `estado`, `creado_en`.
-* `GET /api/v1/eventos`
-    * Response: lista con `id`, `titulo`, `inicia_en`, `lugar`, `votos`.
-* `POST /api/v1/moderacion/acciones`
-    * Request: `tipo_objetivo`, `objetivo_id`, `accion`, `nota`.
-    * Response: `id`, `estado_objetivo`.
+- `POST /api/v1/eventos`
+  - Request: `titulo`, `descripcion`, `inicia_en`, `lugar_id`, `artistas[]`.
+  - Response: `id`, `estado`, `creado_en`.
+- `GET /api/v1/eventos`
+  - Response: lista con `id`, `titulo`, `inicia_en`, `lugar`, `votos`.
+- `POST /api/v1/moderacion/acciones`
+  - Request: `tipo_objetivo`, `objetivo_id`, `accion`, `nota`.
+  - Response: `id`, `estado_objetivo`.
 
 ### Datos de prueba
 
-* 10 eventos con fechas futuras y pasadas.
-* 5 artistas y 5 lugares con perfiles básicos.
-* 1 moderador y 1 admin con credenciales de desarrollo.
+- 10 eventos con fechas futuras y pasadas.
+- 5 artistas y 5 lugares con perfiles básicos.
+- 1 moderador y 1 admin con credenciales de desarrollo.
 
 ### Configuración de entorno
 
-* `DATABASE_URL`
-* `SUPABASE_URL`
-* `SUPABASE_ANON_KEY`
-* `SUPABASE_SERVICE_ROLE_KEY`
-* `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`
+- `DATABASE_URL`
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`
 
 ### Mapa de UI (alto nivel)
 
-* Feed (listado + filtros)
-* Detalle de evento (info + comentarios + votos)
-* Publicar evento (formulario)
-* Panel de moderación (pendientes + acciones)
+- Feed (listado + filtros)
+- Detalle de evento (info + comentarios + votos)
+- Publicar evento (formulario)
+- Panel de moderación (pendientes + acciones)
 
 ## Lineamientos de frontend
 
-* Diseño base: tipografía legible, escala de espaciado consistente, paleta breve con estados (exito, error, advertencia).
-* Manejo de estado: React Query para datos remotos; estado local con hooks; cacheado por vistas principales.
-* Formularios: validación de campos obligatorios, mensajes de error claros, y estados de carga/empty/error en cada pantalla.
-* Rutas: `/` (feed), `/eventos/:id`, `/publicar`, `/artistas/:id`, `/lugares/:id`, `/moderacion`.
-* Acceso: botones y acciones visibles según rol; rutas de moderación y publicación protegidas.
+- Diseño base: tipografía legible, escala de espaciado consistente, paleta breve con estados (exito, error, advertencia).
+- Manejo de estado: React Query para datos remotos; estado local con hooks; cacheado por vistas principales.
+- Formularios: validación de campos obligatorios, mensajes de error claros, y estados de carga/empty/error en cada pantalla.
+- Rutas: `/` (feed), `/eventos/:id`, `/publicar`, `/artistas/:id`, `/lugares/:id`, `/moderacion`.
+- Acceso: botones y acciones visibles según rol; rutas de moderación y publicación protegidas.
 
 ### Flujos clave
 
@@ -397,10 +398,10 @@ Casos borde: alta confianza con insistencia del usuario (marcar `posible_duplica
 
 ### Política de moderación (resumen)
 
-* Umbrales: contenido con múltiples reportes entra en ocultamiento preventivo hasta revisión.
-* SLA: revisión de eventos pendientes en 48 horas en fase MVP.
-* Escalamiento: reincidencias o conflictos pasan al admin con nota de moderación.
-* Auditoría: toda acción queda registrada con moderador, motivo y fecha.
+- Umbrales: contenido con múltiples reportes entra en ocultamiento preventivo hasta revisión.
+- SLA: revisión de eventos pendientes en 48 horas en fase MVP.
+- Escalamiento: reincidencias o conflictos pasan al admin con nota de moderación.
+- Auditoría: toda acción queda registrada con moderador, motivo y fecha.
 
 ## Plan por etapas
 
@@ -412,16 +413,16 @@ Objetivo: validar el flujo principal y la propuesta de valor con un alcance redu
 
 Alcance:
 
-* Feed con filtros básicos y detalle de evento.
-* Publicación de eventos con moderación manual simple.
-* Perfiles básicos de artistas y lugares.
-* Comentarios sin hilos avanzados ni métricas.
+- Feed con filtros básicos y detalle de evento.
+- Publicación de eventos con moderación manual simple.
+- Perfiles básicos de artistas y lugares.
+- Comentarios sin hilos avanzados ni métricas.
 
 Criterios de cierre:
 
-* Publicar y visualizar eventos de punta a punta.
-* Moderación funcional con aprobación/rechazo.
-* Feedback inicial de usuarios o equipo docente.
+- Publicar y visualizar eventos de punta a punta.
+- Moderación funcional con aprobación/rechazo.
+- Feedback inicial de usuarios o equipo docente.
 
 ### Fase 2: MVP
 
@@ -429,16 +430,16 @@ Objetivo: habilitar funcionalidades clave de comunidad y personalización.
 
 Alcance:
 
-* Seguimiento de artistas y lugares con alertas internas.
-* Votos en eventos y comentarios, con visualización en el feed.
-* Detección de duplicados con advertencias al publicar.
-* Reclamo de perfiles no reclamados.
+- Seguimiento de artistas y lugares con alertas internas.
+- Votos en eventos y comentarios, con visualización en el feed.
+- Detección de duplicados con advertencias al publicar.
+- Reclamo de perfiles no reclamados.
 
 Criterios de cierre:
 
-* Flujo completo de publicación, moderación y reclamo.
-* Feed con orden por recencia y conteo visible de votos.
-* Notificaciones básicas configurables por el usuario.
+- Flujo completo de publicación, moderación y reclamo.
+- Feed con orden por recencia y conteo visible de votos.
+- Notificaciones básicas configurables por el usuario.
 
 ### Fase 3: Producción
 
@@ -446,34 +447,33 @@ Objetivo: estabilizar operación, mejorar confiabilidad y preparar escalamiento.
 
 Alcance:
 
-* Métricas y reportes para roles especiales.
-* Mejoras de rendimiento y monitoreo.
-* Políticas y auditoría de moderación consistentes.
+- Métricas y reportes para roles especiales.
+- Mejoras de rendimiento y monitoreo.
+- Políticas y auditoría de moderación consistentes.
 
 Criterios de cierre:
 
-* Rendimiento dentro de objetivos definidos en NFR.
-* Trazabilidad de acciones de moderación.
-* Backups y políticas de retención activas.
+- Rendimiento dentro de objetivos definidos en NFR.
+- Trazabilidad de acciones de moderación.
+- Backups y políticas de retención activas.
 
 ### Requerimientos no funcionales
 
-* Rendimiento: carga inicial del feed < 2s en conexiones promedio; acciones críticas (votar, comentar, seguir) < 500ms.
-* Disponibilidad: objetivo 99.5% mensual en entornos productivos.
-* Privacidad y datos: datos personales mínimos, cifrado en tránsito, retención de logs de auditoría por 180 días.
-* Accesibilidad: cumplimiento WCAG 2.1 AA en vistas principales.
+- Rendimiento: carga inicial del feed < 2s en conexiones promedio; acciones críticas (votar, comentar, seguir) < 500ms.
+- Disponibilidad: objetivo 99.5% mensual en entornos productivos.
+- Privacidad y datos: datos personales mínimos, cifrado en tránsito, retención de logs de auditoría por 180 días.
+- Accesibilidad: cumplimiento WCAG 2.1 AA en vistas principales.
 
 ## Preparación para implementación (Fases 1 y 2)
 
 ### Checklist de alcance para Fase 1 (Prototipo)
 
-* Pantallas mínimas: feed, detalle de evento, publicar evento, panel de moderación.
-* Endpoints mínimos: listar eventos, detalle de evento, crear evento, aprobar/rechazar.
-* Autenticación: login básico para roles internos (miembro y moderador).
+- Pantallas mínimas: feed, detalle de evento, publicar evento, panel de moderación.
+- Endpoints mínimos: listar eventos, detalle de evento, crear evento, aprobar/rechazar.
+- Autenticación: login básico para roles internos (miembro y moderador).
 
 ### Criterios de aceptación por flujo
 
-* Publicación: un usuario registrado puede crear un evento con datos obligatorios, queda en `PENDIENTE` y aparece en moderación.
-* Moderación: un moderador aprueba o rechaza, y el estado se refleja en el feed.
-* Reclamo (Fase 2): un artista/lugar solicita reclamo y el admin lo aprueba, vinculando el perfil.
-
+- Publicación: un usuario registrado puede crear un evento con datos obligatorios, queda en `PENDIENTE` y aparece en moderación.
+- Moderación: un moderador aprueba o rechaza, y el estado se refleja en el feed.
+- Reclamo (Fase 2): un artista/lugar solicita reclamo y el admin lo aprueba, vinculando el perfil.

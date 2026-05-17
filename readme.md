@@ -6,6 +6,8 @@ Alumnos: GUARAZ Diego, MEDINA Víctor, SEGURA Melisa | Desarrollo de Sistemas We
 
 El desarrollo consiste en una aplicación web para publicar y consumir eventos locales en formato de cartelera. La plataforma permite consultar eventos próximos (conciertos, exposiciones, talleres, etc.), ver detalles completos, interactuar con la comunidad y publicar nuevos eventos. Artistas y lugares pueden registrarse y gestionar su información pública para mantener sus perfiles actualizados.
 
+[Especificaciones](./spec.md) | [TODO](./TODO.md)
+
 ## Estado Actual (Fase 0 - Completada)
 
 Actualmente, el proyecto cuenta con una infraestructura base sólida y funcional:
