@@ -1,13 +1,24 @@
+/**
+ * Almacenamiento temporal en memoria.
+ *
+ * IMPORTANTE: Actualmente este archivo actúa como nuestra "Base de Datos" temporal.
+ * Los datos se pierden cada vez que el servidor se reinicia.
+ * En la siguiente fase, reemplazaremos esta lógica por llamadas a Prisma + PostgreSQL.
+ */
 import { randomUUID } from 'node:crypto';
 
+// Tipos de estado permitidos para un evento.
 export type EstadoEvento = 'PENDIENTE' | 'PUBLICADO' | 'RECHAZADO' | 'ARCHIVADO';
 
+/**
+ * Interfaz que define la estructura de un Evento en el sistema.
+ */
 export interface Evento {
   id: string;
   creadoPorUsuarioId: string | null;
   titulo: string;
   descripcion: string | null;
-  iniciaEn: string;
+  iniciaEn: string; // ISO string de fecha/hora
   terminaEn: string | null;
   estado: EstadoEvento;
   entidadLugarId: string | null;
@@ -16,16 +27,20 @@ export interface Evento {
   actualizadoEn: string;
 }
 
+/**
+ * Interfaz que define la estructura de un Comentario.
+ */
 export interface Comentario {
   id: string;
   eventoId: string;
   usuarioId: string | null;
-  padreId: string | null;
+  padreId: string | null; // Para hilos de comentarios (respuestas)
   cuerpo: string;
   creadoEn: string;
   actualizadoEn: string;
 }
 
+// Tipos para los datos que recibimos desde la API (Inputs)
 type EventoInput = {
   titulo: string;
   descripcion?: string;
@@ -48,22 +63,32 @@ type ComentarioInput = {
   padreId?: string | null;
 };
 
+// Mapas para almacenar los datos (id -> objeto)
 const eventos = new Map<string, Evento>();
 const comentarios = new Map<string, Comentario>();
 
+// Función auxiliar para generar timestamps uniformes
 const now = () => new Date().toISOString();
 
+/**
+ * Clonamos los objetos antes de devolverlos para evitar que modificaciones
+ * accidentales fuera del "store" afecten a los datos guardados (inmutabilidad).
+ */
 const cloneEvento = (evento: Evento): Evento => ({ ...evento });
-
 const cloneComentario = (comentario: Comentario): Comentario => ({ ...comentario });
 
+// --- MÉTODOS DE EVENTOS ---
+
+/** Lista todos los eventos registrados */
 export const listEventos = (): Evento[] => Array.from(eventos.values()).map(cloneEvento);
 
+/** Obtiene un evento específico por su ID */
 export const getEvento = (eventoId: string): Evento | null => {
   const evento = eventos.get(eventoId);
   return evento ? cloneEvento(evento) : null;
 };
 
+/** Crea un nuevo evento con estado inicial PENDIENTE */
 export const createEvento = (input: EventoInput): Evento => {
   const timestamp = now();
   const evento: Evento = {
@@ -73,7 +98,7 @@ export const createEvento = (input: EventoInput): Evento => {
     descripcion: input.descripcion ?? null,
     iniciaEn: input.iniciaEn,
     terminaEn: input.terminaEn ?? null,
-    estado: 'PENDIENTE',
+    estado: 'PENDIENTE', // Por defecto, todo evento requiere moderación
     entidadLugarId: input.entidadLugarId ?? null,
     posibleDuplicado: false,
     creadoEn: timestamp,
@@ -84,12 +109,14 @@ export const createEvento = (input: EventoInput): Evento => {
   return cloneEvento(evento);
 };
 
+/** Actualiza campos específicos de un evento */
 export const updateEvento = (eventoId: string, patch: EventoPatch): Evento | null => {
   const current = eventos.get(eventoId);
   if (!current) {
     return null;
   }
 
+  // Combinamos los datos actuales con los nuevos
   const updated: Evento = {
     ...current,
     ...patch,
@@ -105,17 +132,22 @@ export const updateEvento = (eventoId: string, patch: EventoPatch): Evento | nul
   return cloneEvento(updated);
 };
 
+/** Elimina un evento (esta acción es definitiva en este modelo) */
 export const deleteEvento = (eventoId: string): boolean => eventos.delete(eventoId);
 
+// --- MÉTODOS DE COMENTARIOS ---
+
+/** Lista comentarios vinculados a un evento específico, ordenados por fecha */
 export const listComentariosByEvento = (eventoId: string): Comentario[] =>
   Array.from(comentarios.values())
     .filter(comentario => comentario.eventoId === eventoId)
     .map(cloneComentario)
     .sort((left, right) => left.creadoEn.localeCompare(right.creadoEn));
 
+/** Crea un comentario para un evento existente */
 export const createComentario = (eventoId: string, input: ComentarioInput): Comentario | null => {
   if (!eventos.has(eventoId)) {
-    return null;
+    return null; // No podemos comentar eventos que no existen
   }
 
   const timestamp = now();
@@ -133,6 +165,7 @@ export const createComentario = (eventoId: string, input: ComentarioInput): Come
   return cloneComentario(comentario);
 };
 
+/** Actualiza el texto de un comentario */
 export const updateComentario = (comentarioId: string, cuerpo: string): Comentario | null => {
   const current = comentarios.get(comentarioId);
   if (!current) {
@@ -149,8 +182,15 @@ export const updateComentario = (comentarioId: string, cuerpo: string): Comentar
   return cloneComentario(updated);
 };
 
+/** Elimina un comentario */
 export const deleteComentario = (comentarioId: string): boolean => comentarios.delete(comentarioId);
 
+// --- SEEDING / DATOS DE PRUEBA ---
+
+/**
+ * Carga datos iniciales si la lista está vacía.
+ * Útil para que los desarrolladores vean algo al entrar por primera vez.
+ */
 export const seedDemoData = (): void => {
   if (eventos.size > 0) {
     return;

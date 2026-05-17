@@ -1,3 +1,8 @@
+/**
+ * Esquema de Base de Datos (Prisma).
+ * Define la estructura de nuestras tablas en PostgreSQL y las relaciones entre ellas.
+ */
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,22 +12,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * Modelo de Usuario.
+ * Almacena la información básica de identidad y el rol dentro de la plataforma.
+ */
 model Usuario {
   id             String      @id @default(uuid())
   email          String      @unique
   nombre_mostrar String
-  rol            String      @default("miembro")
+  rol            String      @default("miembro") // miembro, entidad, moderador, admin
   creado_en      DateTime    @default(now())
   actualizado_en DateTime    @updatedAt
+
+  // Relaciones
   eventos        Evento[]    @relation("EventosCreados")
   comentarios    Comentario[]
 }
 
+/**
+ * Modelo de Perfil de Entidad.
+ * Unificado para Artistas y Lugares según la especificación simplificada.
+ */
 model PerfilEntidad {
   id          String   @id @default(uuid())
   usuario_id  String   @unique
   nombre      String
-  tipo        String
+  tipo        String   // "artista" o "lugar"
   descripcion String?
   direccion   String?
   gmaps_url   String?
@@ -30,6 +45,10 @@ model PerfilEntidad {
   creado_en   DateTime @default(now())
 }
 
+/**
+ * Modelo de Evento.
+ * Es el corazón de la aplicación. Pasa por estados de moderación.
+ */
 model Evento {
   id                    String          @id @default(uuid())
   creado_por_usuario_id  String?
@@ -37,22 +56,30 @@ model Evento {
   descripcion           String?
   inicia_en             DateTime
   termina_en            DateTime?
-  estado                String          @default("PENDIENTE")
-  entidad_lugar_id      String?
+  estado                String          @default("PENDIENTE") // PENDIENTE, PUBLICADO, RECHAZADO, ARCHIVADO
+  entidad_lugar_id      String?         // Referencia al lugar donde ocurre
   posible_duplicado     Boolean         @default(false)
   creado_en             DateTime        @default(now())
   actualizado_en        DateTime        @updatedAt
+
+  // Relaciones
   creador               Usuario?        @relation("EventosCreados", fields: [creado_por_usuario_id], references: [id])
   comentarios           Comentario[]
 }
 
+/**
+ * Modelo de Comentario.
+ * Permite la interacción en los eventos. Soporta hilos mediante padre_id.
+ */
 model Comentario {
   id         String   @id @default(uuid())
   evento_id  String
   usuario_id String?
-  padre_id   String?
+  padre_id   String?  // Si está presente, es una respuesta a otro comentario
   cuerpo     String
   creado_en  DateTime @default(now())
+
+  // Relaciones
   evento     Evento   @relation(fields: [evento_id], references: [id])
   autor      Usuario? @relation(fields: [usuario_id], references: [id])
 }
