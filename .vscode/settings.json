@@ -1,0 +1,19 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.validate.enable": true,
+  "eslint.packageManager": "npm",
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.alwaysShowStatus": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.history": false
+  }
+}
+{
+    "prisma.pinToPrisma6": true,
+    "js/ts.tsdk.path": "node_modules\\typescript\\lib"
+}
