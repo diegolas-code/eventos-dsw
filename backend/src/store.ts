@@ -145,6 +145,14 @@ export const listComentariosByEvento = async (eventoId: string): Promise<Comenta
   return data.map(mapComentario);
 };
 
+/** Obtiene un comentario específico por su ID */
+export const getComentario = async (comentarioId: string): Promise<Comentario | null> => {
+  const data = await prisma.comentario.findUnique({
+    where: { id: comentarioId },
+  });
+  return data ? mapComentario(data) : null;
+};
+
 /** Crea un comentario para un evento existente */
 export const createComentario = async (
   eventoId: string,

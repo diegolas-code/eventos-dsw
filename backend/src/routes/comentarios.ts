@@ -11,9 +11,24 @@ import type { PatchComentarioInput } from '../dtos.js';
 type Req = ExRequest<any, any, any>;
 type ReqPatchComentario = ExRequest<{ id: string }, any, PatchComentarioInput>;
 
-import { deleteComentario, updateComentario } from '../store.js';
+import { deleteComentario, updateComentario, getComentario } from '../store.js';
 
 const router = Router();
+
+/**
+ * GET /api/v1/comentarios/:id
+ * Obtiene un comentario específico por su ID.
+ */
+router.get('/:id', async (request: Req, response: ExpressResponse) => {
+  const comentario = await getComentario(request.params.id);
+
+  if (!comentario) {
+    response.status(404).json({ error: 'Comentario no encontrado' });
+    return;
+  }
+
+  response.json({ data: comentario });
+});
 
 /**
  * PATCH /api/v1/comentarios/:id
