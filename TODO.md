@@ -13,7 +13,7 @@ Fase 0 — Despliegue inicial y CRUD público
   - [x] Añadir comentarios: `POST /eventos/:id/comentarios`, `GET /eventos/:id/comentarios`.
   - [x] Definir esquema de BD (Postgres + Prisma) y migraciones iniciales.
   - [x] Crear seed data y script de carga persistente.
-  - [x] Frontend mínimo (React + Vite): vistas iniciales y conexión al API.
+  - [x] Frontend moderno (React + Vite): Estructura de rutas, Tailwind CSS y React Query.
   - [x] Configurar despliegue continuo básico (GitHub Actions).
   - [x] Documentar cómo ejecutar localmente y variables requeridas (`.env.example`).
 
@@ -24,7 +24,7 @@ Fase 1 — Autenticación y roles
   - Integrar Supabase Auth (o JWT propio) en frontend y backend.
   - Añadir middleware de autorización en API y proteger endpoints de modificación para usuarios autenticados.
   - Añadir endpoints para gestión de usuarios y asignación de roles.
-  - Actualizar UI: login, registro, gestión de perfil básico.
+  - [ ] Actualizar UI: login, registro (Estructura base creada en `ProfilePage`).
   - Añadir tests básicos de integración para auth y permisos.
 
 Fase 2 — Pool de publicaciones y moderación

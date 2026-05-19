@@ -24,6 +24,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@typescript-eslint/parser": "^8.59.3",
+    "autoprefixer": "^10.5.0",
     "eslint": "^8.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.0.0",
@@ -33,8 +34,20 @@
     "lint-staged": "^17.0.5",
     "micromatch": "^4.0.8",
     "minimatch": "^10.2.5",
+    "postcss": "^8.5.14",
     "prettier": "^3.0.0",
+    "tailwindcss": "^4.3.0",
     "typescript": "^5.0.0",
     "yaml": "^2.9.0"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@supabase/supabase-js": "^2.105.4",
+    "@tanstack/react-query": "^5.100.10",
+    "clsx": "^2.1.1",
+    "react-hook-form": "^7.76.0",
+    "react-router-dom": "^7.15.1",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
   }
 }
