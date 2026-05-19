@@ -27,3 +27,16 @@ export type CreateComentarioInput = {
 export type PatchComentarioInput = {
   cuerpo: string;
 };
+
+/** Datos necesarios para registrar un nuevo Usuario */
+export type CreateUsuarioInput = {
+  email: string;
+  nombreMostrar: string;
+  rol?: string;
+};
+
+/** Datos permitidos para actualizar el perfil de un Usuario */
+export type PatchUsuarioInput = {
+  nombreMostrar?: string;
+  rol?: string;
+};

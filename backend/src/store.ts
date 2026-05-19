@@ -4,7 +4,7 @@
  * Este archivo centraliza el acceso a la base de Datos (PostgreSQL) a través de Prisma.
  */
 import { PrismaClient } from '@prisma/client';
-import type { CreateEventoInput, CreateComentarioInput } from './dtos.js';
+import type { CreateEventoInput, CreateComentarioInput, CreateUsuarioInput } from './dtos.js';
 
 // Instanciamos el cliente de Prisma
 const prisma = new PrismaClient();
@@ -43,6 +43,18 @@ export interface Comentario {
 }
 
 /**
+ * Interfaz que define la estructura de un Usuario
+ */
+export interface Usuario {
+  id: string;
+  email: string;
+  nombreMostrar: string;
+  rol: string;
+  creadoEn: string;
+  actualizadoEn: string;
+}
+
+/**
  * Función mapeadora para convertir el modelo de la BD (snake_case) al formato del API (camelCase).
  */
 const mapEvento = (e: any): Evento => ({
@@ -67,6 +79,15 @@ const mapComentario = (c: any): Comentario => ({
   cuerpo: c.cuerpo,
   creadoEn: c.creado_en.toISOString(),
   actualizadoEn: c.creado_en.toISOString(), // Comentarios no suelen tener updatedAt en el schema actual
+});
+
+const mapUsuario = (u: any): Usuario => ({
+  id: u.id,
+  email: u.email,
+  nombreMostrar: u.nombre_mostrar,
+  rol: u.rol,
+  creadoEn: u.creado_en.toISOString(),
+  actualizadoEn: u.actualizado_en.toISOString(),
 });
 
 // --- MÉTODOS DE EVENTOS ---
@@ -193,6 +214,62 @@ export const updateComentario = async (
 export const deleteComentario = async (comentarioId: string): Promise<boolean> => {
   try {
     await prisma.comentario.delete({ where: { id: comentarioId } });
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+// --- MÉTODOS DE USUARIOS ---
+
+/** Lista todos los usuarios registrados */
+export const listUsuarios = async (): Promise<Usuario[]> => {
+  const data = await prisma.usuario.findMany({
+    orderBy: { creado_en: 'desc' },
+  });
+  return data.map(mapUsuario);
+};
+
+/** Obtiene un usuario específico por su ID */
+export const getUsuario = async (usuarioId: string): Promise<Usuario | null> => {
+  const data = await prisma.usuario.findUnique({
+    where: { id: usuarioId },
+  });
+  return data ? mapUsuario(data) : null;
+};
+
+/** Crea un usuario en la base de datos */
+export const createUsuario = async (input: CreateUsuarioInput): Promise<Usuario> => {
+  const data = await prisma.usuario.create({
+    data: {
+      email: input.email,
+      nombre_mostrar: input.nombreMostrar,
+      rol: input.rol ?? 'miembro',
+    },
+  });
+  return mapUsuario(data);
+};
+
+/** Actualiza datos del perfil de un usuario */
+export const updateUsuario = async (usuarioId: string, patch: any): Promise<Usuario | null> => {
+  try {
+    const data = await prisma.usuario.update({
+      where: { id: usuarioId },
+      data: {
+        nombre_mostrar: patch.nombreMostrar,
+        rol: patch.rol,
+      },
+    });
+    return mapUsuario(data);
+  } catch {
+    return null;
+  }
+};
+
+/** Elimina un usuario del sistema */
+export const deleteUsuario = async (usuarioId: string): Promise<boolean> => {
+  try {
+    await prisma.usuario.delete({ where: { id: usuarioId } });
     return true;
   } catch {
     return false;
