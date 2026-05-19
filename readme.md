@@ -8,20 +8,24 @@ El desarrollo consiste en una aplicación web para publicar y consumir eventos l
 
 [Especificaciones](./spec.md) | [TODO](./TODO.md)
 
-## Estado Actual (Fase 0 - Completada)
+## Estado Actual (Fase 0.5 - Prototipo Avanzado)
 
-Actualmente, el proyecto cuenta con una infraestructura base sólida y funcional:
+Actualmente, el proyecto ha superado la base inicial y cuenta con una arquitectura de frontend moderna y escalable:
 
-- **Backend:** API REST construida con **Node.js + Express** y tipado estricto con **TypeScript**.
-- **Base de Datos:** Persistencia real en la nube utilizando **PostgreSQL (Supabase)** y el ORM **Prisma**.
-- **Frontend:** Aplicación básica con **React + Vite** configurada para consumir la API.
-- **Calidad:** Configuración de **ESLint**, **Prettier** y **Husky** para mantener estándares de código.
+- **Backend:** API REST robusta con **Node.js + Express**, **Prisma** y **PostgreSQL**.
+- **Frontend (Refactorizado):**
+  - **Navegación:** Implementada con `react-router-dom` (Home, Detalles, Creación, Perfil).
+  - **Gestión de Datos:** Uso de `@tanstack/react-query` para fetching y caché eficiente.
+  - **Estilos:** Integración completa de **Tailwind CSS**.
+  - **Estructura:** Organización por páginas y componentes reutilizables (Navbar, Layouts).
+- **Documentación:** El archivo [spec.md](./spec.md) se ha movido a la raíz para facilitar su consulta.
+- **Calidad:** Pipeline de CI configurado con GitHub Actions.
 
 ### Próximos pasos:
 
-- Implementación de **Autenticación (Phase 1)**.
-- Creación de formularios de publicación y perfiles de usuario.
-- Panel de moderación de eventos.
+- Integración de **Autenticación (Phase 1)** con Supabase Auth.
+- Implementación de formularios de publicación con validación.
+- Lógica de moderación y estados de eventos.
 
 ---
 
