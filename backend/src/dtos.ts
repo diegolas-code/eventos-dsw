@@ -40,3 +40,13 @@ export type PatchUsuarioInput = {
   nombreMostrar?: string;
   rol?: string;
 };
+
+/** Datos necesarios para crear un Perfil de Entidad */
+export type CreatePerfilEntidadInput = {
+  usuarioId: string;
+  nombre: string;
+  tipo: string;
+  descripcion?: string;
+  direccion?: string;
+  gmapsUrl?: string;
+};

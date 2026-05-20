@@ -3,6 +3,8 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import comentariosRouter from './routes/comentarios.js';
 import eventosRouter from './routes/eventos.js';
+import usuariosRouter from './routes/usuarios.js';
+import perfilesRouter from './routes/perfiles.js';
 import { seedDemoData } from './store.js';
 
 export const createApp = () => {
@@ -28,6 +30,8 @@ export const createApp = () => {
 
   app.use('/api/v1/eventos', eventosRouter);
   app.use('/api/v1/comentarios', comentariosRouter);
+  app.use('/api/v1/usuarios', usuariosRouter);
+  app.use('/api/v1/perfiles', perfilesRouter);
 
   app.use((_request: Request, response: Response) => {
     response.status(404).json({ error: 'La ruta solicitada no existe' });

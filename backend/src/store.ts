@@ -4,7 +4,12 @@
  * Este archivo centraliza el acceso a la base de Datos (PostgreSQL) a través de Prisma.
  */
 import { PrismaClient } from '@prisma/client';
-import type { CreateEventoInput, CreateComentarioInput, CreateUsuarioInput } from './dtos.js';
+import type {
+  CreateEventoInput,
+  CreateComentarioInput,
+  CreateUsuarioInput,
+  CreatePerfilEntidadInput,
+} from './dtos.js';
 
 // Instanciamos el cliente de Prisma
 const prisma = new PrismaClient();
@@ -54,6 +59,18 @@ export interface Usuario {
   actualizadoEn: string;
 }
 
+export interface PerfilEntidad {
+  id: string;
+  usuarioId: string;
+  nombre: string;
+  tipo: string;
+  descripcion: string | null;
+  direccion: string | null;
+  gmapsUrl: string | null;
+  reclamado: boolean;
+  creadoEn: string;
+}
+
 /**
  * Función mapeadora para convertir el modelo de la BD (snake_case) al formato del API (camelCase).
  */
@@ -88,6 +105,18 @@ const mapUsuario = (u: any): Usuario => ({
   rol: u.rol,
   creadoEn: u.creado_en.toISOString(),
   actualizadoEn: u.actualizado_en.toISOString(),
+});
+
+const mapPerfilEntidad = (p: any): PerfilEntidad => ({
+  id: p.id,
+  usuarioId: p.usuario_id,
+  nombre: p.nombre,
+  tipo: p.tipo,
+  descripcion: p.descripcion,
+  direccion: p.direccion,
+  gmapsUrl: p.gmaps_url,
+  reclamado: p.reclamado,
+  creadoEn: p.creado_en.toISOString(),
 });
 
 // --- MÉTODOS DE EVENTOS ---
@@ -274,6 +303,33 @@ export const deleteUsuario = async (usuarioId: string): Promise<boolean> => {
   } catch {
     return false;
   }
+};
+
+// --- MÉTODOS DE Perfil Entidad ---
+
+/** Obtiene el perfil de entidad asociado a un usuario específico */
+export const getPerfilByUsuario = async (usuarioId: string): Promise<PerfilEntidad | null> => {
+  const data = await prisma.perfilEntidad.findUnique({
+    where: { usuario_id: usuarioId },
+  });
+  return data ? mapPerfilEntidad(data) : null;
+};
+
+/** Crea nuevo perfil de entidad */
+export const CreatePerfilEntidad = async (
+  input: CreatePerfilEntidadInput
+): Promise<PerfilEntidad> => {
+  const data = await prisma.perfilEntidad.create({
+    data: {
+      usuario_id: input.usuarioId,
+      nombre: input.nombre,
+      tipo: input.tipo,
+      descripcion: input.descripcion ?? null,
+      direccion: input.direccion ?? null,
+      gmaps_url: input.gmapsUrl ?? null,
+    },
+  });
+  return mapPerfilEntidad(data);
 };
 
 // --- SEEDING / DATOS DE PRUEBA ---
