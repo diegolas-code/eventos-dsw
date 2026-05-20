@@ -50,6 +50,40 @@ export default function HomePage() {
       )}
 
       {data && <EventGrid events={data} />}
+      <div
+  className="
+    mt-20
+    bg-white
+    rounded-3xl
+    p-10
+    text-center
+  "
+>
+  <h2 className="text-4xl font-bold mb-4">
+    ¿Organizás eventos?
+  </h2>
+
+  <p className="text-zinc-600 mb-6">
+    Publicá recitales, talleres,
+    exposiciones y actividades.
+  </p>
+
+  <button
+    className="
+      bg-violet-600
+      text-white
+      px-6
+      py-3
+      rounded-xl
+      hover:bg-violet-700
+      transition
+    "
+  >
+    Publicar evento
+  </button>
+</div>
     </MainLayout>
+
+
   );
 }
