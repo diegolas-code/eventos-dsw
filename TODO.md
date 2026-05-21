@@ -17,7 +17,7 @@ Fase 0 — Despliegue inicial y CRUD público
   - [x] Configurar despliegue continuo básico (GitHub Actions).
   - [x] Documentar cómo ejecutar localmente y variables requeridas (`.env.example`).
 
-Fase 0.5 — Refactorización de Esquema y Tipado (Actual)
+Fase 0.5 — Refactorización de Esquema y Tipado (Completada) ✅
 
 - Objetivo: Robustecer la base de datos y el tipado del backend antes de escalar a Auth.
 - Tareas:
@@ -27,6 +27,7 @@ Fase 0.5 — Refactorización de Esquema y Tipado (Actual)
   - [x] Refactorizar `backend/src/store.ts` para soportar los nuevos Enums y estructuras de datos.
   - [x] Actualizar DTOs y mapeadores para mantener consistencia camelCase.
   - [x] Ejecutar migración de limpieza (`prisma migrate reset`) y regenerar cliente.
+  - [x] Validar esquema con creación de evento real (M:N artistas).
 
 Fase 1 — Autenticación y roles
 
