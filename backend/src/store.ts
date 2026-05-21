@@ -454,4 +454,6 @@ export const seedDemoData = async (): Promise<void> => {
       usuario_id: admin.id,
     },
   });
+
+  console.log('✅ Datos iniciales sembrados con éxito.');
 };
