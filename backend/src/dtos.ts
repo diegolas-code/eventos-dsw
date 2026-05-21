@@ -2,9 +2,10 @@
  * Data Transfer Objects (DTOs).
  *
  * Estas interfaces definen la "forma" de los datos que esperamos recibir
- * en el cuerpo (body) de las peticiones HTTP. Ayudan a que TypeScript
- * valide que no falten campos obligatorios.
+ * en el cuerpo (body) de las peticiones HTTP.
+ * Actualizado para Phase 0.5 con Enums de Prisma.
  */
+import { RolUsuario, TipoEntidad } from '@prisma/client';
 
 /** Datos necesarios para crear un nuevo Evento */
 export type CreateEventoInput = {
@@ -14,6 +15,7 @@ export type CreateEventoInput = {
   terminaEn?: string | null;
   entidadLugarId?: string | null;
   creadoPorUsuarioId?: string | null;
+  artistasIds?: string[]; // IDs para la relación muchos-a-muchos
 };
 
 /** Datos necesarios para crear un nuevo Comentario */
@@ -32,20 +34,20 @@ export type PatchComentarioInput = {
 export type CreateUsuarioInput = {
   email: string;
   nombreMostrar: string;
-  rol?: string;
+  rol?: RolUsuario;
 };
 
 /** Datos permitidos para actualizar el perfil de un Usuario */
 export type PatchUsuarioInput = {
   nombreMostrar?: string;
-  rol?: string;
+  rol?: RolUsuario;
 };
 
 /** Datos necesarios para crear un Perfil de Entidad */
 export type CreatePerfilEntidadInput = {
-  usuarioId: string;
+  usuarioId?: string; // Opcional para perfiles no reclamados
   nombre: string;
-  tipo: string;
+  tipo: TipoEntidad;
   descripcion?: string;
   direccion?: string;
   gmapsUrl?: string;

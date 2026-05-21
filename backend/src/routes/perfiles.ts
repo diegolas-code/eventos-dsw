@@ -6,7 +6,7 @@ import { Router } from 'express';
 import type { Request as ExRequest } from 'express-serve-static-core';
 import type { Response as ExpressResponse } from 'express';
 import type { CreatePerfilEntidadInput } from '../dtos.js';
-import { CreatePerfilEntidad, getPerfilByUsuario } from '../store.js';
+import { CreatePerfilEntidad, getPerfilByUsuario, TipoEntidad } from '../store.js';
 
 type Req = ExRequest<any, any, any>;
 type ReqPostPerfil = ExRequest<any, any, CreatePerfilEntidadInput>;
@@ -25,17 +25,14 @@ router.get('/usuario/:usuarioId', async (request: Req, response: ExpressResponse
 
 /** POST /api/v1/perfiles - Crear un perfil de entidad */
 router.post('/', async (request: ReqPostPerfil, response: ExpressResponse) => {
-  const { usuarioId, nombre, tipo } = request.body ?? ({} as CreatePerfilEntidadInput);
+  const { nombre, tipo } = request.body ?? ({} as CreatePerfilEntidadInput);
 
   if (
-    typeof usuarioId !== 'string' ||
-    usuarioId.trim().length === 0 ||
     typeof nombre !== 'string' ||
     nombre.trim().length === 0 ||
-    typeof tipo !== 'string' ||
-    (tipo !== 'artista' && tipo !== 'lugar')
+    (tipo !== TipoEntidad.ARTISTA && tipo !== TipoEntidad.LUGAR)
   ) {
-    response.status(404).json({ error: 'usuarioId, nombre y tipo son obligatorios' });
+    response.status(400).json({ error: 'nombre y tipo (ARTISTA|LUGAR) son obligatorios' });
     return;
   }
 

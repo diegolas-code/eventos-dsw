@@ -6,7 +6,14 @@ import { Router } from 'express';
 import type { Request as ExRequest } from 'express-serve-static-core';
 import type { Response as ExpressResponse } from 'express';
 import type { CreateUsuarioInput, PatchUsuarioInput } from '../dtos.js';
-import { listUsuarios, getUsuario, createUsuario, updateUsuario, deleteUsuario } from '../store.js';
+import {
+  listUsuarios,
+  getUsuario,
+  createUsuario,
+  updateUsuario,
+  deleteUsuario,
+  RolUsuario,
+} from '../store.js';
 
 // Tipado básico para las peticiones de la API
 type Req = ExRequest<any, any, any>;
@@ -52,7 +59,7 @@ router.post('/', async (request: ReqPostUsuario, response: ExpressResponse) => {
   const nuevoUsuario = await createUsuario({
     email,
     nombreMostrar,
-    rol: typeof rol === 'string' ? rol : undefined,
+    rol: (rol as RolUsuario) ?? RolUsuario.miembro,
   });
 
   response.status(201).json({ data: nuevoUsuario });
