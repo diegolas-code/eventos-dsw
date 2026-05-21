@@ -4,14 +4,16 @@ Este documento analiza la implementación actual del esquema de Prisma frente a 
 
 ## Análisis de las Opciones
 
-### 1. Esquema Actual (Implementado)
+### 1. Esquema Actual (Post backend-update)
 
-- **Simplicidad:** Es directo y fácil de entender.
+Esta es la versión implementada tras la integración de la rama `backend-update`. Aunque representó un avance significativo al introducir usuarios y perfiles, mantiene deudas técnicas importantes:
+
+- **Simplicidad:** Es directo y fácil de entender, pero rígido.
 - **Limitaciones:**
-  - Usa `String` para roles y estados, lo que puede llevar a errores de tipeo y datos inconsistentes.
-  - Relación 1-a-1 entre Usuario y Perfil (un usuario solo puede ser un "artista" O un "lugar", no ambos).
-  - Falta de relación muchos-a-muchos para artistas en eventos (solo contempla un `entidad_lugar_id`).
-  - La recursividad de comentarios no está explícitamente definida en Prisma (falta la relación `@relation` para `padre_id`).
+  - **Tipado Débil:** Usa `String` para roles (`rol`) y estados (`estado`), lo que impide que la base de datos valide los valores permitidos y obliga a manejar uniones de tipos manuales en TypeScript.
+  - **Relación 1-a-1 Rígida:** La relación entre `Usuario` y `PerfilEntidad` es única (`@unique`). Esto impide que un usuario real sea, por ejemplo, un artista que también gestiona su propio local de eventos.
+  - **Evento con Artista Único:** Solo contempla un `entidad_lugar_id`. No hay forma de registrar múltiples artistas en un mismo evento (como en un festival o fecha compartida).
+  - **Recursividad Incompleta:** Existe el campo `padre_id` en `Comentario`, pero al no estar definida la `@relation` en Prisma, no se pueden realizar consultas recursivas eficientes ni garantizar integridad referencial en las respuestas.
 
 ### 2. Sugerencia Externa (ChatGPT)
 

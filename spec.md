@@ -80,28 +80,47 @@ Si se detectan estos factores, se guarda con un flag de `posible_duplicado` para
 
 ### Entidades y relaciones
 
+    enum RolUsuario {
+        miembro
+        artista
+        lugar
+        moderador
+        admin
+    }
+
+    enum TipoEntidad {
+        ARTISTA
+        LUGAR
+    }
+
+    enum EstadoEvento {
+        PENDIENTE
+        PUBLICADO
+        RECHAZADO
+        ARCHIVADO
+    }
+
     USUARIO {
         uuid id PK
         string email
         string nombre_mostrar
-        string rol "miembro|entidad|admin|moderador"
+        RolUsuario rol
         datetime creado_en
         datetime actualizado_en
     }
 
     PERFIL_ENTIDAD {
         uuid id PK
-        uuid usuario_id FK
+        uuid usuario_id FK "Opcional (para perfiles no reclamados)"
         string nombre
-        string tipo "artista|lugar"
+        TipoEntidad tipo
         text descripcion
         string direccion
         string gmaps_url
-        string redes
-        string horarios
-        string servicios
+        string imagen_url
         boolean reclamado
         datetime creado_en
+        datetime actualizado_en
     }
 
     EVENTO {
@@ -111,39 +130,17 @@ Si se detectan estos factores, se guarda con un flag de `posible_duplicado` para
         text descripcion
         datetime inicia_en
         datetime termina_en
-        string estado "PENDIENTE|PUBLICADO|RECHAZADO|ARCHIVADO"
-        uuid entidad_lugar_id FK
+        EstadoEvento estado
+        uuid entidad_lugar_id FK "Lugar donde ocurre"
         boolean posible_duplicado
+        string imagen_url
         datetime creado_en
         datetime actualizado_en
     }
 
     EVENTO_ARTISTA {
         uuid evento_id FK
-        uuid entidad_artista_id FK
-    }
-
-    EVENTO_MEDIA {
-        uuid id PK
-        uuid evento_id FK
-        string url
-        string tipo
-    }
-
-        string url
-        string tipo
-    }
-
-    SEGUIMIENTO {
-        uuid usuario_id FK
-        string tipo_objetivo "artista|lugar"
-        uuid objetivo_id
-        datetime creado_en
-    }
-
-    FAVORITO {
-        uuid usuario_id FK
-        uuid evento_id FK
+        uuid artista_id FK "Relación Muchos-a-Muchos"
         datetime creado_en
     }
 
@@ -151,9 +148,10 @@ Si se detectan estos factores, se guarda con un flag de `posible_duplicado` para
         uuid id PK
         uuid evento_id FK
         uuid usuario_id FK
-        uuid padre_id FK
+        uuid padre_id FK "Relación recursiva para hilos"
         text cuerpo
         datetime creado_en
+        datetime actualizado_en
     }
 
     VOTO_EVENTO {

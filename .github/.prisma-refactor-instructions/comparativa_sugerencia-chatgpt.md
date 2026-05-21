@@ -1,187 +1,202 @@
-`generator client {`  
- `provider = "prisma-client-js"`  
-`}`
+# Sugerencia de Esquema Prisma (Refactor Completo)
 
-`datasource db {`  
- `provider = "postgresql"`  
- `url      = env("DATABASE_URL")`  
-`}`
+Este documento contiene la propuesta de esquema optimizado para **Eventos DSW**. Resuelve las limitaciones detectadas tras la integración de la rama `backend-update`.
 
-`enum RolUsuario {`  
- `miembro`  
- `artista`  
- `lugar`  
- `moderador`  
- `admin`  
-`}`
+## Esquema Propuesto
 
-`enum TipoEntidad {`  
- `ARTISTA`  
- `LUGAR`  
-`}`
+```prisma
+/**
+ * Sugerencia de Esquema Refactorizado.
+ * Este modelo soluciona las limitaciones de tipado, flexibilidad de perfiles y relaciones muchos-a-muchos.
+ */
 
-`enum EstadoEvento {`  
- `PENDIENTE`  
- `PUBLICADO`  
- `RECHAZADO`  
- `ARCHIVADO`  
-`}`
+generator client {
+  provider = "prisma-client-js"
+}
 
-`model Usuario {`  
- `id                String            @id @default(uuid())`  
- `email             String            @unique`  
- `nombre_mostrar    String`  
- `rol               RolUsuario        @default(miembro)`
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
-`creado_en         DateTime          @default(now())`  
- `actualizado_en    DateTime          @updatedAt`
+/**
+ * Enums para garantizar integridad de datos.
+ */
+enum RolUsuario {
+  miembro
+  artista
+  lugar
+  moderador
+  admin
+}
 
-`eventos_creados   Evento[]`  
- `comentarios       Comentario[]`  
- `perfiles          PerfilEntidad[]`
+enum TipoEntidad {
+  ARTISTA
+  LUGAR
+}
 
-`@@index([rol])`  
-`}`
+enum EstadoEvento {
+  PENDIENTE
+  PUBLICADO
+  RECHAZADO
+  ARCHIVADO
+}
 
-`model PerfilEntidad {`  
- `id                String            @id @default(uuid())`
+/**
+ * Modelo de Usuario.
+ * Ahora soporta múltiples perfiles y roles tipados.
+ */
+model Usuario {
+  id                String            @id @default(uuid())
+  email             String            @unique
+  nombre_mostrar    String
+  rol               RolUsuario        @default(miembro)
 
-`usuario_id        String?`  
- `usuario           Usuario?          @relation(fields: [usuario_id], references: [id], onDelete: SetNull)`
+  creado_en         DateTime          @default(now())
+  actualizado_en    DateTime          @updatedAt
 
-`nombre            String`  
- `tipo              TipoEntidad`
+  // Relaciones
+  eventos_creados   Evento[]          @relation("EventosCreados")
+  comentarios       Comentario[]
+  perfiles          PerfilEntidad[]
 
-`descripcion       String?`  
- `direccion         String?`  
- `gmaps_url         String?`
+  @@index([rol])
+}
 
-`imagen_url        String?`
+/**
+ * Modelo de Perfil de Entidad.
+ * Permite que un usuario tenga múltiples identidades (Artista, Lugar, etc).
+ */
+model PerfilEntidad {
+  id                String            @id @default(uuid())
 
-`reclamado         Boolean           @default(false)`
+  usuario_id        String?
+  usuario           Usuario?          @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
 
-`creado_en         DateTime          @default(now())`  
- `actualizado_en    DateTime          @updatedAt`
+  nombre            String
+  tipo              TipoEntidad
 
-`eventos_lugar     Evento[]`
+  descripcion       String?
+  direccion         String?
+  gmaps_url         String?
 
-`eventos_artista   EventoArtista[]`
+  imagen_url        String?
 
-`@@index([tipo])`  
- `@@index([nombre])`  
-`}`
+  reclamado         Boolean           @default(false)
 
-`model Evento {`  
- `id                      String              @id @default(uuid())`
+  creado_en         DateTime          @default(now())
+  actualizado_en    DateTime          @updatedAt
 
-`creado_por_usuario_id   String?`  
- `creado_por              Usuario?            @relation(fields: [creado_por_usuario_id], references: [id], onDelete: SetNull)`
+  // Relaciones
+  eventos_lugar     Evento[]
+  eventos_artista   EventoArtista[]
 
-`titulo                  String`  
- `descripcion             String?`
+  @@index([tipo])
+  @@index([nombre])
+}
 
-`inicia_en               DateTime`  
- `termina_en              DateTime?`
+/**
+ * Modelo de Evento.
+ * Corazón del sistema, ahora con soporte para múltiples artistas invitados.
+ */
+model Evento {
+  id                      String              @id @default(uuid())
 
-`estado                  EstadoEvento        @default(PENDIENTE)`
+  creado_por_usuario_id   String?
+  creado_por              Usuario?            @relation("EventosCreados", fields: [creado_por_usuario_id], references: [id], onDelete: SetNull)
 
-`entidad_lugar_id        String?`  
- `lugar                   PerfilEntidad?      @relation(fields: [entidad_lugar_id], references: [id], onDelete: SetNull)`
+  titulo                  String
+  descripcion             String?
 
-`posible_duplicado       Boolean             @default(false)`
+  inicia_en               DateTime
+  termina_en              DateTime?
 
-`imagen_url              String?`
+  estado                  EstadoEvento        @default(PENDIENTE)
 
-`creado_en               DateTime            @default(now())`  
- `actualizado_en          DateTime            @updatedAt`
+  entidad_lugar_id        String?
+  lugar                   PerfilEntidad?      @relation(fields: [entidad_lugar_id], references: [id], onDelete: SetNull)
 
-`comentarios             Comentario[]`
+  posible_duplicado       Boolean             @default(false)
 
-`artistas                EventoArtista[]`
+  imagen_url              String?
 
-`@@index([estado])`  
- `@@index([inicia_en])`  
- `@@index([creado_por_usuario_id])`  
- `@@index([entidad_lugar_id])`  
-`}`
+  creado_en               DateTime            @default(now())
+  actualizado_en          DateTime            @updatedAt
 
-`model EventoArtista {`  
- `evento_id           String`  
- `artista_id          String`
+  // Relaciones
+  comentarios             Comentario[]
+  artistas                EventoArtista[]
 
-`evento              Evento          @relation(fields: [evento_id], references: [id], onDelete: Cascade)`
+  @@index([estado])
+  @@index([inicia_en])
+  @@index([creado_por_usuario_id])
+  @@index([entidad_lugar_id])
+}
 
-`artista             PerfilEntidad   @relation(fields: [artista_id], references: [id], onDelete: Cascade)`
+/**
+ * Tabla intermedia para relación Muchos-a-Muchos entre Eventos y Artistas.
+ */
+model EventoArtista {
+  evento_id           String
+  artista_id          String
 
-`creado_en           DateTime        @default(now())`
+  evento              Evento          @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+  artista             PerfilEntidad   @relation(fields: [artista_id], references: [id], onDelete: Cascade)
 
-`@@id([evento_id, artista_id])`
+  creado_en           DateTime        @default(now())
 
-`@@index([artista_id])`  
-`}`
+  @@id([evento_id, artista_id])
+  @@index([artista_id])
+}
 
-`model Comentario {`  
- `id                  String          @id @default(uuid())`
+/**
+ * Modelo de Comentario.
+ * Implementa recursividad real para hilos de conversación.
+ */
+model Comentario {
+  id                  String          @id @default(uuid())
 
-`evento_id           String`  
- `evento              Evento          @relation(fields: [evento_id], references: [id], onDelete: Cascade)`
+  evento_id           String
+  evento              Evento          @relation(fields: [evento_id], references: [id], onDelete: Cascade)
 
-`usuario_id          String?`  
- `usuario             Usuario?        @relation(fields: [usuario_id], references: [id], onDelete: SetNull)`
+  usuario_id          String?
+  usuario             Usuario?        @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
 
-`padre_id            String?`  
- `padre               Comentario?     @relation("ComentarioRespuesta", fields: [padre_id], references: [id], onDelete: Cascade)`
+  padre_id            String?
+  padre               Comentario?     @relation("ComentarioRespuesta", fields: [padre_id], references: [id], onDelete: Cascade)
 
-`respuestas          Comentario[]    @relation("ComentarioRespuesta")`
+  respuestas          Comentario[]    @relation("ComentarioRespuesta")
 
-`cuerpo              String`
+  cuerpo              String
 
-`creado_en           DateTime        @default(now())`  
- `actualizado_en      DateTime        @updatedAt`
+  creado_en           DateTime        @default(now())
+  actualizado_en      DateTime        @updatedAt
 
-`@@index([evento_id])`  
- `@@index([usuario_id])`  
- `@@index([padre_id])`  
-`}`
+  @@index([evento_id])
+  @@index([usuario_id])
+  @@index([padre_id])
+}
+```
 
-Cambios principales respecto a tu versión:
+## Cambios Principales y Beneficios
 
-enums en vez de TEXT libre,  
-`@updatedAt` automático,  
-comentarios recursivos completos,  
-relación muchos-a-muchos evento/artistas,  
-múltiples perfiles por usuario,  
-índices importantes,  
-relaciones bien definidas,  
-`Cascade` y `SetNull` consistentes.
+1.  **Enums en vez de Strings:** Se garantiza que solo valores válidos entren en `rol`, `tipo` y `estado`.
+2.  **Relación Muchos-a-Muchos (Evento/Artista):** Permite registrar múltiples bandas o artistas en un solo evento.
+3.  **Recursividad de Comentarios:** Define correctamente la relación `@relation` para permitir consultas anidadas y hilos de conversación reales.
+4.  **Flexibilidad de Perfiles:** Un usuario puede tener múltiples perfiles asociados (un usuario que es artista y también gestiona un local).
+5.  **Índices de Rendimiento:** Se añaden `@@index` en campos críticos para búsquedas frecuentes.
+6.  **Integridad Referencial:** Uso consistente de `onDelete: Cascade` y `SetNull`.
 
-Para aplicarlo:
+## Pasos para la Aplicación
 
-Reemplazá tu `schema.prisma`  
-Ejecutá:
-
-`npx prisma migrate dev` \--name `init`
-
-Si ya tenés migraciones rotas o de prueba:
-
-`npx prisma migrate reset`
-
-Eso borra la base y la recrea. Solo hacelo en desarrollo.
-
-Después:
-
-`npx prisma generate`
-
-Con este esquema ya pueden construir:
-
-feed,  
-detalle,  
-perfiles,  
-comentarios,  
-moderación,  
-artistas múltiples,  
-lugares,  
-autenticación,  
-publicación de eventos,
-
-sin que el modelo quede demasiado complejo para mantener.
+1.  **Reemplazo:** Copiar el contenido anterior en `backend/prisma/schema.prisma`.
+2.  **Reset de Base de Datos:**
+    ```bash
+    npx prisma migrate reset
+    ```
+    _(Advertencia: Esto borrará los datos actuales. Solo realizar en entorno de desarrollo)._
+3.  **Generación de Cliente:**
+    ```bash
+    npx prisma generate
+    ```
+4.  **Refactor de Store:** Actualizar `backend/src/store.ts` para manejar los nuevos Enums y la lógica de múltiples artistas.

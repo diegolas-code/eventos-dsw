@@ -17,6 +17,17 @@ Fase 0 — Despliegue inicial y CRUD público
   - [x] Configurar despliegue continuo básico (GitHub Actions).
   - [x] Documentar cómo ejecutar localmente y variables requeridas (`.env.example`).
 
+Fase 0.5 — Refactorización de Esquema y Tipado (Actual)
+
+- Objetivo: Robustecer la base de datos y el tipado del backend antes de escalar a Auth.
+- Tareas:
+  - [x] Migrar estados (`estado`), roles (`rol`) y tipos de entidad (`tipo`) a **Enums de Prisma**.
+  - [x] Implementar relación **Muchos-a-Muchos** para artistas en eventos mediante tabla intermedia.
+  - [x] Configurar **recursividad real** en el modelo de comentarios (`padre_id` con `@relation`).
+  - [x] Refactorizar `backend/src/store.ts` para soportar los nuevos Enums y estructuras de datos.
+  - [x] Actualizar DTOs y mapeadores para mantener consistencia camelCase.
+  - [x] Ejecutar migración de limpieza (`prisma migrate reset`) y regenerar cliente.
+
 Fase 1 — Autenticación y roles
 
 - Objetivo: añadir autenticación y roles definidos en la spec (`miembro`, `artista`, `lugar`, `moderador`, `admin`).
