@@ -1,6 +1,6 @@
 /**
  * Esquema de Base de Datos (Prisma).
- * Define la estructura de nuestras tablas en PostgreSQL y las relaciones entre ellas.
+ * Optimizado para Eventos DSW - Phase 0.5.
  */
 
 generator client {
@@ -13,73 +13,146 @@ datasource db {
 }
 
 /**
+ * Enums para garantizar integridad de datos y tipado fuerte.
+ */
+enum RolUsuario {
+  miembro
+  artista
+  lugar
+  moderador
+  admin
+}
+
+enum TipoEntidad {
+  ARTISTA
+  LUGAR
+}
+
+enum EstadoEvento {
+  PENDIENTE
+  PUBLICADO
+  RECHAZADO
+  ARCHIVADO
+}
+
+/**
  * Modelo de Usuario.
- * Almacena la información básica de identidad y el rol dentro de la plataforma.
+ * Almacena la identidad y el rol principal. Soporta múltiples perfiles de entidad.
  */
 model Usuario {
-  id             String      @id @default(uuid())
-  email          String      @unique
-  nombre_mostrar String
-  rol            String      @default("miembro") // miembro, entidad, moderador, admin
-  creado_en      DateTime    @default(now())
-  actualizado_en DateTime    @updatedAt
+  id                String            @id @default(uuid())
+  email             String            @unique
+  nombre_mostrar    String
+  rol               RolUsuario        @default(miembro)
+  creado_en         DateTime          @default(now())
+  actualizado_en    DateTime          @updatedAt
 
   // Relaciones
-  eventos        Evento[]    @relation("EventosCreados")
-  comentarios    Comentario[]
+  eventos_creados   Evento[]          @relation("EventosCreados")
+  comentarios       Comentario[]
+  perfiles          PerfilEntidad[]
+
+  @@index([rol])
 }
 
 /**
  * Modelo de Perfil de Entidad.
- * Unificado para Artistas y Lugares según la especificación simplificada.
+ * Permite que un usuario tenga múltiples identidades (Artista, Lugar, etc).
+ * También soporta perfiles "no reclamados" si usuario_id es null.
  */
 model PerfilEntidad {
-  id          String   @id @default(uuid())
-  usuario_id  String   @unique
-  nombre      String
-  tipo        String   // "artista" o "lugar"
-  descripcion String?
-  direccion   String?
-  gmaps_url   String?
-  reclamado   Boolean  @default(false)
-  creado_en   DateTime @default(now())
+  id                String            @id @default(uuid())
+  usuario_id        String?           @unique
+  usuario           Usuario?          @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  nombre            String
+  tipo              TipoEntidad
+  descripcion       String?
+  direccion         String?
+  gmaps_url         String?
+  imagen_url        String?
+  reclamado         Boolean           @default(false)
+  creado_en         DateTime          @default(now())
+  actualizado_en    DateTime          @updatedAt
+
+  // Relaciones
+  eventos_lugar     Evento[]          @relation("EventosEnLugar")
+  eventos_artista   EventoArtista[]
+
+  @@index([tipo])
+  @@index([nombre])
 }
 
 /**
  * Modelo de Evento.
- * Es el corazón de la aplicación. Pasa por estados de moderación.
+ * Corazón de la plataforma, ahora con soporte para múltiples artistas.
  */
 model Evento {
-  id                    String          @id @default(uuid())
-  creado_por_usuario_id  String?
+  id                    String              @id @default(uuid())
+  creado_por_usuario_id String?
+  creador               Usuario?            @relation("EventosCreados", fields: [creado_por_usuario_id], references: [id], onDelete: SetNull)
+
   titulo                String
   descripcion           String?
   inicia_en             DateTime
   termina_en            DateTime?
-  estado                String          @default("PENDIENTE") // PENDIENTE, PUBLICADO, RECHAZADO, ARCHIVADO
-  entidad_lugar_id      String?         // Referencia al lugar donde ocurre
-  posible_duplicado     Boolean         @default(false)
-  creado_en             DateTime        @default(now())
-  actualizado_en        DateTime        @updatedAt
+  estado                EstadoEvento        @default(PENDIENTE)
+
+  entidad_lugar_id      String?
+  lugar                 PerfilEntidad?      @relation("EventosEnLugar", fields: [entidad_lugar_id], references: [id], onDelete: SetNull)
+
+  posible_duplicado     Boolean             @default(false)
+  imagen_url            String?
+  creado_en             DateTime            @default(now())
+  actualizado_en        DateTime            @updatedAt
 
   // Relaciones
-  creador               Usuario?        @relation("EventosCreados", fields: [creado_por_usuario_id], references: [id])
   comentarios           Comentario[]
+  artistas              EventoArtista[]
+
+  @@index([estado])
+  @@index([inicia_en])
+  @@index([creado_por_usuario_id])
+  @@index([entidad_lugar_id])
+}
+
+/**
+ * Tabla intermedia para relación Muchos-a-Muchos entre Eventos y Artistas.
+ */
+model EventoArtista {
+  evento_id           String
+  artista_id          String
+
+  evento              Evento          @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+  artista             PerfilEntidad   @relation(fields: [artista_id], references: [id], onDelete: Cascade)
+
+  creado_en           DateTime        @default(now())
+
+  @@id([evento_id, artista_id])
+  @@index([artista_id])
 }
 
 /**
  * Modelo de Comentario.
- * Permite la interacción en los eventos. Soporta hilos mediante padre_id.
+ * Implementa recursividad real para hilos de conversación.
  */
 model Comentario {
-  id         String   @id @default(uuid())
-  evento_id  String
-  usuario_id String?
-  padre_id   String?  // Si está presente, es una respuesta a otro comentario
-  cuerpo     String
-  creado_en  DateTime @default(now())
+  id                  String          @id @default(uuid())
+  evento_id           String
+  evento              Evento          @relation(fields: [evento_id], references: [id], onDelete: Cascade)
 
-  // Relaciones
-  evento     Evento   @relation(fields: [evento_id], references: [id])
-  autor      Usuario? @relation(fields: [usuario_id], references: [id])
+  usuario_id          String?
+  usuario             Usuario?        @relation(fields: [usuario_id], references: [id], onDelete: SetNull)
+
+  padre_id            String?
+  padre               Comentario?     @relation("ComentarioRespuesta", fields: [padre_id], references: [id], onDelete: Cascade)
+  respuestas          Comentario[]    @relation("ComentarioRespuesta")
+
+  cuerpo              String
+  creado_en           DateTime        @default(now())
+  actualizado_en      DateTime        @updatedAt
+
+  @@index([evento_id])
+  @@index([usuario_id])
+  @@index([padre_id])
 }
