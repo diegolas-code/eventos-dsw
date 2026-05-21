@@ -67,7 +67,7 @@ All protected routes must use a centralized middleware that:
    - How to verify the current state.
 5. **Version control practices**: Commit early and often with small, focused changes; create feature branches for new work and open pull requests for review. Use descriptive commit messages, link PRs to issues, and push frequently to the remote repository to keep CI/CD and collaborators in sync.
 
-## 6. Current Phase: Phase 0
+## 6. Current Phase: Phase 1 (Autenticación y Autorización)
 
-- Goal: Setup repo structure, basic Express API (CRUD for Events/Comments), and a minimal React app to display them.
-- No Auth yet (handled in Phase 1).
+- **Goal**: Integrar Supabase Auth de forma activa en el frontend y backend, implementar el middleware de RBAC y proteger las rutas sensibles.
+- **Noteworthy**: Los endpoints base para `usuarios` y `perfiles` de entidad ya están implementados y operativos en el backend. El frontend ya cuenta con un sistema de rutas base funcional.

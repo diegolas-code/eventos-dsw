@@ -23,8 +23,8 @@ Fase 1 — Autenticación y roles
 - Tareas:
   - Integrar Supabase Auth (o JWT propio) en frontend y backend.
   - Añadir middleware de autorización en API y proteger endpoints de modificación para usuarios autenticados.
-  - Añadir endpoints para gestión de usuarios y asignación de roles.
-  - [ ] Actualizar UI: login, registro (Estructura base creada en `ProfilePage`).
+  - [x] Añadir endpoints para gestión de usuarios y asignación de roles.
+  - [x] Actualizar UI: login, registro (Estructura base creada en `ProfilePage`).
   - Añadir tests básicos de integración para auth y permisos.
 
 Fase 2 — Pool de publicaciones y moderación

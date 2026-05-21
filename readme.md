@@ -8,24 +8,26 @@ El desarrollo consiste en una aplicación web para publicar y consumir eventos l
 
 [Especificaciones](./spec.md) | [TODO](./TODO.md)
 
-## Estado Actual (Fase 0.5 - Prototipo Avanzado)
+## Estado Actual (Fase 1 - Autenticación en Progreso)
 
-Actualmente, el proyecto ha superado la base inicial y cuenta con una arquitectura de frontend moderna y escalable:
+Actualmente, el proyecto ha completado la **Fase 0 (CRUD Público)** y se encuentra iniciando la **Fase 1 (Autenticación)**:
 
 - **Backend:** API REST robusta con **Node.js + Express**, **Prisma** y **PostgreSQL**.
-- **Frontend (Refactorizado):**
+  - CRUD completo de eventos y comentarios.
+  - Endpoints base para gestión de usuarios y perfiles de entidad (Artistas/Lugares).
+  - Seed de datos demo integrado.
+- **Frontend:**
   - **Navegación:** Implementada con `react-router-dom` (Home, Detalles, Creación, Perfil).
   - **Gestión de Datos:** Uso de `@tanstack/react-query` para fetching y caché eficiente.
   - **Estilos:** Integración completa de **Tailwind CSS**.
   - **Estructura:** Organización por páginas y componentes reutilizables (Navbar, Layouts).
-- **Documentación:** El archivo [spec.md](./spec.md) se ha movido a la raíz para facilitar su consulta.
-- **Calidad:** Pipeline de CI configurado con GitHub Actions.
+- **Calidad:** Pipeline de CI configurado con GitHub Actions y control de calidad con Husky + Prettier/ESLint.
 
-### Próximos pasos:
+### Próximos pasos (Fase 1):
 
-- Integración de **Autenticación (Phase 1)** con Supabase Auth.
-- Implementación de formularios de publicación con validación.
-- Lógica de moderación y estados de eventos.
+- Integración activa de **Supabase Auth** para login y registro.
+- Implementación de **Middleware de Autorización** para proteger la creación/edición de eventos.
+- Desarrollo de formularios de publicación con validación avanzada (Zod).
 
 ---
 
