@@ -366,7 +366,7 @@ export const deleteUsuario = async (usuarioId: string): Promise<boolean> => {
 
 /** Obtiene el perfil de entidad asociado a un usuario específico */
 export const getPerfilByUsuario = async (usuarioId: string): Promise<PerfilEntidad | null> => {
-  const data = await prisma.perfilEntidad.findUnique({
+  const data = await prisma.perfilEntidad.findFirst({
     where: { usuario_id: usuarioId },
   });
   return data ? mapPerfilEntidad(data) : null;
@@ -378,12 +378,13 @@ export const CreatePerfilEntidad = async (
 ): Promise<PerfilEntidad> => {
   const data = await prisma.perfilEntidad.create({
     data: {
-      usuario_id: input.usuarioId,
+      usuario_id: input.usuarioId ?? null,
       nombre: input.nombre,
-      tipo: input.tipo as TipoEntidad,
+      tipo: input.tipo,
       descripcion: input.descripcion ?? null,
       direccion: input.direccion ?? null,
       gmaps_url: input.gmapsUrl ?? null,
+      imagen_url: input.imagenUrl ?? null,
     },
   });
   return mapPerfilEntidad(data);
