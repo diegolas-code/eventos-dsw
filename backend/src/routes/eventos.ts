@@ -37,8 +37,15 @@ router.get('/', async (_request: Req, response: ExpressResponse) => {
  * Crea un nuevo evento. Valida campos obligatorios básicos.
  */
 router.post('/', async (request: ReqCreateEvento, response: ExpressResponse) => {
-  const { titulo, descripcion, iniciaEn, terminaEn, entidadLugarId, creadoPorUsuarioId } =
-    request.body ?? ({} as CreateEventoInput);
+  const {
+    titulo,
+    descripcion,
+    iniciaEn,
+    terminaEn,
+    entidadLugarId,
+    creadoPorUsuarioId,
+    artistasIds,
+  } = request.body ?? ({} as CreateEventoInput);
 
   // Validación básica manual (en el futuro podemos usar Zod o Joi)
   if (typeof titulo !== 'string' || typeof iniciaEn !== 'string') {
@@ -53,6 +60,7 @@ router.post('/', async (request: ReqCreateEvento, response: ExpressResponse) => 
     terminaEn: typeof terminaEn === 'string' || terminaEn === null ? terminaEn : undefined,
     entidadLugarId: typeof entidadLugarId === 'string' ? entidadLugarId : undefined,
     creadoPorUsuarioId: typeof creadoPorUsuarioId === 'string' ? creadoPorUsuarioId : undefined,
+    artistasIds: Array.isArray(artistasIds) ? artistasIds : undefined,
   });
 
   response.status(201).json({ data: evento });

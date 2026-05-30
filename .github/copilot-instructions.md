@@ -19,11 +19,17 @@ You are an expert full-stack developer assisting in the creation of a local even
 
 ## 3. Critical Architecture Rules
 
-### A. Unified Entity Model
+### A. Unified Entity Model & Enums
 
-Do NOT create separate tables for Artists and Venues. Use a single `PERFIL_ENTIDAD` table with a `tipo` field ('artista' or 'lugar').
+Do NOT use plain strings for roles, event states, or entity types. Always use the defined **Prisma Enums**:
 
-- **Reason**: Simplifies relationships and reduces code duplication.
+- `RolUsuario`: miembro, artista, lugar, moderador, admin.
+- `EstadoEvento`: PENDIENTE, PUBLICADO, RECHAZADO, ARCHIVADO.
+- `TipoEntidad`: ARTISTA, LUGAR.
+
+Use a single `PERFIL_ENTIDAD` table with a `tipo` field. Events support **multiple artists** via the `EventoArtista` junction table.
+
+- **Reason**: Ensures data integrity, leverages Prisma's type safety, and supports complex event lineups (festivals).
 
 ### B. Simplified Duplicate Detection
 
@@ -49,10 +55,11 @@ All protected routes must use a centralized middleware that:
 
 ## 4. Database Entities (High-Level)
 
-- **USUARIO**: email, nombre_mostrar, rol (miembro, entidad, moderador, admin).
-- **PERFIL_ENTIDAD**: usuario_id, nombre, tipo, descripcion, direccion, gmaps_url, reclamado.
-- **EVENTO**: creado_por_usuario_id, titulo, descripcion, inicia_en, termina_en, estado (PENDIENTE, PUBLICADO, RECHAZADO, ARCHIVADO), entidad_lugar_id, posible_duplicado.
-- **COMENTARIO**: evento_id, usuario_id, padre_id (for threads), cuerpo.
+- **USUARIO**: email, nombre_mostrar, rol (Enum).
+- **PERFIL_ENTIDAD**: usuario_id (opcional), nombre, tipo (Enum), descripcion, direccion, gmaps_url, imagen_url, reclamado.
+- **EVENTO**: creado_por_usuario_id, titulo, descripcion, inicia_en, termina_en, estado (Enum), entidad_lugar_id (FK al local), posible_duplicado.
+- **EVENTO_ARTISTA**: tabla intermedia para vincular múltiples artistas a un evento.
+- **COMENTARIO**: evento_id, usuario_id, padre_id (relación recursiva), cuerpo.
 - **Interactions**: FAVORITO, SEGUIMIENTO, VOTO_EVENTO, VOTO_COMENTARIO.
 
 ## 5. Development Workflow
@@ -67,7 +74,7 @@ All protected routes must use a centralized middleware that:
    - How to verify the current state.
 5. **Version control practices**: Commit early and often with small, focused changes; create feature branches for new work and open pull requests for review. Use descriptive commit messages, link PRs to issues, and push frequently to the remote repository to keep CI/CD and collaborators in sync.
 
-## 6. Current Phase: Phase 0
+## 6. Current Phase: Phase 0.5 (Refactorización de Esquema y Tipado)
 
-- Goal: Setup repo structure, basic Express API (CRUD for Events/Comments), and a minimal React app to display them.
-- No Auth yet (handled in Phase 1).
+- **Goal**: Migrar a Enums, implementar relaciones muchos-a-muchos y recursividad real en comentarios.
+- **Noteworthy**: Los endpoints base ya existen pero deben ser adaptados al nuevo esquema. La integridad de datos es la prioridad en esta fase.

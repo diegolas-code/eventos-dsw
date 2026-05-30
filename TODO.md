@@ -13,9 +13,21 @@ Fase 0 — Despliegue inicial y CRUD público
   - [x] Añadir comentarios: `POST /eventos/:id/comentarios`, `GET /eventos/:id/comentarios`.
   - [x] Definir esquema de BD (Postgres + Prisma) y migraciones iniciales.
   - [x] Crear seed data y script de carga persistente.
-  - [x] Frontend mínimo (React + Vite): vistas iniciales y conexión al API.
+  - [x] Frontend moderno (React + Vite): Estructura de rutas, Tailwind CSS y React Query.
   - [x] Configurar despliegue continuo básico (GitHub Actions).
   - [x] Documentar cómo ejecutar localmente y variables requeridas (`.env.example`).
+
+Fase 0.5 — Refactorización de Esquema y Tipado (Completada) ✅
+
+- Objetivo: Robustecer la base de datos y el tipado del backend antes de escalar a Auth.
+- Tareas:
+  - [x] Migrar estados (`estado`), roles (`rol`) y tipos de entidad (`tipo`) a **Enums de Prisma**.
+  - [x] Implementar relación **Muchos-a-Muchos** para artistas en eventos mediante tabla intermedia.
+  - [x] Configurar **recursividad real** en el modelo de comentarios (`padre_id` con `@relation`).
+  - [x] Refactorizar `backend/src/store.ts` para soportar los nuevos Enums y estructuras de datos.
+  - [x] Actualizar DTOs y mapeadores para mantener consistencia camelCase.
+  - [x] Ejecutar migración de limpieza (`prisma migrate reset`) y regenerar cliente.
+  - [x] Validar esquema con creación de evento real (M:N artistas).
 
 Fase 1 — Autenticación y roles
 
@@ -23,8 +35,8 @@ Fase 1 — Autenticación y roles
 - Tareas:
   - Integrar Supabase Auth (o JWT propio) en frontend y backend.
   - Añadir middleware de autorización en API y proteger endpoints de modificación para usuarios autenticados.
-  - Añadir endpoints para gestión de usuarios y asignación de roles.
-  - Actualizar UI: login, registro, gestión de perfil básico.
+  - [x] Añadir endpoints para gestión de usuarios y asignación de roles.
+  - [x] Actualizar UI: login, registro (Estructura base creada en `ProfilePage`).
   - Añadir tests básicos de integración para auth y permisos.
 
 Fase 2 — Pool de publicaciones y moderación
