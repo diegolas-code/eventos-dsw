@@ -5,8 +5,9 @@
 import { Router } from 'express';
 import type { Request as ExRequest } from 'express-serve-static-core';
 import type { Response as ExpressResponse } from 'express';
+import { TipoEntidad } from '@prisma/client';
 import type { CreatePerfilEntidadInput } from '../dtos.js';
-import { CreatePerfilEntidad, getPerfilByUsuario, TipoEntidad } from '../store.js';
+import { CreatePerfilEntidad, getPerfilByUsuario } from '../store.js';
 
 type Req = ExRequest<any, any, any>;
 type ReqPostPerfil = ExRequest<any, any, CreatePerfilEntidadInput>;
@@ -30,9 +31,9 @@ router.post('/', async (request: ReqPostPerfil, response: ExpressResponse) => {
   if (
     typeof nombre !== 'string' ||
     nombre.trim().length === 0 ||
-    (tipo !== TipoEntidad.ARTISTA && tipo !== TipoEntidad.LUGAR)
+    !Object.values(TipoEntidad).includes(tipo)
   ) {
-    response.status(400).json({ error: 'nombre y tipo (ARTISTA|LUGAR) son obligatorios' });
+    response.status(400).json({ error: 'nombre y tipo (ARTISTA o LUGAR) son obligatorios' });
     return;
   }
 

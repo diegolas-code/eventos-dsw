@@ -51,4 +51,5 @@ export type CreatePerfilEntidadInput = {
   descripcion?: string;
   direccion?: string;
   gmapsUrl?: string;
+  imagenUrl?: string;
 };

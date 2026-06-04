@@ -5,15 +5,9 @@
 import { Router } from 'express';
 import type { Request as ExRequest } from 'express-serve-static-core';
 import type { Response as ExpressResponse } from 'express';
+import { RolUsuario } from '@prisma/client';
 import type { CreateUsuarioInput, PatchUsuarioInput } from '../dtos.js';
-import {
-  listUsuarios,
-  getUsuario,
-  createUsuario,
-  updateUsuario,
-  deleteUsuario,
-  RolUsuario,
-} from '../store.js';
+import { listUsuarios, getUsuario, createUsuario, updateUsuario, deleteUsuario } from '../store.js';
 
 // Tipado básico para las peticiones de la API
 type Req = ExRequest<any, any, any>;
@@ -56,10 +50,17 @@ router.post('/', async (request: ReqPostUsuario, response: ExpressResponse) => {
     response.status(400).json({ error: 'Email y nombreMostrar son obligatorios.' });
     return;
   }
+
+  // Validación estricta del Enum de Roles
+  if (rol && !Object.values(RolUsuario).includes(rol)) {
+    response.status(400).json({ error: 'El rol proporcionado no es válido.' });
+    return;
+  }
+
   const nuevoUsuario = await createUsuario({
     email,
     nombreMostrar,
-    rol: (rol as RolUsuario) ?? RolUsuario.miembro,
+    rol: rol ?? RolUsuario.miembro,
   });
 
   response.status(201).json({ data: nuevoUsuario });
