@@ -33,11 +33,13 @@ Fase 1 — Autenticación y roles
 
 - Objetivo: añadir autenticación y roles definidos en la spec (`miembro`, `artista`, `lugar`, `moderador`, `admin`).
 - Tareas:
-  - Integrar Supabase Auth (o JWT propio) en frontend y backend.
-  - Añadir middleware de autorización en API y proteger endpoints de modificación para usuarios autenticados.
+  - [ ] Integrar JWT/Auth real en frontend y backend (reemplazar demo local).
+  - [ ] Añadir middleware de autorización en API y proteger endpoints de modificación.
   - [x] Añadir endpoints para gestión de usuarios y asignación de roles.
-  - [x] Actualizar UI: login, registro (Estructura base creada en `ProfilePage`).
-  - Añadir tests básicos de integración para auth y permisos.
+  - [x] Actualizar UI: login, registro y perfil (Estructura base funcional en `ProfilePage`).
+  - [x] Implementar navegación segura con `ProtectedRoute`.
+  - [x] Crear formulario de publicación con validación avanzada (`CreateEventPage`).
+  - [ ] Añadir tests básicos de integración para auth y permisos.
 
 Fase 2 — Pool de publicaciones y moderación
 

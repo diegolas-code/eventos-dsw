@@ -10,24 +10,24 @@ El desarrollo consiste en una aplicación web para publicar y consumir eventos l
 
 ## Estado Actual (Fase 1 - Autenticación en Progreso)
 
-Actualmente, el proyecto ha completado la **Fase 0 (CRUD Público)** y se encuentra iniciando la **Fase 1 (Autenticación)**:
+Actualmente, el proyecto ha completado la **Fase 0.5 (Refactorización de Esquema)** y se encuentra integrando la **Fase 1 (Autenticación)**:
 
 - **Backend:** API REST robusta con **Node.js + Express**, **Prisma** y **PostgreSQL**.
-  - CRUD completo de eventos y comentarios.
-  - Endpoints base para gestión de usuarios y perfiles de entidad (Artistas/Lugares).
-  - Seed de datos demo integrado.
+  - Refactorización de esquema completada (Enums, Relaciones M:N).
+  - CRUD refinado para usuarios y perfiles de entidad.
+  - Validación estricta de roles y tipos de entidad.
 - **Frontend:**
-  - **Navegación:** Implementada con `react-router-dom` (Home, Detalles, Creación, Perfil).
-  - **Gestión de Datos:** Uso de `@tanstack/react-query` para fetching y caché eficiente.
-  - **Estilos:** Integración completa de **Tailwind CSS**.
-  - **Estructura:** Organización por páginas y componentes reutilizables (Navbar, Layouts).
-- **Calidad:** Pipeline de CI configurado con GitHub Actions y control de calidad con Husky + Prettier/ESLint.
+  - **Navegación & Seguridad:** Rutas protegidas (`ProtectedRoute`) que redirigen al login si no hay sesión activa.
+  - **Eventos:** Formulario de creación (`CreateEventPage`) funcional con validación y formateo de fecha/hora.
+  - **Auth UI:** Maquetación completa de Login, Registro y Vista de Perfil (Demo activa).
+  - **Estilos:** Tailwind CSS integrado con diseño moderno y minimalista.
+- **Integración:** Ramas de UI y Backend unificadas en la rama `dev`.
 
 ### Próximos pasos (Fase 1):
 
-- Integración activa de **Supabase Auth** para login y registro.
-- Implementación de **Middleware de Autorización** para proteger la creación/edición de eventos.
-- Desarrollo de formularios de publicación con validación avanzada (Zod).
+- Implementación de **JWT/Auth real** en el backend para reemplazar la sesión demo.
+- Conexión del formulario de eventos con el ID del usuario autenticado.
+- Subida de imágenes para eventos y perfiles (Cloudflare R2).
 
 ---
 
