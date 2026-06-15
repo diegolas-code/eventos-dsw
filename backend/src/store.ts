@@ -181,6 +181,7 @@ export const createEvento = async (
     data: {
       titulo: input.titulo,
       descripcion: input.descripcion ?? null,
+      imagen_url: input.imagenUrl ?? null,
       inicia_en: new Date(input.iniciaEn),
       termina_en: input.terminaEn ? new Date(input.terminaEn) : null,
       entidad_lugar_id: input.entidadLugarId ?? null,

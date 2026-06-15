@@ -4,8 +4,19 @@
  */
 import { Router } from 'express';
 import type { Request as ExRequest } from 'express-serve-static-core';
-import type { Response as ExpressResponse } from 'express';
+
 import type { CreateEventoInput, CreateComentarioInput } from '../dtos.js';
+import upload from "../middleware/upload.js";
+import cloudinary from "../config/cloudinary.js";
+import type { Request } from "express";
+import type { Response as ExpressResponse } from "express";
+
+
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
+
+
 
 // Alias para facilitar el tipado de Express con nuestros DTOs
 type Req = ExRequest<any, any, any>;
@@ -36,36 +47,75 @@ router.get('/', async (_request: Req, response: ExpressResponse) => {
  * POST /api/v1/eventos
  * Crea un nuevo evento. Valida campos obligatorios básicos.
  */
-router.post('/', async (request: ReqCreateEvento, response: ExpressResponse) => {
-  const {
-    titulo,
-    descripcion,
-    iniciaEn,
-    terminaEn,
-    entidadLugarId,
-    creadoPorUsuarioId,
-    artistasIds,
-  } = request.body ?? ({} as CreateEventoInput);
+router.post(
+  '/',
+  upload.single('image'),
+  async (
+    request: MulterRequest,
+    response: ExpressResponse
+  ) => {
+    const body = request.body as CreateEventoInput;
 
-  // Validación básica manual (en el futuro podemos usar Zod o Joi)
-  if (typeof titulo !== 'string' || typeof iniciaEn !== 'string') {
-    response.status(400).json({ error: 'titulo e iniciaEn son obligatorios' });
-    return;
+    if (
+      typeof body.titulo !== 'string' ||
+      typeof body.iniciaEn !== 'string'
+    ) {
+      response.status(400).json({
+        error: 'titulo e iniciaEn son obligatorios',
+      });
+      return;
+    }
+
+    let imagenUrl: string | undefined;
+
+    try {
+      if (request.file) {
+        const result = await new Promise<any>(
+          (resolve, reject) => {
+            cloudinary.uploader
+              .upload_stream(
+                {
+                  folder: 'eventos-dsw',
+                },
+                (error, result) => {
+                  if (error) {
+                    reject(error);
+                    return;
+                  }
+
+                  resolve(result);
+                }
+              )
+              .end(request.file!.buffer);
+          }
+        );
+
+        imagenUrl = result.secure_url;
+      }
+
+      const evento = await createEvento({
+        titulo: body.titulo,
+        descripcion: body.descripcion,
+        iniciaEn: body.iniciaEn,
+        terminaEn: body.terminaEn,
+        entidadLugarId: body.entidadLugarId,
+        creadoPorUsuarioId: body.creadoPorUsuarioId,
+        artistasIds: body.artistasIds,
+        imagenUrl,
+      });
+
+      response.status(201).json({
+        data: evento,
+      });
+    } catch (error) {
+      console.error(error);
+
+      response.status(500).json({
+        error: 'Error creando evento',
+      });
+    }
   }
-
-  const evento = await createEvento({
-    titulo,
-    descripcion: typeof descripcion === 'string' ? descripcion : undefined,
-    iniciaEn,
-    terminaEn: typeof terminaEn === 'string' || terminaEn === null ? terminaEn : undefined,
-    entidadLugarId: typeof entidadLugarId === 'string' ? entidadLugarId : undefined,
-    creadoPorUsuarioId: typeof creadoPorUsuarioId === 'string' ? creadoPorUsuarioId : undefined,
-    artistasIds: Array.isArray(artistasIds) ? artistasIds : undefined,
-  });
-
-  response.status(201).json({ data: evento });
-});
-
+);
 /**
  * GET /api/v1/eventos/:id
  * Obtiene el detalle de un evento por su ID.

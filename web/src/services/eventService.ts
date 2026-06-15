@@ -10,3 +10,19 @@ export async function getEventById(id: string) {
 
   return response.data.data;
 }
+export async function createEvent(
+  formData: FormData
+) {
+  const response = await api.post(
+    "/eventos",
+    formData,
+    {
+      headers: {
+        "Content-Type":
+          "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data.data;
+}
