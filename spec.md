@@ -48,7 +48,7 @@ Los usuarios con el rol de "Moderadores" son miembros designados por el administ
 
 Se utilizará React con Vite para el frontend y un backend en Node.js (Express o Fastify) con PostgreSQL y Prisma como ORM. En la etapa inicial, el hosting será Vercel para el frontend, Render para el backend, Supabase Postgres para la base de datos y Cloudflare R2 para almacenamiento de imágenes.
 
-La autenticación se resolverá con Supabase Auth (correo y redes sociales), lo que delega la seguridad en un proveedor confiable y reduce el riesgo de implementar autenticación propia. El despliegue se realizará desde un repositorio Git con integración y entrega continua mediante GitHub Actions, ejecutando lint y build en cada push o pull request. Los tests se incorporarán progresivamente. Al hacer merge a la rama principal se desplegará automáticamente en Vercel y Render. Las variables de entorno se gestionan desde los paneles de cada servicio.
+La autenticación se resolverá de forma local mediante un sistema basado en JSON Web Tokens (JWT) y contraseñas seguras (hasheadas en la base de datos). El backend proveerá endpoints de registro y login, emitiendo un token JWT firmado. El frontend almacenará este token de forma segura (localStorage o cookies) y lo enviará en el encabezado `Authorization: Bearer <token>` en cada petición que requiera autenticación. El despliegue se realizará desde un repositorio Git con integración y entrega continua mediante GitHub Actions, ejecutando lint y build en cada push o pull request. Los tests se incorporarán progresivamente. Al hacer merge a la rama principal se desplegará automáticamente en Vercel y Render. Las variables de entorno se gestionan desde los paneles de cada servicio.
 
 La elección de servicios permite costos iniciales $0 y un flujo de despliegue simple. El plan de escalamiento contempla migrar a planes pagos para evitar cold starts en el backend, aumentar recursos, habilitar backups de base de datos y ampliar el uso de Cloudflare R2 según demanda.
 
@@ -103,6 +103,7 @@ Si se detectan estos factores, se guarda con un flag de `posible_duplicado` para
     USUARIO {
         uuid id PK
         string email
+        string contrasena_hash
         string nombre_mostrar
         RolUsuario rol
         datetime creado_en
@@ -240,7 +241,12 @@ Tabla resumida de capacidades por rol. Los permisos detallados se especifican en
 
 ### API v1 (REST)
 
-Para la autenticación el backend integra Supabase Auth de forma server-side. El frontend inicia sesión con Supabase y el backend valida el token/JWT en cada request, resolviendo el usuario y su rol a partir de ese token.
+Para la autenticación, se utilizará una implementación basada en JWT (JSON Web Tokens). El backend expone rutas de autenticación (`/api/v1/auth/register`, `/api/v1/auth/login`) para verificar credenciales contra la base de datos y firmar el token JWT. El cliente adjunta este token en la cabecera `Authorization` en cada petición. El backend implementa un middleware de autenticación que valida la firma del token, resolviendo la identidad y el rol del usuario para la protección de rutas.
+
+#### Autenticación
+
+- `POST /api/v1/auth/register` (Registrar nuevo usuario con email, nombre y contraseña)
+- `POST /api/v1/auth/login` (Iniciar sesión y retornar token JWT)
 
 #### Convenciones
 
@@ -336,9 +342,8 @@ Para la autenticación el backend integra Supabase Auth de forma server-side. El
 ### Configuración de entorno
 
 - `DATABASE_URL`
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `JWT_SECRET` (Clave secreta para firmar y verificar tokens)
+- `JWT_EXPIRES_IN` (Tiempo de expiración del token JWT, ej: `7d` o `24h`)
 - `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY`, `R2_SECRET_KEY`
 
 ### Mapa de UI (alto nivel)

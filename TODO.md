@@ -33,8 +33,22 @@ Fase 1 — Autenticación y roles
 
 - Objetivo: añadir autenticación y roles definidos en la spec (`miembro`, `artista`, `lugar`, `moderador`, `admin`).
 - Tareas:
-  - [ ] Integrar JWT/Auth real en frontend y backend (reemplazar demo local).
-  - [ ] Añadir middleware de autorización en API y proteger endpoints de modificación.
+  - [ ] Configurar JWT y credenciales locales:
+    - [ ] Modificar el modelo `Usuario` en `schema.prisma` para incluir `contrasena_hash`.
+    - [ ] Ejecutar la migración correspondiente (`prisma migrate dev`).
+    - [ ] Instalar dependencias para hashing (ej: `bcryptjs`) y tokens (ej: `jsonwebtoken`).
+    - [ ] Crear utilidades en el backend para hash de contraseñas y firma/verificación de tokens JWT.
+  - [ ] Implementar rutas de autenticación en backend:
+    - [ ] `POST /api/v1/auth/register` (Registrar y hashear contraseña).
+    - [ ] `POST /api/v1/auth/login` (Verificar credenciales y firmar token JWT).
+  - [ ] Crear middleware de autenticación y autorización en backend:
+    - [ ] Middleware para validar el token JWT proveniente de `Authorization: Bearer <token>`.
+    - [ ] Middleware para validar roles específicos y proteger rutas de modificación (POST/PATCH/DELETE).
+  - [ ] Integrar autenticación real en frontend:
+    - [ ] Configurar interceptores de Axios en `api.ts` para adjuntar el token de `localStorage`.
+    - [ ] Modificar formulario de registro para enviar peticiones al backend y guardar el token.
+    - [ ] Modificar formulario de login para solicitar token al backend e iniciar sesión.
+    - [ ] Actualizar `ProtectedRoute` y el estado del perfil para usar la sesión/JWT real.
   - [x] Añadir endpoints para gestión de usuarios y asignación de roles.
   - [x] Actualizar UI: login, registro y perfil (Estructura base funcional en `ProfilePage`).
   - [x] Implementar navegación segura con `ProtectedRoute`.
