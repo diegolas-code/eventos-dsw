@@ -45,9 +45,7 @@ router.post('/register', async (req: ReqRegister, res: ExpressResponse) => {
 
     const hashedPassword = await hashPassword(password);
 
-    // Usamos casting a 'any' en el modelo para permitir compilar
-    // antes de que se integre el cambio del esquema de Prisma (contrasena_hash)
-    const nuevoUsuario = await (prisma.usuario as any).create({
+    const nuevoUsuario = await prisma.usuario.create({
       data: {
         email,
         contrasena_hash: hashedPassword,
@@ -97,7 +95,7 @@ router.post('/login', async (req: ReqLogin, res: ExpressResponse) => {
       return;
     }
 
-    const contrasenaHash = (usuario as any).contrasena_hash;
+    const contrasenaHash = usuario.contrasena_hash;
     if (!contrasenaHash) {
       res.status(401).json({
         error: 'El usuario no tiene una contraseña establecida en la base de datos.',
