@@ -76,7 +76,7 @@ Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
   - Dashboard personal: listar eventos propios y editar perfil.
   - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
 
-Fase 4 — Votaciones, Seguimiento y Duplicados
+Fase 4 — Votaciones, Seguimiento y Duplicados (Opcional)
 
 - Objetivo: añadir interactividad y detección de duplicados simple.
 - Tareas:
