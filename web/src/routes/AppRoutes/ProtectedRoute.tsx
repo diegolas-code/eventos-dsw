@@ -10,9 +10,9 @@ interface ProtectedRouteProps {
  * Si no hay sesión, redirige al perfil (login).
  */
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const isLoggedIn = localStorage.getItem('demo_session_email');
+  const token = localStorage.getItem('token');
 
-  if (!isLoggedIn) {
+  if (!token) {
     return <Navigate to="/perfil" replace />;
   }
 

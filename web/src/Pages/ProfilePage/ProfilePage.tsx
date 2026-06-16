@@ -15,12 +15,14 @@ export default function ProfilePage() {
     }
   }, []);
 
-  const handleLoginSuccess = (email: string) => {
+  const handleLoginSuccess = (email: string, token: string) => {
+    localStorage.setItem('token', token);
     localStorage.setItem('demo_session_email', email);
     setUserEmail(email);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('demo_session_email');
     setUserEmail(null);
     setView('login');
