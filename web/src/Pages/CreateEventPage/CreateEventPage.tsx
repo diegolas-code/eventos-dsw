@@ -46,7 +46,7 @@ export default function CreateEventPage() {
 
       await createEvent(formData);
 
-      alert('¡Evento creado con éxito! Queda pendiente de moderación.');
+      alert('¡Evento creado con éxito!');
       setTitulo('');
       setDescripcion('');
       setIniciaEn('');
