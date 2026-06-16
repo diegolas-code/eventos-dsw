@@ -91,7 +91,7 @@ model Evento {
   id                    String              @id @default(uuid())
   creado_por_usuario_id String?
   creador               Usuario?            @relation("EventosCreados", fields: [creado_por_usuario_id], references: [id], onDelete: SetNull)
-
+ lugar_manual          String?
   titulo                String
   descripcion           String?
   inicia_en             DateTime

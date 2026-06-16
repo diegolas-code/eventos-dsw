@@ -6,6 +6,7 @@ type EventCardProps = {
     titulo: string;
     descripcion?: string;
     iniciaEn?: string;
+    imagenUrl?: string;
   };
 };
 
@@ -25,6 +26,17 @@ export default function EventCard({
           cursor-pointer
         "
       >
+         {event.imagenUrl && (
+      <img
+        src={event.imagenUrl}
+        alt={event.titulo}
+        className="
+          w-full
+          h-56
+          object-cover
+        "
+      />
+    )}
         <h2 className="text-2xl font-bold mb-3">
           {event.titulo}
         </h2>

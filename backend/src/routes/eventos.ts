@@ -97,6 +97,7 @@ router.post(
         titulo: body.titulo,
         descripcion: body.descripcion,
         iniciaEn: body.iniciaEn,
+        lugar: body.lugar,
         terminaEn: body.terminaEn,
         entidadLugarId: body.entidadLugarId,
         creadoPorUsuarioId: body.creadoPorUsuarioId,

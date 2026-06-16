@@ -5,6 +5,7 @@ type Event = {
   titulo: string;
   descripcion?: string;
   iniciaEn?: string;
+  imagenUrl?: string;
 };
 
 type Props = {
