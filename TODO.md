@@ -38,7 +38,9 @@ Fase 1 — Autenticación y roles
   - [x] Añadir endpoints para gestión de usuarios y asignación de roles.
   - [x] Actualizar UI: login, registro y perfil (Estructura base funcional en `ProfilePage`).
   - [x] Implementar navegación segura con `ProtectedRoute`.
-  - [x] Crear formulario de publicación con validación avanzada (`CreateEventPage`).
+  - [x] Crear formulario de publicación con validación avanzada y subida de imágenes (`CreateEventPage`).
+  - [x] Integrar carga de imágenes (posters) usando Cloudinary en el backend y previsualización en frontend.
+  - [x] Implementar soporte para ubicación manual (campo `lugar_manual` en BD y API).
   - [ ] Añadir tests básicos de integración para auth y permisos.
 
 Fase 2 — Pool de publicaciones y moderación
