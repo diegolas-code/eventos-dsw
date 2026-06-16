@@ -33,9 +33,9 @@ Fase 1 — Autenticación y roles
 
 - Objetivo: añadir autenticación y roles definidos en la spec (`miembro`, `artista`, `lugar`, `moderador`, `admin`).
 - Tareas:
-  - [ ] Configurar JWT y credenciales locales:
-    - [ ] Modificar el modelo `Usuario` en `schema.prisma` para incluir `contrasena_hash`.
-    - [ ] Ejecutar la migración correspondiente (`prisma migrate dev`).
+  - [x] Configurar JWT y credenciales locales:
+    - [x] Modificar el modelo `Usuario` en `schema.prisma` para incluir `contrasena_hash`.
+    - [x] Ejecutar la migración correspondiente (`prisma migrate dev`).
     - [x] Instalar dependencias para hashing (ej: `bcryptjs`) y tokens (ej: `jsonwebtoken`).
     - [x] Crear utilidades en el backend para hash de contraseñas y firma/verificación de tokens JWT.
   - [x] Implementar rutas de autenticación en backend:
@@ -44,18 +44,18 @@ Fase 1 — Autenticación y roles
   - [x] Crear middleware de autenticación y autorización en backend:
     - [x] Middleware para validar el token JWT proveniente de `Authorization: Bearer <token>`.
     - [x] Middleware para validar roles específicos y proteger rutas de modificación (POST/PATCH/DELETE).
-  - [ ] Integrar autenticación real en frontend:
-    - [ ] Configurar interceptores de Axios en `api.ts` para adjuntar el token de `localStorage`.
-    - [ ] Modificar formulario de registro para enviar peticiones al backend y guardar el token.
-    - [ ] Modificar formulario de login para solicitar token al backend e iniciar sesión.
-    - [ ] Actualizar `ProtectedRoute` y el estado del perfil para usar la sesión/JWT real.
+  - [x] Integrar autenticación real en frontend:
+    - [x] Configurar interceptores de Axios en `api.ts` para adjuntar el token de `localStorage`.
+    - [x] Modificar formulario de registro para enviar peticiones al backend y guardar el token.
+    - [x] Modificar formulario de login para solicitar token al backend e iniciar sesión.
+    - [x] Actualizar `ProtectedRoute` y el estado del perfil para usar la sesión/JWT real.
   - [x] Añadir endpoints para gestión de usuarios y asignación de roles.
   - [x] Actualizar UI: login, registro y perfil (Estructura base funcional en `ProfilePage`).
   - [x] Implementar navegación segura con `ProtectedRoute`.
   - [x] Crear formulario de publicación con validación avanzada y subida de imágenes (`CreateEventPage`).
   - [x] Integrar carga de imágenes (posters) usando Cloudinary en el backend y previsualización en frontend.
   - [x] Implementar soporte para ubicación manual (campo `lugar_manual` en BD y API).
-  - [ ] Añadir tests básicos de integración para auth y permisos.
+  - [x] Añadir tests básicos de integración para auth y permisos.
 
 Fase 2 — Pool de publicaciones y moderación
 
