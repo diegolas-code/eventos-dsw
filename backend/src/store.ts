@@ -34,6 +34,7 @@ export interface Evento {
   imagenUrl: string | null;
   creadoEn: string;
   actualizadoEn: string;
+  lugar: string | null;
   // Incluimos artistas si vienen en la query
   artistas?: PerfilEntidadBrief[];
 }
@@ -101,6 +102,7 @@ const mapEvento = (e: any): Evento => ({
   entidadLugarId: e.entidad_lugar_id,
   posibleDuplicado: e.posible_duplicado,
   imagenUrl: e.imagen_url,
+  lugar: e.lugar_manual,
   creadoEn: e.creado_en.toISOString(),
   actualizadoEn: e.actualizado_en.toISOString(),
   // Si la consulta incluyó la relación artistas (EventoArtista -> PerfilEntidad)
@@ -181,6 +183,8 @@ export const createEvento = async (
     data: {
       titulo: input.titulo,
       descripcion: input.descripcion ?? null,
+      imagen_url: input.imagenUrl ?? null,
+      lugar_manual: input.lugar ?? null,
       inicia_en: new Date(input.iniciaEn),
       termina_en: input.terminaEn ? new Date(input.terminaEn) : null,
       entidad_lugar_id: input.entidadLugarId ?? null,

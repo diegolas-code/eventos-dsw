@@ -16,6 +16,9 @@ export type CreateEventoInput = {
   entidadLugarId?: string | null;
   creadoPorUsuarioId?: string | null;
   artistasIds?: string[]; // IDs para la relación muchos-a-muchos
+
+  imagenUrl?: string;
+  lugar?: string | null;
 };
 
 /** Datos necesarios para crear un nuevo Comentario */

@@ -1,19 +1,18 @@
-import EventCard from "./EventCard";
+import EventCard from './EventCard';
 
 type Event = {
   id: string;
   titulo: string;
   descripcion?: string;
   iniciaEn?: string;
+  imagenUrl?: string;
 };
 
 type Props = {
   events: Event[];
 };
 
-export default function EventGrid({
-  events,
-}: Props) {
+export default function EventGrid({ events }: Props) {
   return (
     <div
       className="
@@ -24,11 +23,8 @@ export default function EventGrid({
         gap-6
       "
     >
-      {events.map((event) => (
-        <EventCard
-          key={event.id}
-          event={event}
-        />
+      {events.map(event => (
+        <EventCard key={event.id} event={event} />
       ))}
     </div>
   );

@@ -1,75 +1,62 @@
 import { useState } from 'react';
 import MainLayout from '../../Components/layout/MainLayout';
-import { api } from '../../services/api';
+import { createEvent } from '../../services/eventService';
 
 export default function CreateEventPage() {
   const [titulo, setTitulo] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [fechaTexto, setFechaTexto] = useState('');
-  const [horaTexto, setHoraTexto] = useState('');
-  const [lugarId, setLugarId] = useState('');
+  const [iniciaEn, setIniciaEn] = useState('');
+  const [lugar, setLugar] = useState('');
+  const [entidadLugarId, setEntidadLugarId] = useState('');
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleFechaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let input = e.target.value.replace(/\D/g, ''); // Borra todo lo que no sea numero
-    if (input.length > 8) input = input.slice(0, 8); // Maximo 8 digitos
-
-    // Agrega diagonales orgánicamente
-    if (input.length > 4) {
-      input = `${input.slice(0, 2)}/${input.slice(2, 4)}/${input.slice(4)}`;
-    } else if (input.length > 2) {
-      input = `${input.slice(0, 2)}/${input.slice(2)}`;
-    }
-    setFechaTexto(input);
-  };
-
-  const handleHoraChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let input = e.target.value.replace(/\D/g, '');
-    if (input.length > 4) input = input.slice(0, 4);
-
-    if (input.length > 2) {
-      input = `${input.slice(0, 2)}:${input.slice(2)}`;
-    }
-
-    setHoraTexto(input);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!titulo.trim() || !descripcion.trim() || fechaTexto.length < 10 || horaTexto.length < 5) {
-      return alert('Por favor, completá los campos obligatorios.');
+    if (!titulo.trim() || !iniciaEn) {
+      return alert('Por favor, completá los campos obligatorios (Título y Fecha/Hora).');
     }
 
     try {
       setLoading(true);
 
-      const [dia, mes, ano] = fechaTexto.split('/');
-      const fechaFormateadaISO = new Date(`${ano}-${mes}-${dia}T${horaTexto}:00`).toISOString();
+      const formData = new FormData();
+      formData.append('titulo', titulo.trim());
+      formData.append('descripcion', descripcion.trim());
+      formData.append('iniciaEn', new Date(iniciaEn).toISOString());
 
-      const nuevoEvento = {
-        titulo: titulo.trim(),
-        descripcion: descripcion.trim(),
-        iniciaEn: fechaFormateadaISO,
-        entidadLugarId: lugarId.trim() || null,
-        terminaEn: null,
-        creadoPorUsuarioId: null,
-        artistasIds: [],
-      };
-
-      const response = await api.post('/eventos', nuevoEvento);
-
-      if (response.status === 201 || response.status === 200) {
-        alert('¡Evento creado con éxito! Queda pendiente de moderación.');
-        setTitulo('');
-        setDescripcion('');
-        setFechaTexto('');
-        setHoraTexto('');
-        setLugarId('');
+      if (lugar.trim()) {
+        formData.append('lugar', lugar.trim());
       }
+      if (entidadLugarId.trim()) {
+        formData.append('entidadLugarId', entidadLugarId.trim());
+      }
+      if (image) {
+        formData.append('image', image);
+      }
+
+      await createEvent(formData);
+
+      alert('¡Evento creado con éxito! Queda pendiente de moderación.');
+      setTitulo('');
+      setDescripcion('');
+      setIniciaEn('');
+      setLugar('');
+      setEntidadLugarId('');
+      setImage(null);
+      setPreview(null);
     } catch (error) {
       console.error('Error al crear el evento:', error);
-      alert('Hubo un error al procesar la fecha u hora. Asegurate de ingresar valores válidos.');
+      alert('Hubo un error al procesar la creación del evento.');
     } finally {
       setLoading(false);
     }
@@ -80,7 +67,7 @@ export default function CreateEventPage() {
       <div className="max-w-2xl w-full mx-auto bg-white border border-zinc-200 p-8 rounded-[32px] shadow-md my-10">
         <h1 className="text-2xl font-bold text-zinc-900 mb-2">Publicar un evento</h1>
         <p className="text-sm text-zinc-500 mb-6">
-          Completá los datos para registrar la fecha. El evento pasará a revision por los
+          Completá los datos para registrar la fecha. El evento pasará a revisión por los
           moderadores.
         </p>
 
@@ -88,7 +75,7 @@ export default function CreateEventPage() {
           {/* Titulo */}
           <div>
             <label className="block text-sm font-medium text-zinc-700 mb-2">
-              Titulo del Evento *
+              Título del Evento *
             </label>
             <input
               type="text"
@@ -102,63 +89,77 @@ export default function CreateEventPage() {
 
           {/* Descripcion */}
           <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-2">Descripción *</label>
+            <label className="block text-sm font-medium text-zinc-700 mb-2">Descripción</label>
             <textarea
               value={descripcion}
               onChange={e => setDescripcion(e.target.value)}
               rows={4}
               className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
               placeholder="Contanos de qué trata el evento..."
+            />
+          </div>
+
+          {/* Fecha y hora */}
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 mb-2">
+              Fecha y Hora de Inicio *
+            </label>
+            <input
+              type="datetime-local"
+              value={iniciaEn}
+              onChange={e => setIniciaEn(e.target.value)}
+              className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
               required
             />
           </div>
 
-          {/* Contenedor para Fecha y Lugar */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-2">
-                Fecha del Evento *
-              </label>
-              <input
-                type="text"
-                value={fechaTexto}
-                onChange={handleFechaChange}
-                className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
-                placeholder="DD/MM/YYYY"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-2">
-                Hora de Inicio *
-              </label>
-              <input
-                type="text"
-                value={horaTexto}
-                onChange={handleHoraChange}
-                className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
-                placeholder="HH:MM (Ej: 21:30)"
-                required
-              />
-            </div>
+          {/* Lugar manual */}
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 mb-2">Lugar (Nombre)</label>
+            <input
+              type="text"
+              value={lugar}
+              onChange={e => setLugar(e.target.value)}
+              className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
+              placeholder="Ej: Teatro Colón o Centro Cultural"
+            />
           </div>
 
-          {/* ID del lugar */}
+          {/* ID del lugar (opcional) */}
           <div>
             <label className="block text-sm font-medium text-zinc-700 mb-2">
               ID del lugar (opcional)
             </label>
             <input
               type="text"
-              value={lugarId}
-              onChange={e => setLugarId(e.target.value)}
+              value={entidadLugarId}
+              onChange={e => setEntidadLugarId(e.target.value)}
               className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
               placeholder="UUID del establecimiento"
             />
           </div>
 
-          {/* Boton de Enviar */}
+          {/* Poster del evento */}
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 mb-2">
+              Poster del Evento
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
+            />
+            {preview && (
+              <img
+                src={preview}
+                alt="Preview"
+                className="mt-4 rounded-2xl w-full h-64 object-cover border border-zinc-200"
+              />
+            )}
+          </div>
+
+          {/* Botón de Enviar */}
           <button
             type="submit"
             disabled={loading}
