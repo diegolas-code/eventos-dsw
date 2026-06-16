@@ -36,14 +36,14 @@ Fase 1 — Autenticación y roles
   - [ ] Configurar JWT y credenciales locales:
     - [ ] Modificar el modelo `Usuario` en `schema.prisma` para incluir `contrasena_hash`.
     - [ ] Ejecutar la migración correspondiente (`prisma migrate dev`).
-    - [ ] Instalar dependencias para hashing (ej: `bcryptjs`) y tokens (ej: `jsonwebtoken`).
-    - [ ] Crear utilidades en el backend para hash de contraseñas y firma/verificación de tokens JWT.
-  - [ ] Implementar rutas de autenticación en backend:
-    - [ ] `POST /api/v1/auth/register` (Registrar y hashear contraseña).
-    - [ ] `POST /api/v1/auth/login` (Verificar credenciales y firmar token JWT).
-  - [ ] Crear middleware de autenticación y autorización en backend:
-    - [ ] Middleware para validar el token JWT proveniente de `Authorization: Bearer <token>`.
-    - [ ] Middleware para validar roles específicos y proteger rutas de modificación (POST/PATCH/DELETE).
+    - [x] Instalar dependencias para hashing (ej: `bcryptjs`) y tokens (ej: `jsonwebtoken`).
+    - [x] Crear utilidades en el backend para hash de contraseñas y firma/verificación de tokens JWT.
+  - [x] Implementar rutas de autenticación en backend:
+    - [x] `POST /api/v1/auth/register` (Registrar y hashear contraseña).
+    - [x] `POST /api/v1/auth/login` (Verificar credenciales y firmar token JWT).
+  - [x] Crear middleware de autenticación y autorización en backend:
+    - [x] Middleware para validar el token JWT proveniente de `Authorization: Bearer <token>`.
+    - [x] Middleware para validar roles específicos y proteger rutas de modificación (POST/PATCH/DELETE).
   - [ ] Integrar autenticación real en frontend:
     - [ ] Configurar interceptores de Axios en `api.ts` para adjuntar el token de `localStorage`.
     - [ ] Modificar formulario de registro para enviar peticiones al backend y guardar el token.
