@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { register } from '../../services/authService';
 
 interface RegisterFormProps {
-  onRegisterSuccess: (email: string, token: string) => void;
+  onRegisterSuccess: (email: string, token: string, rol: string) => void;
   onSwitchToLogin: () => void;
 }
 
@@ -28,7 +28,7 @@ export default function RegisterForm({ onRegisterSuccess, onSwitchToLogin }: Reg
         password,
       });
       alert('¡Usuario registrado con éxito!');
-      onRegisterSuccess(data.user.email, data.token);
+      onRegisterSuccess(data.user.email, data.token, data.user.rol);
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.error ?? 'Error al registrar el usuario. Comprobá los datos.');

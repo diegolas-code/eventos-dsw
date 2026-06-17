@@ -15,15 +15,17 @@ export default function ProfilePage() {
     }
   }, []);
 
-  const handleLoginSuccess = (email: string, token: string) => {
+  const handleLoginSuccess = (email: string, token: string, rol: string) => {
     localStorage.setItem('token', token);
     localStorage.setItem('demo_session_email', email);
+    localStorage.setItem('demo_session_rol', rol);
     setUserEmail(email);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('demo_session_email');
+    localStorage.removeItem('demo_session_rol');
     setUserEmail(null);
     setView('login');
   };

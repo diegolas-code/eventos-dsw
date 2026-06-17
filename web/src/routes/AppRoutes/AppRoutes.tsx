@@ -4,6 +4,7 @@ import HomePage from '../../Pages/Home/Homepage';
 import EventPage from '../../Pages/EventPage/EventPage';
 import CreateEventPage from '../../Pages/CreateEventPage/CreateEventPage';
 import ProfilePage from '../../Pages/ProfilePage/ProfilePage';
+import ModerationPage from '../../Pages/ModerationPage/ModerationPage';
 import ProtectedRoute from './ProtectedRoute';
 
 export default function AppRoutes() {
@@ -17,6 +18,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <CreateEventPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/moderacion"
+          element={
+            <ProtectedRoute allowedRoles={['moderador', 'admin']}>
+              <ModerationPage />
             </ProtectedRoute>
           }
         />
