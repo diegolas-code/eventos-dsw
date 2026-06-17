@@ -53,6 +53,7 @@ model Usuario {
   eventos_creados   Evento[]          @relation("EventosCreados")
   comentarios       Comentario[]
   perfiles          PerfilEntidad[]
+  acciones_moderacion AccionModeracion[]
 
   @@index([rol])
 }
@@ -111,6 +112,7 @@ model Evento {
   // Relaciones
   comentarios           Comentario[]
   artistas              EventoArtista[]
+  acciones_moderacion   AccionModeracion[]
 
   @@index([estado])
   @@index([inicia_en])
@@ -157,4 +159,24 @@ model Comentario {
   @@index([evento_id])
   @@index([usuario_id])
   @@index([padre_id])
+}
+
+enum TipoAccionModeracion {
+  APROBAR
+  RECHAZAR
+  ARCHIVAR
+}
+
+model AccionModeracion {
+  id              String               @id @default(uuid())
+  evento_id       String
+  evento          Evento               @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+  moderador_id    String
+  moderador       Usuario              @relation(fields: [moderador_id], references: [id], onDelete: Cascade)
+  tipo_accion     TipoAccionModeracion
+  nota            String?
+  creado_en       DateTime             @default(now())
+
+  @@index([evento_id])
+  @@index([moderador_id])
 }
