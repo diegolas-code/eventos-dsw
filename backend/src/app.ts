@@ -6,6 +6,7 @@ import eventosRouter from './routes/eventos.js';
 import usuariosRouter from './routes/usuarios.js';
 import perfilesRouter from './routes/perfiles.js';
 import authRouter from './routes/auth.js';
+import moderacionRouter from './routes/moderacion.js';
 import { seedDemoData } from './store.js';
 
 export const createApp = () => {
@@ -34,6 +35,7 @@ export const createApp = () => {
   app.use('/api/v1/usuarios', usuariosRouter);
   app.use('/api/v1/perfiles', perfilesRouter);
   app.use('/api/v1/auth', authRouter);
+  app.use('/api/v1/moderacion', moderacionRouter);
 
   app.use((_request: Request, response: Response) => {
     response.status(404).json({ error: 'La ruta solicitada no existe' });

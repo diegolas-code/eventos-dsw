@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 async function runTests() {
   console.log('Running auth tests...');
   const app = createApp();
-  const server = app.listen(3333);
+  const server: any = app.listen(3333);
 
   try {
     // 1. Clean test user
