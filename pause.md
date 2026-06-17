@@ -1,37 +1,36 @@
-# Fases 0, 0.5 y Primeras Integraciones - ¡Todo en Marcha! 🚀
+# Fase 1 Completada - ¡Autenticación Real con JWT en Marcha! 🚀
 
-Este documento confirma que el proyecto ha superado la etapa de infraestructura pura y ya cuenta con funcionalidades de usuario integradas, seguras y con subida de multimedia.
+Este documento confirma que el proyecto ha completado exitosamente la **Fase 1 (Autenticación y Roles)**. Ya no se usa una sesión de prueba (mock/demo); el sistema implementa una infraestructura segura de tokens JWT, almacenamiento persistente local y encriptación de credenciales.
 
 ## 🏁 Hitos Alcanzados
 
-### **1. Integración de Features (Fase 1 - Desarrollo)**
+### **1. Autenticación Local con JWT (Backend)**
 
-- **Eventos:** Formulario de creación ([CreateEventPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/CreateEventPage/CreateEventPage.tsx)) completamente integrado con la subida de posters de eventos (con previsualización interactiva) y campo de ubicación.
-- **Visualización de Posters:** Los listados de eventos en la página de inicio ([Homepage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/Home/Homepage.tsx)) y la tarjeta de evento ([EventCard.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/EventPage/EventCard.tsx)) muestran la imagen subida.
-- **Autenticación Demo:** Maquetación completa de Login, Registro y Perfil. El sistema ya cuenta con una "Sesión Demo" persistente en `localStorage`.
-- **Seguridad:** Implementación de `ProtectedRoute`. Intentar crear un evento sin sesión redirige automáticamente al perfil.
+- **Encriptación Segura:** Registro de usuarios cifrando contraseñas con `bcryptjs` en la base de datos de PostgreSQL/Supabase.
+- **Firma y Validación de Tokens:** Generación y verificación de tokens con `jsonwebtoken`.
+- **Rutas de Autenticación:** Endpoints operativos `POST /api/v1/auth/register` y `POST /api/v1/auth/login`.
+- **Middlewares de Seguridad:**
+  - `requireAuth`: Extrae y valida el encabezado `Authorization: Bearer <token>`, resolviendo la identidad del usuario.
+  - `requireRole`: Valida el rol (`RolUsuario`) del usuario para denegar el acceso a recursos no permitidos.
 
-### **2. Refinamiento del Backend y Base de Datos**
+### **2. Integración y Seguridad en Cliente (Frontend)**
 
-- **Gestión de Imágenes (Cloudinary):** Integración de subida de imágenes a Cloudinary usando un middleware de Express con Multer ([upload.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/middleware/upload.ts)).
-- **Ubicación Manual (`lugar_manual`):** Migración ejecutada y campos adaptados en el backend para almacenar texto libre de ubicación en el evento en lugar de requerir obligatoriamente un perfil de establecimiento.
-- **Consistencia:** Fusión exitosa y resolución de conflictos de la rama `victor-part` en `dev`.
+- **Interceptor de Axios:** Configuración de interceptores en [api.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/services/api.ts) para adjuntar automáticamente el token en cada petición saliente que requiera autorización.
+- **Formularios de Sesión:** [LoginForm.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/LoginForm.tsx) y [RegisterForm.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/RegisterForm.tsx) conectados a la API real, solicitando contraseñas y almacenando el token retornado de forma local.
+- **Navegación Protegida:** El componente `ProtectedRoute` ahora comprueba de forma robusta la existencia del JWT en `localStorage`.
 
-### **3. Infraestructura y Calidad**
+### **3. Base de Datos y Estabilidad**
 
-- **Build & Types:** Compilación verificada exitosamente en el backend (TypeScript compilación limpia) y en el frontend (Vite bundler productivo exitoso).
-- **Esquema:** Modelo Prisma v6 sincronizado y validado.
+- **Esquema Prisma Sincronizado:** Modelo `Usuario` modificado con el campo `contrasena_hash String?` y migración ejecutada.
+- **Pruebas de Integración:** Script [test-auth.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/scripts/test-auth.ts) creado para verificar de forma automática el funcionamiento de la firma y validación de endpoints de autenticación en la base de datos real.
 
 ---
 
-## ⏭️ Siguiente Nivel: Fase 1 (Autenticación Real)
+## ⏭️ Siguiente Nivel: Fase 2 (Pool de Publicaciones y Moderación)
 
 El foco inmediato al retomar será:
 
-1.  **Auth Real:** Reemplazar la "Sesión Demo" por un sistema basado en JWT (JSON Web Tokens) o Supabase Auth.
-2.  **Vinculación:** Conectar el formulario de creación de eventos para que use el `userId` real del usuario autenticado (actualmente en `null` o demo).
-3.  **Refuerzo de API:** Proteger los endpoints de creación/edición en el backend mediante un Middleware de Autorización real.
-
----
-
-¡El prototipo tiene soporte de multimedia, es navegable y seguro! 🚀
+1. **Estados del Evento:** Añadir soporte y filtros por estado (`PENDIENTE | PUBLICADO | RECHAZADO | ARCHIVADO`) a la cartelera pública.
+2. **Flujo de Publicación:** Hacer que al crear un evento este inicie en estado `PENDIENTE`.
+3. **Endpoints de Moderador:** Desarrollar los endpoints `GET /moderacion/pendientes` y `POST /moderacion/acciones`.
+4. **UI del Moderador:** Diseñar el panel de moderación en el frontend con capacidad para aprobar/rechazar/archivar eventos con notas de auditoría.

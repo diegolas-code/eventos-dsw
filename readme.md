@@ -8,26 +8,27 @@ El desarrollo consiste en una aplicación web para publicar y consumir eventos l
 
 [Especificaciones](./spec.md) | [TODO](./TODO.md)
 
-## Estado Actual (Fase 1 - Autenticación en Progreso)
+## Estado Actual (Fase 1 Completada - Autenticación JWT Lista)
 
-Actualmente, el proyecto ha completado la **Fase 0.5 (Refactorización de Esquema)** y se encuentra integrando la **Fase 1 (Autenticación)**:
+Actualmente, el proyecto ha completado exitosamente la **Fase 1 (Autenticación y Roles)**:
 
 - **Backend:** API REST robusta con **Node.js + Express**, **Prisma** y **PostgreSQL**.
-  - Refactorización de esquema completada (Enums, Relaciones M:N).
-  - CRUD refinado para usuarios y perfiles de entidad.
-  - Validación estricta de roles y tipos de entidad.
+  - Autenticación real con JWT (`jsonwebtoken`) y cifrado de contraseñas (`bcryptjs`).
+  - Middlewares de autenticación y protección de rutas según rol del usuario.
+  - Endpoints de autenticación operativos (`POST /api/v1/auth/register` y `POST /api/v1/auth/login`).
+  - Carga de posters de eventos implementada con **Cloudinary** ([cloudinary.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/config/cloudinary.ts)).
 - **Frontend:**
-  - **Navegación & Seguridad:** Rutas protegidas (`ProtectedRoute`) que redirigen al login si no hay sesión activa.
-  - **Eventos:** Formulario de creación (`CreateEventPage`) funcional con validación y formateo de fecha/hora.
-  - **Auth UI:** Maquetación completa de Login, Registro y Vista de Perfil (Demo activa).
-  - **Estilos:** Tailwind CSS integrado con diseño moderno y minimalista.
-- **Integración:** Ramas de UI y Backend unificadas en la rama `dev`.
+  - **Autenticación real integrada:** Formularios de Login, Registro y Perfil conectados al backend, almacenando el JWT localmente.
+  - **Axios Interceptor:** Interceptor configurado en [api.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/services/api.ts) para adjuntar el token de forma automática en cabeceras de peticiones autorizadas.
+  - **Navegación & Seguridad:** Rutas protegidas (`ProtectedRoute`) basadas en la existencia del JWT local.
+  - **Eventos:** Formulario de creación (`CreateEventPage`) moderno, con widget de previsualización y subida directa de imágenes.
+- **Estabilidad:** Scripts de test de integración de API ([test-auth.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/scripts/test-auth.ts)) agregados y pasando exitosamente.
 
-### Próximos pasos (Fase 1):
+### Próximos pasos (Fase 2):
 
-- Implementación de **JWT/Auth real** en el backend para reemplazar la sesión demo.
-- Conexión del formulario de eventos con el ID del usuario autenticado.
-- Subida de imágenes para eventos y perfiles (Cloudflare R2).
+- **Estados de Publicación:** Añadir estados a eventos (`PENDIENTE`, `PUBLICADO`, `RECHAZADO`, `ARCHIVADO`).
+- **Endpoints de Moderación:** Rutas especiales para listar y accionar sobre eventos pendientes.
+- **Panel del Moderador:** Interfaz del frontend para que moderadores/admin aprueben o rechacen eventos con comentarios de auditoría.
 
 ---
 
