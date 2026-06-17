@@ -61,11 +61,23 @@ Fase 2 — Pool de publicaciones y moderación
 
 - Objetivo: separar flujo de publicación y añadir panel de moderación.
 - Tareas:
-  - Añadir estado `PENDIENTE|PUBLICADO|RECHAZADO|ARCHIVADO` a `EVENTO`.
-  - Cambiar flujo: publicar crea `PENDIENTE`; añadir endpoints de moderación: `GET /moderacion/pendientes`, `POST /moderacion/acciones`.
-  - Implementar panel de moderador en frontend (lista y acciones: aprobar/rechazar/archivar con nota).
-  - Registrar acciones de moderación (`ACCION_MODERACION`) para auditoría.
-  - Añadir tests de flujo publicación → moderación.
+  - [ ] Diseñar y migrar base de datos para auditoría:
+    - [ ] Agregar el modelo `AccionModeracion` y el enum `TipoAccionModeracion` en `schema.prisma`.
+    - [ ] Actualizar relaciones en los modelos `Usuario` y `Evento`.
+    - [ ] Ejecutar la migración de base de datos (`prisma migrate dev`).
+  - [ ] Filtrar cartelera pública:
+    - [ ] Modificar `listEventos()` en `store.ts` para retornar únicamente eventos en estado `PUBLICADO`.
+  - [ ] Implementar endpoints de moderación en backend:
+    - [ ] Crear el router `routes/moderacion.ts` protegido con `requireAuth` y `requireRole`.
+    - [ ] Endpoint `GET /api/v1/moderacion/pendientes` para listar eventos con estado `PENDIENTE`.
+    - [ ] Endpoint `POST /api/v1/moderacion/acciones` para aprobar/rechazar/archivar transaccionalmente.
+    - [ ] Registrar la ruta en `app.ts`.
+  - [ ] Desarrollar pruebas de integración de moderación:
+    - [ ] Ampliar `test-auth.ts` con flujos de creación, listado y aprobación/rechazo de moderación.
+  - [ ] Integrar moderación en frontend:
+    - [ ] Crear el servicio `moderationService.ts` en el cliente de Axios.
+    - [ ] Configurar la ruta `/moderacion` en `AppRoutes.tsx` protegida por rol.
+    - [ ] Implementar la interfaz `ModerationPage.tsx` con listado y controles de aprobación/rechazo.
 
 Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
 
