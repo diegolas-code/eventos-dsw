@@ -1,36 +1,35 @@
-# Fase 1 Completada - ¡Autenticación Real con JWT en Marcha! 🚀
+# Fase 2 Completada - ¡Pool de Publicaciones y Moderación de Contenido Listos! 🚀
 
-Este documento confirma que el proyecto ha completado exitosamente la **Fase 1 (Autenticación y Roles)**. Ya no se usa una sesión de prueba (mock/demo); el sistema implementa una infraestructura segura de tokens JWT, almacenamiento persistente local y encriptación de credenciales.
+Este documento confirma que el proyecto ha completado exitosamente la **Fase 2 (Pool de Publicaciones y Moderación)**. Ahora, todos los eventos creados pasan por un proceso de revisión y moderación antes de ser publicados, con un registro de auditoría completo y un panel premium para moderadores y administradores.
 
 ## 🏁 Hitos Alcanzados
 
-### **1. Autenticación Local con JWT (Backend)**
+### **1. Flujo de Publicación Controlado y Base de Datos (Backend)**
+- **Estado por Defecto:** Las nuevas publicaciones de eventos se crean en estado `PENDIENTE` y no son visibles en la cartelera pública.
+- **Auditoría de Moderación:** Adición del modelo `AccionModeracion` y el enum `TipoAccionModeracion` a la base de datos PostgreSQL, registrando qué moderador aprobó/rechazó/archivó cada publicación, la fecha exacta y notas explicativas de auditoría.
+- **Filtrado de Cartelera:** La cartelera pública del backend se actualizó para retornar únicamente eventos en estado `PUBLICADO`.
 
-- **Encriptación Segura:** Registro de usuarios cifrando contraseñas con `bcryptjs` en la base de datos de PostgreSQL/Supabase.
-- **Firma y Validación de Tokens:** Generación y verificación de tokens con `jsonwebtoken`.
-- **Rutas de Autenticación:** Endpoints operativos `POST /api/v1/auth/register` y `POST /api/v1/auth/login`.
-- **Middlewares de Seguridad:**
-  - `requireAuth`: Extrae y valida el encabezado `Authorization: Bearer <token>`, resolviendo la identidad del usuario.
-  - `requireRole`: Valida el rol (`RolUsuario`) del usuario para denegar el acceso a recursos no permitidos.
+### **2. Endpoints de Moderación y Seguridad (Backend)**
+- **Endpoints Protegidos:**
+  - `GET /api/v1/moderacion/pendientes`: Retorna eventos en estado `PENDIENTE`.
+  - `POST /api/v1/moderacion/acciones`: Permite aprobar (cambia el estado del evento a `PUBLICADO`), rechazar (`RECHAZADO`), o archivar (`ARCHIVADO`) un evento de manera transaccional y guarda el registro de auditoría.
+- **Acceso Restringido:** Las rutas requieren autenticación y rol de `moderador` o `admin` para ejecutarse.
 
-### **2. Integración y Seguridad en Cliente (Frontend)**
+### **3. Panel de Control de Moderación (Frontend)**
+- **UI Premium de Moderación:** Creado el dashboard en [ModerationPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ModerationPage/ModerationPage.tsx) con carga reactiva (TanStack Query), tarjetas de información detallada de eventos, inputs para añadir notas de auditoría, y controles visuales elegantes (Aprobar, Rechazar, Archivar) con micro-animaciones e iconos.
+- **Ruta Protegida por Rol:** La ruta `/moderacion` en el cliente utiliza una versión extendida de `ProtectedRoute` que restringe el acceso según el rol guardado en `localStorage`.
+- **Enlace Dinámico en Navbar:** Si el usuario autenticado tiene rol de moderador o administrador, se muestra de forma dinámica y con un indicador animado el enlace a "Moderación" en la barra de navegación superior.
 
-- **Interceptor de Axios:** Configuración de interceptores en [api.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/services/api.ts) para adjuntar automáticamente el token en cada petición saliente que requiera autorización.
-- **Formularios de Sesión:** [LoginForm.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/LoginForm.tsx) y [RegisterForm.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/RegisterForm.tsx) conectados a la API real, solicitando contraseñas y almacenando el token retornado de forma local.
-- **Navegación Protegida:** El componente `ProtectedRoute` ahora comprueba de forma robusta la existencia del JWT en `localStorage`.
-
-### **3. Base de Datos y Estabilidad**
-
-- **Esquema Prisma Sincronizado:** Modelo `Usuario` modificado con el campo `contrasena_hash String?` y migración ejecutada.
-- **Pruebas de Integración:** Script [test-auth.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/scripts/test-auth.ts) creado para verificar de forma automática el funcionamiento de la firma y validación de endpoints de autenticación en la base de datos real.
+### **4. Pruebas y Construcción Estables**
+- **Pruebas de Integración:** Se expandió [test-auth.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/scripts/test-auth.ts) para simular y validar todo el flujo de moderación e impedir vulnerabilidades de escalado de privilegios (Forbidden 403 para usuarios comunes).
+- **Compilación Exitosa:** La typecheck general (`npm run typecheck`) y la build de producción de Vite (`npm run build`) se ejecutan con éxito y sin advertencias críticas.
 
 ---
 
-## ⏭️ Siguiente Nivel: Fase 2 (Pool de Publicaciones y Moderación)
+## ⏭️ Siguiente Nivel: Fase 3 (Perfiles de Entidades y Dashboard Personal)
 
 El foco inmediato al retomar será:
 
-1. **Estados del Evento:** Añadir soporte y filtros por estado (`PENDIENTE | PUBLICADO | RECHAZADO | ARCHIVADO`) a la cartelera pública.
-2. **Flujo de Publicación:** Hacer que al crear un evento este inicie en estado `PENDIENTE`.
-3. **Endpoints de Moderador:** Desarrollar los endpoints `GET /moderacion/pendientes` y `POST /moderacion/acciones`.
-4. **UI del Moderador:** Diseñar el panel de moderación en el frontend con capacidad para aprobar/rechazar/archivar eventos con notas de auditoría.
+1. **Modelado y CRUD de Perfiles de Entidades:** Implementar los perfiles reclamables para artistas y lugares (`PERFIL_ENTIDAD`) unificados en la base de datos.
+2. **Flujo de Reclamación:** Diseñar el proceso por el cual un usuario puede reclamar una entidad (ej: ser dueño del perfil de un artista o local) con posterior verificación/aprobación de un administrador.
+3. **Dashboard de Entidades:** Crear una interfaz de panel de control para artistas y locales donde puedan visualizar la lista de sus eventos creados y actualizar su propia información de perfil.
