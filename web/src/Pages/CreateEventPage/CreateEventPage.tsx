@@ -4,6 +4,8 @@ import { createEvent } from '../../services/eventService';
 
 export default function CreateEventPage() {
   const [titulo, setTitulo] = useState('');
+  const [categoria, setCategoria] =
+  useState("OTRO");
   const [descripcion, setDescripcion] = useState('');
   const [iniciaEn, setIniciaEn] = useState('');
   const [lugar, setLugar] = useState('');
@@ -31,6 +33,7 @@ export default function CreateEventPage() {
 
       const formData = new FormData();
       formData.append('titulo', titulo.trim());
+      formData.append("categoria", categoria);
       formData.append('descripcion', descripcion.trim());
       formData.append('iniciaEn', new Date(iniciaEn).toISOString());
 
@@ -86,6 +89,49 @@ export default function CreateEventPage() {
               required
             />
           </div>
+<div>
+  <label className="block mb-2 font-medium">
+    Categoría
+  </label>
+
+  <select
+    value={categoria}
+    onChange={(e) =>
+      setCategoria(e.target.value)
+    }
+    className="
+      w-full
+      border
+      rounded-xl
+      p-3
+    "
+  >
+    <option value="CONCIERTO">
+      Concierto
+    </option>
+
+    <option value="EXPOSICION">
+      Exposición
+    </option>
+
+    <option value="TALLER">
+      Taller
+    </option>
+
+    <option value="FERIA">
+      Feria
+    </option>
+
+    <option value="TEATRO">
+      Teatro
+    </option>
+
+    <option value="OTRO">
+      Otro
+    </option>
+  </select>
+</div>
+
 
           {/* Descripcion */}
           <div>

@@ -5,7 +5,7 @@
  * en el cuerpo (body) de las peticiones HTTP.
  * Actualizado para Phase 0.5 con Enums de Prisma.
  */
-import { RolUsuario, TipoEntidad } from '@prisma/client';
+import { CategoriaEvento, RolUsuario, TipoEntidad } from '@prisma/client';
 
 /** Datos necesarios para crear un nuevo Evento */
 export type CreateEventoInput = {
@@ -13,12 +13,13 @@ export type CreateEventoInput = {
   descripcion?: string;
   iniciaEn: string; // Se espera formato ISO 8601
   terminaEn?: string | null;
+    categoria?: CategoriaEvento;
+  lugar?:string | null;
   entidadLugarId?: string | null;
   creadoPorUsuarioId?: string | null;
   artistasIds?: string[]; // IDs para la relación muchos-a-muchos
-
-  imagenUrl?: string;
-  lugar?: string | null;
+  
+    imagenUrl?: string;
 };
 
 /** Datos necesarios para crear un nuevo Comentario */
@@ -53,6 +54,6 @@ export type CreatePerfilEntidadInput = {
   tipo: TipoEntidad;
   descripcion?: string;
   direccion?: string;
+  imagenUrl?:string;
   gmapsUrl?: string;
-  imagenUrl?: string;
 };

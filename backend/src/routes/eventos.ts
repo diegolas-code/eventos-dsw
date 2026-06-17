@@ -10,7 +10,7 @@ import upload from '../middleware/upload.js';
 import cloudinary from '../config/cloudinary.js';
 import type { Request } from 'express';
 import type { Response as ExpressResponse } from 'express';
-
+import { CategoriaEvento } from "@prisma/client";
 interface MulterRequest extends Request {
   file?: Express.Multer.File;
 }
@@ -43,6 +43,12 @@ router.get('/', async (_request: Req, response: ExpressResponse) => {
  * POST /api/v1/eventos
  * Crea un nuevo evento. Valida campos obligatorios básicos.
  */
+
+router.get('/categorias/listado', (_req, response) => {
+  response.json({
+    data: Object.values(CategoriaEvento),
+  });
+});
 router.post(
   '/',
   upload.single('image'),
@@ -86,6 +92,7 @@ router.post(
         descripcion: body.descripcion,
         iniciaEn: body.iniciaEn,
         lugar: body.lugar,
+         categoria: body.categoria,
         terminaEn: body.terminaEn,
         entidadLugarId: body.entidadLugarId,
         creadoPorUsuarioId: body.creadoPorUsuarioId,

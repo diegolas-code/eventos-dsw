@@ -19,3 +19,11 @@ export async function createEvent(formData: FormData) {
 
   return response.data.data;
 }
+
+export async function getCategorias() {
+  const response = await api.get(
+    "/eventos/categorias/listado"
+  );
+
+  return response.data.data;
+}

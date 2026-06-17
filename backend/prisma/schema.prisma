@@ -36,6 +36,15 @@ enum EstadoEvento {
   ARCHIVADO
 }
 
+enum CategoriaEvento {
+  CONCIERTO
+  EXPOSICION
+  TALLER
+  FERIA
+  TEATRO
+  OTRO
+}
+
 /**
  * Modelo de Usuario.
  * Almacena la identidad y el rol principal. Soporta múltiples perfiles de entidad.
@@ -100,7 +109,7 @@ model Evento {
   inicia_en             DateTime
   termina_en            DateTime?
   estado                EstadoEvento        @default(PENDIENTE)
-
+  categoria             CategoriaEvento     @default(OTRO)
   entidad_lugar_id      String?
   lugar                 PerfilEntidad?      @relation("EventosEnLugar", fields: [entidad_lugar_id], references: [id], onDelete: SetNull)
 

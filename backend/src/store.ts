@@ -4,7 +4,7 @@
  * Este archivo centraliza el acceso a la base de Datos (PostgreSQL) a través de Prisma.
  * Actualizado para Phase 0.5 con Enums y relaciones M:N.
  */
-import { PrismaClient, RolUsuario, EstadoEvento, TipoEntidad } from '@prisma/client';
+import { PrismaClient, RolUsuario, EstadoEvento, TipoEntidad, CategoriaEvento } from '@prisma/client';
 import type {
   CreateEventoInput,
   CreateComentarioInput,
@@ -27,6 +27,7 @@ export interface Evento {
   titulo: string;
   descripcion: string | null;
   iniciaEn: string;
+    categoria: string;
   terminaEn: string | null;
   estado: EstadoEvento;
   entidadLugarId: string | null;
@@ -95,6 +96,7 @@ const mapEvento = (e: any): Evento => ({
   id: e.id,
   creadoPorUsuarioId: e.creado_por_usuario_id,
   titulo: e.titulo,
+  categoria: e.categoria,
   descripcion: e.descripcion,
   iniciaEn: e.inicia_en.toISOString(),
   terminaEn: e.termina_en ? e.termina_en.toISOString() : null,
@@ -186,6 +188,7 @@ export const createEvento = async (
       descripcion: input.descripcion ?? null,
       imagen_url: input.imagenUrl ?? null,
       lugar_manual: input.lugar ?? null,
+      categoria: input.categoria ?? CategoriaEvento.OTRO,
       inicia_en: new Date(input.iniciaEn),
       termina_en: input.terminaEn ? new Date(input.terminaEn) : null,
       entidad_lugar_id: input.entidadLugarId ?? null,
