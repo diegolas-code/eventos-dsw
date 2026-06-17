@@ -152,6 +152,7 @@ const mapPerfilEntidad = (p: any): PerfilEntidad => ({
 /** Lista todos los eventos registrados con sus artistas */
 export const listEventos = async (): Promise<Evento[]> => {
   const data = await prisma.evento.findMany({
+    where: { estado: 'PUBLICADO' },
     include: {
       artistas: {
         include: { artista: true },
