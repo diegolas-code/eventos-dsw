@@ -88,6 +88,22 @@ export default function Navbar() {
           >
             Perfil
           </Link>
+
+          {/* CTA */}
+          <button
+            className="
+              bg-violet-600
+              hover:bg-violet-700
+              transition
+              text-white
+              px-5
+              py-2
+              rounded-xl
+              font-semibold
+            "
+          >
+            Explorar
+          </button>
         </div>
       </div>
     </nav>
