@@ -51,7 +51,8 @@ const eventosFiltrados =
     Todos
   </button>
 
-  {categorias?.map((categoria: string) => (
+ {
+  categorias?.map((categoria: string) => (
     <button
       key={categoria}
       onClick={() =>
@@ -60,12 +61,19 @@ const eventosFiltrados =
       className={
         categoriaSeleccionada === categoria
           ? "bg-violet-600 text-white px-4 py-2 rounded-full"
-          : "bg-white px-4 py-2 rounded-full"
+          : "bg-white border border-zinc-200 px-4 py-2 rounded-full"
       }
     >
-      {categoria}
+      {categoria
+        .toLowerCase()
+        .replace("_", " ")
+        .replace(
+          /^\w/,
+          (c) => c.toUpperCase()
+        )}
     </button>
-  ))}
+  ))};
+
 </div>
       {isLoading && (
         <p>Cargando eventos...</p>

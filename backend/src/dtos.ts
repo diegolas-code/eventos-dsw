@@ -18,7 +18,7 @@ export type CreateEventoInput = {
   entidadLugarId?: string | null;
   creadoPorUsuarioId?: string | null;
   artistasIds?: string[]; // IDs para la relación muchos-a-muchos
-  
+  galeria?: string[];
     imagenUrl?: string;
 };
 

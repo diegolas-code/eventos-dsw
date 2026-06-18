@@ -11,8 +11,12 @@ export default function CreateEventPage() {
   const [lugar, setLugar] = useState('');
   const [entidadLugarId, setEntidadLugarId] = useState('');
   const [image, setImage] = useState<File | null>(null);
+  const [gallery, setGallery] = useState<File[]>([]);
+const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -20,6 +24,25 @@ export default function CreateEventPage() {
     setImage(file);
     setPreview(URL.createObjectURL(file));
   };
+
+  const handleGalleryChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+   ) => {
+    const files = Array.from(
+     e.target.files || []
+    );
+
+  setGallery(files);
+
+  setGalleryPreview(
+    files.map((file) =>
+      URL.createObjectURL(file)
+    )
+  );
+};
+
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +70,13 @@ export default function CreateEventPage() {
         formData.append('image', image);
       }
 
+      gallery.forEach((file) => {
+       formData.append(
+       'gallery',
+        file
+     );
+   });
+         
       await createEvent(formData);
 
       alert('¡Evento creado con éxito!');
@@ -204,6 +234,55 @@ export default function CreateEventPage() {
               />
             )}
           </div>
+
+          <div>
+  <label className="block text-sm font-medium text-zinc-700 mb-2">
+    Galería de Fotos
+  </label>
+
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    onChange={handleGalleryChange}
+    className="
+      w-full
+      px-5
+      py-3
+      border
+      border-zinc-300
+      rounded-2xl
+    "
+  />
+
+  {galleryPreview.length > 0 && (
+    <div
+      className="
+        mt-4
+        grid
+        grid-cols-2
+        md:grid-cols-3
+        gap-3
+      "
+    >
+      {galleryPreview.map(
+        (img, index) => (
+          <img
+            key={index}
+            src={img}
+            alt=""
+            className="
+              h-32
+              w-full
+              object-cover
+              rounded-xl
+            "
+          />
+        )
+      )}
+    </div>
+  )}
+</div>
 
           {/* Botón de Enviar */}
           <button

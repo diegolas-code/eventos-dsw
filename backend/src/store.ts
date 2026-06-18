@@ -38,6 +38,13 @@ export interface Evento {
   lugar: string | null;
   // Incluimos artistas si vienen en la query
   artistas?: PerfilEntidadBrief[];
+   imagenes?: EventoImagen[];
+}
+
+export interface EventoImagen {
+  id: string;
+  url: string;
+  orden: number;
 }
 
 /**
@@ -104,6 +111,7 @@ const mapEvento = (e: any): Evento => ({
   entidadLugarId: e.entidad_lugar_id,
   posibleDuplicado: e.posible_duplicado,
   imagenUrl: e.imagen_url,
+  imagenes: e.imagenes,
   lugar: e.lugar_manual,
   creadoEn: e.creado_en.toISOString(),
   actualizadoEn: e.actualizado_en.toISOString(),
@@ -157,8 +165,10 @@ export const listEventos = async (): Promise<Evento[]> => {
     where: { estado: 'PUBLICADO' },
     include: {
       artistas: {
-        include: { artista: true },
+        include: { artista: true ,
       },
+    },
+imagenes: true,
     },
     orderBy: { inicia_en: 'asc' },
   });
@@ -167,20 +177,28 @@ export const listEventos = async (): Promise<Evento[]> => {
 
 /** Obtiene un evento específico por su ID */
 export const getEvento = async (eventoId: string): Promise<Evento | null> => {
-  const data = await prisma.evento.findUnique({
-    where: { id: eventoId },
-    include: {
-      artistas: {
-        include: { artista: true },
+const data = await prisma.evento.findUnique({
+  where: { id: eventoId },
+
+  include: {
+    artistas: {
+      include: {
+        artista: true,
       },
     },
-  });
+
+    imagenes: true,
+  },
+});
   return data ? mapEvento(data) : null;
 };
 
 /** Crea un nuevo evento en la base de datos */
 export const createEvento = async (
-  input: CreateEventoInput & { artistasIds?: string[] }
+  input: CreateEventoInput & {
+    artistasIds?: string[];
+    galeria?: string[];
+  }
 ): Promise<Evento> => {
   const data = await prisma.evento.create({
     data: {
@@ -190,28 +208,51 @@ export const createEvento = async (
       lugar_manual: input.lugar ?? null,
       categoria: input.categoria ?? CategoriaEvento.OTRO,
       inicia_en: new Date(input.iniciaEn),
-      termina_en: input.terminaEn ? new Date(input.terminaEn) : null,
-      entidad_lugar_id: input.entidadLugarId ?? null,
-      creado_por_usuario_id: input.creadoPorUsuarioId ?? null,
+      termina_en: input.terminaEn
+        ? new Date(input.terminaEn)
+        : null,
+      entidad_lugar_id:
+        input.entidadLugarId ?? null,
+      creado_por_usuario_id:
+        input.creadoPorUsuarioId ?? null,
       estado: EstadoEvento.PENDIENTE,
-      // Conectamos múltiples artistas si se proveen sus IDs
+
       artistas: input.artistasIds
         ? {
-            create: input.artistasIds.map(id => ({
-              artista: { connect: { id } },
-            })),
+            create: input.artistasIds.map(
+              (id) => ({
+                artista: {
+                  connect: { id },
+                },
+              })
+            ),
+          }
+        : undefined,
+
+      imagenes: input.galeria?.length
+        ? {
+            create: input.galeria.map(
+              (url, index) => ({
+                url,
+                orden: index,
+              })
+            ),
           }
         : undefined,
     },
+
     include: {
       artistas: {
-        include: { artista: true },
+        include: {
+          artista: true,
+        },
       },
+      imagenes: true,
     },
   });
+
   return mapEvento(data);
 };
-
 /** Actualiza campos específicos de un evento */
 export const updateEvento = async (eventoId: string, patch: any): Promise<Evento | null> => {
   try {

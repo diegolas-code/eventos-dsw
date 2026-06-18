@@ -122,12 +122,28 @@ model Evento {
   comentarios           Comentario[]
   artistas              EventoArtista[]
   acciones_moderacion   AccionModeracion[]
-
+  imagenes              EventoImagen[]
   @@index([estado])
   @@index([inicia_en])
   @@index([creado_por_usuario_id])
   @@index([entidad_lugar_id])
 }
+
+model EventoImagen {
+  id          String   @id @default(uuid())
+
+  evento_id   String
+  evento      Evento   @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+
+  url         String
+
+  orden       Int      @default(0)
+
+  creado_en   DateTime @default(now())
+
+  @@index([evento_id])
+}
+
 
 /**
  * Tabla intermedia para relación Muchos-a-Muchos entre Eventos y Artistas.

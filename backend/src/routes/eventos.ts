@@ -12,7 +12,10 @@ import type { Request } from 'express';
 import type { Response as ExpressResponse } from 'express';
 import { CategoriaEvento } from "@prisma/client";
 interface MulterRequest extends Request {
-  file?: Express.Multer.File;
+  files?: {
+    image?: Express.Multer.File[];
+    gallery?: Express.Multer.File[];
+  };
 }
 
 // Alias para facilitar el tipado de Express con nuestros DTOs
@@ -51,7 +54,16 @@ router.get('/categorias/listado', (_req, response) => {
 });
 router.post(
   '/',
-  upload.single('image'),
+  upload.fields([
+  {
+    name: "image",
+    maxCount: 1,
+  },
+  {
+    name: "gallery",
+    maxCount: 4,
+  },
+]),
   async (request: MulterRequest, response: ExpressResponse) => {
     const body = request.body as CreateEventoInput;
 
@@ -61,49 +73,70 @@ router.post(
       });
       return;
     }
+let imagenUrl: string | undefined;
+const galeriaUrls: string[] = [];
 
-    let imagenUrl: string | undefined;
+try {
+  const portada = request.files?.image?.[0];
 
-    try {
-      if (request.file) {
-        const result = await new Promise<any>((resolve, reject) => {
-          cloudinary.uploader
-            .upload_stream(
-              {
-                folder: 'eventos-dsw',
-              },
-              (error, result) => {
-                if (error) {
-                  reject(error);
-                  return;
-                }
+  if (portada) {
+    const result = await new Promise<any>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder: "eventos-dsw",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        )
+        .end(portada.buffer);
+    });
 
-                resolve(result);
-              }
-            )
-            .end(request.file!.buffer);
-        });
+    imagenUrl = result.secure_url;
+  }
 
-        imagenUrl = result.secure_url;
-      }
+  const galleryFiles =
+    request.files?.gallery || [];
 
-      const evento = await createEvento({
-        titulo: body.titulo,
-        descripcion: body.descripcion,
-        iniciaEn: body.iniciaEn,
-        lugar: body.lugar,
-         categoria: body.categoria,
-        terminaEn: body.terminaEn,
-        entidadLugarId: body.entidadLugarId,
-        creadoPorUsuarioId: body.creadoPorUsuarioId,
-        artistasIds: body.artistasIds,
-        imagenUrl,
-      });
+  for (const file of galleryFiles) {
+    const result = await new Promise<any>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder: "eventos-dsw/gallery",
+          },
+          (error, result) => {
+            if (error) return reject(error);
+            resolve(result);
+          }
+        )
+        .end(file.buffer);
+    });
 
-      response.status(201).json({
-        data: evento,
-      });
-    } catch (error) {
+    galeriaUrls.push(result.secure_url);
+  }
+
+  const evento = await createEvento({
+    titulo: body.titulo,
+    descripcion: body.descripcion,
+    iniciaEn: body.iniciaEn,
+    lugar: body.lugar,
+    categoria: body.categoria,
+    terminaEn: body.terminaEn,
+    entidadLugarId: body.entidadLugarId,
+    creadoPorUsuarioId: body.creadoPorUsuarioId,
+    artistasIds: body.artistasIds,
+    imagenUrl,
+    galeria: galeriaUrls,
+  });
+
+  response.status(201).json({
+    data: evento,
+  });
+}
+ catch (error) {
       console.error(error);
 
       response.status(500).json({
