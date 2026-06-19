@@ -31,7 +31,7 @@ export default function EventCard({
 
       {event.iniciaEn && (
         <p className="text-sm text-zinc-500">
-          📅{" "}
+          {" "}
           {new Date(event.iniciaEn).toLocaleString()}
         </p>
       )}

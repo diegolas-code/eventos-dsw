@@ -99,7 +99,7 @@ export default function EventPage() {
                 clickable: true,
               }}
               autoplay={{
-                delay: 5000,
+                delay: 10000,
               }}
               thumbs={{
                 swiper:
@@ -111,20 +111,21 @@ export default function EventPage() {
               className="w-full"
             >
               {images.map((img: any) => (
-                <SwiperSlide key={img.id}>
-                  <img
-                    src={img.url}
-                    alt=""
-                    className="
-                      w-full
-                      h-[250px]
-                      sm:h-[350px]
-                      md:h-[500px]
-                      lg:h-[650px]
-                      object-cover
-                    "
-                  />
-                </SwiperSlide>
+              <SwiperSlide key={img.id}>
+  <img
+    src={img.url}
+    alt=""
+    className="
+      w-full
+     h-[220px]
+sm:h-[280px]
+md:h-[350px]
+lg:h-[420px]
+      object-cover
+      rounded-2xl
+    "
+  />
+</SwiperSlide>
               ))}
             </Swiper>
 
