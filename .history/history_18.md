@@ -41,8 +41,11 @@
 
 ---
 
-## ⚠️ Dificultades y Correcciones Pendientes
+## 🔧 Correcciones y Mejoras de Estabilidad (Sesión Actual)
 
-1. **Parámetros sin Tipar en TypeScript:**
-   - _Problema:_ El nuevo endpoint `GET /categorias/listado` en [eventos.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/routes/eventos.ts#L50) contenía parámetros implícitos de tipo `any` (`_req`, `response`), rompiendo la compilación del backend debido a la política `noImplicitAny`.
-   - _Corrección:_ Definir explícitamente los tipos `Request` y `Response` de Express.
+1. **Corrección de Tipos en API de Eventos ([eventos.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/routes/eventos.ts#L50)):**
+   - _Problema:_ El nuevo endpoint `GET /categorias/listado` contenía parámetros implícitos de tipo `any` (`_req`, `response`), impidiendo la compilación del backend.
+   - _Solución:_ Se definieron explícitamente los tipos `Request` y `ExpressResponse` para los parámetros.
+2. **Mejora del Manejo de Errores en Moderación ([ModerationPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ModerationPage/ModerationPage.tsx#L130-L137)):**
+   - _Problema:_ Cualquier error al consultar el endpoint de moderación (como `401 Unauthorized` por expiración de sesión, o `403 Forbidden` por rol insuficiente) se mostraba como un "Error de conexión" genérico.
+   - _Solución:_ Se refactorizó la visualización de errores para extraer y mostrar el mensaje del backend y el código de estado HTTP exacto, facilitando el diagnóstico del usuario.

@@ -130,10 +130,17 @@ export default function ModerationPage() {
         ) : error ? (
           <div className="bg-red-50 border border-red-100 text-red-600 p-8 rounded-[32px] text-center shadow-md">
             <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">Error de conexión</h3>
-            <p className="text-zinc-600">
-              No se pudieron cargar los eventos pendientes. Por favor, reintentá más tarde.
+            <h3 className="text-xl font-bold mb-2">Error al cargar pendientes</h3>
+            <p className="text-zinc-600 mb-2">
+              {(error as any).response?.data?.error ??
+                (error as any).message ??
+                'No se pudieron cargar los eventos pendientes.'}
             </p>
+            {(error as any).response?.status && (
+              <p className="text-xs text-zinc-400">
+                Código de estado: {(error as any).response.status}
+              </p>
+            )}
           </div>
         ) : pendingEvents && pendingEvents.length === 0 ? (
           <div className="bg-white border border-zinc-200 rounded-[32px] p-16 text-center shadow-sm max-w-2xl mx-auto flex flex-col items-center">
