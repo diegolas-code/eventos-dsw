@@ -106,7 +106,7 @@ Fase 4 — Votaciones, Seguimiento y Duplicados (Opcional)
 - Objetivo: añadir interactividad y detección de duplicados simple.
 - Tareas:
   - Implementar detección de duplicados básica (mismo lugar + mismo día + mismo artista).
-  - Diseñar tablas `VOTO_EVENTO`, `VOTO_COMENTARIO` y `SEGUIMIENTO`.
+  - Diseñar tablas `VOTO_EVENTO` y `SEGUIMIENTO`.
   - Endpoints para votar/seguir y para obtener conteos.
   - UI: botones de voto y seguir, actualizaciones optimistas.
   - Considerar denormalizar `vote_count` en `EVENTO` para lecturas rápidas.

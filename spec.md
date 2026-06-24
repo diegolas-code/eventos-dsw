@@ -161,12 +161,6 @@ Si se detectan estos factores, se guarda con un flag de `posible_duplicado` para
         datetime creado_en
     }
 
-    VOTO_COMENTARIO {
-        uuid usuario_id FK
-        uuid comentario_id FK
-        datetime creado_en
-    }
-
     REPORTE {
         uuid id PK
         uuid denunciante_usuario_id FK
@@ -209,9 +203,7 @@ Si se detectan estos factores, se guarda con un flag de `posible_duplicado` para
     USUARIO |---< COMENTARIO : escribe
     COMENTARIO |---< COMENTARIO : responde
     USUARIO |---< VOTO_EVENTO : vota
-    USUARIO |---< VOTO_COMENTARIO : vota
     EVENTO |---< VOTO_EVENTO : recibe_voto
-    COMENTARIO |---< VOTO_COMENTARIO : recibe_voto
     USUARIO |---< REPORTE : denuncia
     USUARIO |---< ACCION_MODERACION : modera
     EVENTO |---< REPORTE : denunciado
@@ -277,8 +269,6 @@ Para la autenticación, se utilizará una implementación basada en JWT (JSON We
 
 - `POST /api/v1/eventos/{id}/votos`
 - `DELETE /api/v1/eventos/{id}/votos`
-- `POST /api/v1/comentarios/{id}/votos`
-- `DELETE /api/v1/comentarios/{id}/votos`
 
 #### Favoritos y seguimiento
 
@@ -317,7 +307,7 @@ Para la autenticación, se utilizará una implementación basada en JWT (JSON We
 
 ### Restricciones de datos e índices
 
-- Unicidad: `USUARIO.email` único, `VOTO_EVENTO` y `VOTO_COMENTARIO` únicos por usuario/objeto, `SEGUIMIENTO` único por usuario/objetivo.
+- Unicidad: `USUARIO.email` único, `VOTO_EVENTO` único por usuario/evento, `SEGUIMIENTO` único por usuario/objetivo.
 - Requeridos: `EVENTO.titulo`, `EVENTO.inicia_en`, `EVENTO.lugar_id`, `COMENTARIO.cuerpo`, `USUARIO.nombre_mostrar`.
 - Índices sugeridos: `EVENTO(inicia_en)`, `EVENTO(estado)`, `EVENTO(lugar_id)`, `EVENTO_ARTISTA(artista_id)`, `SEGUIMIENTO(usuario_id)`, `FAVORITO(usuario_id)`, `COMENTARIO(evento_id)`, `REPORTE(estado)`.
 - Búsqueda: índice de texto para `EVENTO.titulo` y `EVENTO.descripcion` para filtros por palabra clave.
@@ -389,7 +379,7 @@ Casos borde: seguimiento masivo (limitar cantidad por usuario), notificaciones r
 
 #### Votos y visibilidad
 
-Flujo principal: el usuario vota un evento/comentario, el contador se actualiza y el indicador de votos se refleja en el detalle y en el feed.
+Flujo principal: el usuario vota un evento, el contador se actualiza y el indicador de votos se refleja en el detalle y en el feed.
 
 Casos borde: múltiples votos desde la misma cuenta (bloqueo), actividad alta (actualización por lotes).
 
@@ -434,7 +424,7 @@ Objetivo: habilitar funcionalidades clave de comunidad y personalización.
 Alcance:
 
 - Seguimiento de artistas y lugares con alertas internas.
-- Votos en eventos y comentarios, con visualización en el feed.
+- Votos en eventos con visualización en el feed.
 - Detección de duplicados con advertencias al publicar.
 - Reclamo de perfiles no reclamados.
 
