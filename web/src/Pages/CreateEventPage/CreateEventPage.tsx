@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import MainLayout from '../../Components/layout/MainLayout';
-import { createEvent } from '../../services/eventService';
+import { createEvent, getCategorias } from '../../services/eventService';
+import { useQuery } from '@tanstack/react-query';
 
 export default function CreateEventPage() {
   const [titulo, setTitulo] = useState('');
@@ -95,6 +96,19 @@ const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
     }
   };
 
+const { data: categorias } = useQuery({
+  queryKey: ["categorias"],
+  queryFn: getCategorias,
+});
+
+const categoriaLabels: Record<string, string> = {
+  CONCIERTO: "Concierto",
+  EXPOSICION: "Exposición",
+  TALLER: "Taller",
+  FERIA: "Feria",
+  TEATRO: "Teatro",
+  OTRO: "Otro",
+};
   return (
     <MainLayout>
       <div className="max-w-2xl w-full mx-auto bg-white border border-zinc-200 p-8 rounded-[32px] shadow-md my-10">
@@ -123,43 +137,28 @@ const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
   <label className="block mb-2 font-medium">
     Categoría
   </label>
-
-  <select
-    value={categoria}
-    onChange={(e) =>
-      setCategoria(e.target.value)
-    }
-    className="
-      w-full
-      border
-      rounded-xl
-      p-3
-    "
-  >
-    <option value="CONCIERTO">
-      Concierto
+<select
+  value={categoria}
+  onChange={(e) =>
+    setCategoria(e.target.value)
+  }
+  className="
+    w-full
+    border
+    rounded-xl
+    p-3
+  "
+>
+  {categorias?.map((cat: string) => (
+    <option
+      key={cat}
+      value={cat}
+    >
+      {categoriaLabels[cat] ?? cat}
     </option>
-
-    <option value="EXPOSICION">
-      Exposición
-    </option>
-
-    <option value="TALLER">
-      Taller
-    </option>
-
-    <option value="FERIA">
-      Feria
-    </option>
-
-    <option value="TEATRO">
-      Teatro
-    </option>
-
-    <option value="OTRO">
-      Otro
-    </option>
-  </select>
+  ))}
+</select>
+  
 </div>
 
 

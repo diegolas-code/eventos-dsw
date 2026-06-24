@@ -19,24 +19,56 @@ export default function HomePage() {
 
 const [categoriaSeleccionada, setCategoriaSeleccionada] =
   useState("TODOS");
+const [search, setSearch] = useState("");
 
 const { data: categorias } = useQuery({
   queryKey: ["categorias"],
   queryFn: getCategorias,
 });
 
-const eventosFiltrados =
-  categoriaSeleccionada === "TODOS"
-    ? data
-    : data?.filter(
-        (evento: any) =>
-          evento.categoria ===
-          categoriaSeleccionada
+const eventosFiltrados = data?.filter(
+  (evento: any) => {
+    const coincideCategoria =
+      categoriaSeleccionada === "TODOS" ||
+      evento.categoria ===
+        categoriaSeleccionada;
+
+    const texto =
+      search.toLowerCase();
+
+    const coincideBusqueda =
+      texto === "" ||
+      evento.titulo
+        ?.toLowerCase()
+        .includes(texto) ||
+
+      evento.descripcion
+        ?.toLowerCase()
+        .includes(texto) ||
+
+      evento.lugar
+        ?.toLowerCase()
+        .includes(texto) ||
+
+      evento.artistas?.some(
+        (artista: any) =>
+          artista.nombre
+            .toLowerCase()
+            .includes(texto)
       );
+
+    return (
+      coincideCategoria &&
+      coincideBusqueda
+    );
+  }
+);
 
   return (
     <MainLayout>
-      <HeroSection />
+      <HeroSection  search={search}
+  setSearch={setSearch} />
+      
 <div className="mb-8 flex gap-3 flex-wrap">
   <button
     onClick={() =>

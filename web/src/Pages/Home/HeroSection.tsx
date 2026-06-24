@@ -1,4 +1,12 @@
-export default function HeroSection() {
+type HeroSectionProps = {
+  search: string;
+  setSearch: (value: string) => void;
+};
+
+export default function HeroSection({
+  search,
+  setSearch,
+}: HeroSectionProps) {
   return (
     <section
       className="
@@ -15,7 +23,7 @@ export default function HeroSection() {
     >
       <div className="max-w-2xl">
         <p className="mb-4 text-sm font-medium">
-           Descubrí lo que pasa en tu ciudad
+          Descubrí lo que pasa en tu ciudad
         </p>
 
         <h1 className="text-6xl font-bold mb-6">
@@ -29,7 +37,11 @@ export default function HeroSection() {
 
         <input
           type="text"
-          placeholder="Buscar eventos..."
+          placeholder="Buscar eventos, artistas o lugares..."
+          value={search}
+          onChange={(e) =>
+            setSearch(e.target.value)
+          }
           className="
             w-full
             max-w-xl

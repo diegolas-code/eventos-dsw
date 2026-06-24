@@ -182,11 +182,12 @@ export default function Navbar() {
               pb-4
             "
           >
-            <Link
-              to="/"
-              onClick={() =>
-                setOpen(false)
-              }
+           <Link
+  to="/"
+  onClick={() => {
+    setOpen(false);
+    window.scrollTo(0, 0);
+  }}
               className="
                 p-3
                 rounded-xl
