@@ -10,7 +10,7 @@ import upload from '../middleware/upload.js';
 import cloudinary from '../config/cloudinary.js';
 import type { Request } from 'express';
 import type { Response as ExpressResponse } from 'express';
-import { CategoriaEvento } from "@prisma/client";
+import { CategoriaEvento } from '@prisma/client';
 interface MulterRequest extends Request {
   files?: {
     image?: Express.Multer.File[];
@@ -47,7 +47,7 @@ router.get('/', async (_request: Req, response: ExpressResponse) => {
  * Crea un nuevo evento. Valida campos obligatorios básicos.
  */
 
-router.get('/categorias/listado', (_req, response) => {
+router.get('/categorias/listado', (_req: Request, response: ExpressResponse) => {
   response.json({
     data: Object.values(CategoriaEvento),
   });
@@ -55,15 +55,15 @@ router.get('/categorias/listado', (_req, response) => {
 router.post(
   '/',
   upload.fields([
-  {
-    name: "image",
-    maxCount: 1,
-  },
-  {
-    name: "gallery",
-    maxCount: 4,
-  },
-]),
+    {
+      name: 'image',
+      maxCount: 1,
+    },
+    {
+      name: 'gallery',
+      maxCount: 4,
+    },
+  ]),
   async (request: MulterRequest, response: ExpressResponse) => {
     const body = request.body as CreateEventoInput;
 
@@ -73,70 +73,68 @@ router.post(
       });
       return;
     }
-let imagenUrl: string | undefined;
-const galeriaUrls: string[] = [];
+    let imagenUrl: string | undefined;
+    const galeriaUrls: string[] = [];
 
-try {
-  const portada = request.files?.image?.[0];
+    try {
+      const portada = request.files?.image?.[0];
 
-  if (portada) {
-    const result = await new Promise<any>((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            folder: "eventos-dsw",
-          },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          }
-        )
-        .end(portada.buffer);
-    });
+      if (portada) {
+        const result = await new Promise<any>((resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream(
+              {
+                folder: 'eventos-dsw',
+              },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+              }
+            )
+            .end(portada.buffer);
+        });
 
-    imagenUrl = result.secure_url;
-  }
+        imagenUrl = result.secure_url;
+      }
 
-  const galleryFiles =
-    request.files?.gallery || [];
+      const galleryFiles = request.files?.gallery || [];
 
-  for (const file of galleryFiles) {
-    const result = await new Promise<any>((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            folder: "eventos-dsw/gallery",
-          },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve(result);
-          }
-        )
-        .end(file.buffer);
-    });
+      for (const file of galleryFiles) {
+        const result = await new Promise<any>((resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream(
+              {
+                folder: 'eventos-dsw/gallery',
+              },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+              }
+            )
+            .end(file.buffer);
+        });
 
-    galeriaUrls.push(result.secure_url);
-  }
+        galeriaUrls.push(result.secure_url);
+      }
 
-  const evento = await createEvento({
-    titulo: body.titulo,
-    descripcion: body.descripcion,
-    iniciaEn: body.iniciaEn,
-    lugar: body.lugar,
-    categoria: body.categoria,
-    terminaEn: body.terminaEn,
-    entidadLugarId: body.entidadLugarId,
-    creadoPorUsuarioId: body.creadoPorUsuarioId,
-    artistasIds: body.artistasIds,
-    imagenUrl,
-    galeria: galeriaUrls,
-  });
+      const evento = await createEvento({
+        titulo: body.titulo,
+        descripcion: body.descripcion,
+        iniciaEn: body.iniciaEn,
+        lugar: body.lugar,
+        categoria: body.categoria,
+        terminaEn: body.terminaEn,
+        entidadLugarId: body.entidadLugarId,
+        creadoPorUsuarioId: body.creadoPorUsuarioId,
+        artistasIds: body.artistasIds,
+        imagenUrl,
+        galeria: galeriaUrls,
+      });
 
-  response.status(201).json({
-    data: evento,
-  });
-}
- catch (error) {
+      response.status(201).json({
+        data: evento,
+      });
+    } catch (error) {
       console.error(error);
 
       response.status(500).json({
