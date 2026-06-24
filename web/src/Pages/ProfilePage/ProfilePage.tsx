@@ -3,10 +3,14 @@ import MainLayout from '../../Components/layout/MainLayout';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import ProfileView from './ProfileView';
+import ManagePerfilPage from './ManagePerfilPage';
 
 export default function ProfilePage() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [view, setView] = useState<'login' | 'register'>('login');
+
+  //Nuevo estado que controla si se edita/crea el perfil de entidad
+  const [isManagingPerfil, setIsManagingPerfil] = useState<boolean>(false);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('demo_session_email');
@@ -28,16 +32,24 @@ export default function ProfilePage() {
     localStorage.removeItem('demo_session_rol');
     setUserEmail(null);
     setView('login');
+    setIsManagingPerfil(false);
   };
 
   return (
     <MainLayout>
       <div className="py-10 min-h-[60hv] flex flex-col justify-center items-center">
         {userEmail ? (
-          // Si el usuario está logueado, ve sus datos
-          <ProfileView onLogout={handleLogout} userEmail={userEmail} />
+          // Si el usuario está logueado, decidimos qué pantalla mostrar
+          isManagingPerfil ? (
+            <ManagePerfilPage onBack={() => setIsManagingPerfil(false)} />
+          ) : (
+            <ProfileView
+              userEmail={userEmail}
+              onLogout={handleLogout}
+              onCreatePerfilClick={() => setIsManagingPerfil(true)} // ¡Acá solucionamos el error!
+            />
+          )
         ) : view === 'login' ? (
-          // Si no esta logueado y esta en vista login
           <LoginForm
             onLoginSuccess={handleLoginSuccess}
             onSwitchToRegister={() => setView('register')}
