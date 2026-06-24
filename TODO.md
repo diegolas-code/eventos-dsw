@@ -79,6 +79,19 @@ Fase 2 — Pool de publicaciones y moderación
     - [x] Configurar la ruta `/moderacion` en `AppRoutes.tsx` protegida por rol.
     - [x] Implementar la interfaz `ModerationPage.tsx` con listado y controles de aprobación/rechazo.
 
+Fase 2.5 — Filtros, Galería de Imágenes y Navegación Responsive (Completada) ✅
+
+- Objetivo: Mejorar la experiencia de usuario con búsqueda, categorización y visualización de galerías.
+- Tareas:
+  - [x] Agregar enum `CategoriaEvento` y relaciones en `schema.prisma`.
+  - [x] Implementar la relación y tabla intermedia `EventoImagen` para soportar galerías de imágenes.
+  - [x] Actualizar `POST /api/v1/eventos` para soportar carga múltiple de imágenes (portada y galería) a Cloudinary.
+  - [x] Crear el endpoint `GET /api/v1/eventos/categorias/listado` para consultar categorías.
+  - [x] Crear selector de categorías e inputs de subida múltiple en `CreateEventPage.tsx` con vista previa.
+  - [x] Crear filtro dinámico de categorías y barra de búsqueda en `Homepage.tsx` y `HeroSection.tsx` (búsqueda por evento, artista, descripción o lugar).
+  - [x] Integrar visor de imágenes interactivo en `EventPage.tsx` utilizando la librería `Swiper`.
+  - [x] Rediseñar el `Navbar.tsx` con efecto glassmorphic y hacerlo completamente adaptable para móviles mediante menú hamburguesa responsive.
+
 Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
 
 - Objetivo: perfiles reclamables y panel personal para entidades.
