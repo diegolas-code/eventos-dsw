@@ -56,6 +56,8 @@ Fase 1 — Autenticación y roles
   - [x] Integrar carga de imágenes (posters) usando Cloudinary en el backend y previsualización en frontend.
   - [x] Implementar soporte para ubicación manual (campo `lugar_manual` en BD y API).
   - [x] Añadir tests básicos de integración para auth y permisos.
+  - [ ] **Agregar funcionalidad Recuperar contraseña** (restablecimiento de credenciales locales).
+  - [ ] **Agregar funcionalidad Asignar roles** (interfaz para administradores).
 
 Fase 2 — Pool de publicaciones y moderación
 
@@ -78,6 +80,7 @@ Fase 2 — Pool de publicaciones y moderación
     - [x] Crear el servicio `moderationService.ts` en el cliente de Axios.
     - [x] Configurar la ruta `/moderacion` en `AppRoutes.tsx` protegida por rol.
     - [x] Implementar la interfaz `ModerationPage.tsx` con listado y controles de aprobación/rechazo.
+    - [ ] **Corregir página moderacion** (optimizando ModerationPage.tsx para asegurar estabilidad y mejor reporte de errores).
 
 Fase 2.5 — Filtros, Galería de Imágenes y Navegación Responsive (Completada) ✅
 
@@ -91,6 +94,7 @@ Fase 2.5 — Filtros, Galería de Imágenes y Navegación Responsive (Completada
   - [x] Crear filtro dinámico de categorías y barra de búsqueda en `Homepage.tsx` y `HeroSection.tsx` (búsqueda por evento, artista, descripción o lugar).
   - [x] Integrar visor de imágenes interactivo en `EventPage.tsx` utilizando la librería `Swiper`.
   - [x] Rediseñar el `Navbar.tsx` con efecto glassmorphic y hacerlo completamente adaptable para móviles mediante menú hamburguesa responsive.
+  - [ ] **Eliminar boton explorar** (redundante de la barra de navegación Navbar.tsx).
 
 Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
 
@@ -101,6 +105,10 @@ Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
   - [ ] Implementar la lógica de creación completa de perfiles en el cliente (POST a la API y selector de `tipo` de entidad).
   - [ ] Flujo de verificación de perfiles por parte del administrador.
   - [ ] Dashboard personal de entidades: listar eventos propios y editar perfil.
+  - [ ] **Terminar página perfil** (ProfilePage.tsx, para mostrar información de la cuenta).
+  - [ ] **Agregar funcionalidad Editar información de usuario** (cuenta personal).
+  - [ ] **Agregar funcionalidad Editar/Eliminar eventos** propios desde el dashboard personal.
+  - [ ] **Agregar funcionalidad Alertas y notificaciones** internas por nuevos eventos.
   - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
 
 Fase 4 — Votaciones, Seguimiento y Duplicados (Opcional)
@@ -111,6 +119,7 @@ Fase 4 — Votaciones, Seguimiento y Duplicados (Opcional)
   - Diseñar tablas `VOTO_EVENTO` y `SEGUIMIENTO`.
   - Endpoints para votar/seguir y para obtener conteos.
   - UI: botones de voto y seguir, actualizaciones optimistas.
+  - **Agregar funcionalidad boton asistir/seguir etc.** (botones interactivos en el frontend con actualizaciones optimistas).
   - Considerar denormalizar `vote_count` en `EVENTO` para lecturas rápidas.
   - Tests de concurrencia y seguridad (evitar doble voto).
 
