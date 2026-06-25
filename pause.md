@@ -26,10 +26,33 @@ Este documento confirma que el proyecto ha completado exitosamente la **Fase 2 (
 
 ---
 
-## ⏭️ Siguiente Nivel: Fase 3 (Perfiles de Entidades y Dashboard Personal)
+## ⏸️ Estado de Pausa Actual (Revisión de Rama `meli-part`)
 
-El foco inmediato al retomar el proyecto será:
+Actualmente nos encontramos posicionados en la rama **`meli-part`**, la cual introduce el avance inicial para la **Fase 3 (Perfiles de Entidades)**.
 
-1. **Modelado y CRUD de Perfiles de Entidades:** Implementar los perfiles reclamables para artistas y lugares (`PERFIL_ENTIDAD`) unificados en la base de datos PostgreSQL.
-2. **Flujo de Reclamación:** Diseñar el proceso por el cual un usuario puede reclamar una entidad (ej: ser dueño del perfil de un artista o local) con posterior verificación/aprobación de un administrador.
-3. **Dashboard de Entidades:** Crear una interfaz de panel de control para artistas y locales donde puedan visualizar la lista de sus eventos creados y actualizar su propia información de perfil.
+### **Estado de la Implementación (Melisa)**
+
+1. **Backend ([backend/src/routes/perfiles.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/routes/perfiles.ts))**:
+   - Implementados endpoints para reclamar perfil (`POST /:id/reclamar`) y actualizar perfil (`PATCH /:id`).
+   - Validación de seguridad para que solo el propietario edite su perfil.
+2. **Frontend ([web/src/Pages/ProfilePage/ManagePerfilPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ManagePerfilPage.tsx))**:
+   - Creada la interfaz de edición/creación de perfiles.
+   - Botón "Crear Perfil" activado en el perfil.
+
+### **Pendientes Identificados (Al retomar)**
+
+1. **Integración con `victor-part` (Conflicto en Home)**:
+   - Al estar basada en `dev`, esta rama carece del commit de búsqueda de Víctor (`23e5f46`). La barra de búsqueda de [Homepage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/Home/Homepage.tsx) está ausente.
+   - Se requiere crear una rama de integración (`feat/integration-perfiles-busqueda`) y fusionar `victor-part` resolviendo el conflicto de la home.
+2. **Corrección del Formulario de Creación**:
+   - El formulario de creación usa erróneamente `PATCH` con ID vacío en lugar de `POST` para nuevos perfiles.
+   - Falta añadir el selector del campo obligatorio `tipo` (`ARTISTA` | `LUGAR`) al crear un perfil de entidad.
+
+---
+
+## ⏭️ Plan al Retomar la Sesión
+
+1. Crear la rama `feat/integration-perfiles-busqueda` desde `meli-part`.
+2. Fusiorar `victor-part` en la nueva rama y resolver el conflicto en `Homepage.tsx`.
+3. Arreglar la lógica de creación del perfil (POST vs PATCH, y campo `tipo`).
+4. Probar y estabilizar el flujo completo de perfiles de entidades de la Fase 3.
