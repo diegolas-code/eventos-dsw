@@ -26,33 +26,21 @@ Este documento confirma que el proyecto ha completado exitosamente la **Fase 2 (
 
 ---
 
-## ⏸️ Estado de Pausa Actual (Revisión de Rama `meli-part`)
+## ⏸️ Estado de Pausa Actual (Integración Realizada en `dev`)
 
-Actualmente nos encontramos posicionados en la rama **`meli-part`**, la cual introduce el avance inicial para la **Fase 3 (Perfiles de Entidades)**.
+Actualmente nos encontramos posicionados en la rama principal de desarrollo **`dev`**, habiendo integrado exitosamente todo el código de `meli-part` (perfiles de entidades) y `victor-part` (buscador, galerías y usabilidad).
 
-### **Estado de la Implementación (Melisa)**
+### **Estado de la Integración**
 
-1. **Backend ([backend/src/routes/perfiles.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/routes/perfiles.ts))**:
-   - Implementados endpoints para reclamar perfil (`POST /:id/reclamar`) y actualizar perfil (`PATCH /:id`).
-   - Validación de seguridad para que solo el propietario edite su perfil.
-2. **Frontend ([web/src/Pages/ProfilePage/ManagePerfilPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ManagePerfilPage.tsx))**:
-   - Creada la interfaz de edición/creación de perfiles.
-   - Botón "Crear Perfil" activado en el perfil.
+- **Conflictos Resueltos**: Se unificaron las píldoras de categorías y los filtros de búsqueda textual en [Homepage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/Home/Homepage.tsx) sin perder la reactividad de la sección Hero.
+- **Estabilidad del Proyecto**: Los tests de integración y la compilación general del cliente (`npm run build`) y servidor (`npm run typecheck`) están pasando de forma 100% limpia.
 
-### **Pendientes Identificados (Al retomar)**
+### **Pendientes Inmediatos (Próxima tarea)**
 
-1. **Integración con `victor-part` (Conflicto en Home)**:
-   - Al estar basada en `dev`, esta rama carece del commit de búsqueda de Víctor (`23e5f46`). La barra de búsqueda de [Homepage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/Home/Homepage.tsx) está ausente.
-   - Se requiere crear una rama de integración (`feat/integration-perfiles-busqueda`) y fusionar `victor-part` resolviendo el conflicto de la home.
-2. **Corrección del Formulario de Creación**:
-   - El formulario de creación usa erróneamente `PATCH` con ID vacío en lugar de `POST` para nuevos perfiles.
-   - Falta añadir el selector del campo obligatorio `tipo` (`ARTISTA` | `LUGAR`) al crear un perfil de entidad.
-
----
-
-## ⏭️ Plan al Retomar la Sesión
-
-1. Crear la rama `feat/integration-perfiles-busqueda` desde `meli-part`.
-2. Fusiorar `victor-part` en la nueva rama y resolver el conflicto en `Homepage.tsx`.
-3. Arreglar la lógica de creación del perfil (POST vs PATCH, y campo `tipo`).
-4. Probar y estabilizar el flujo completo de perfiles de entidades de la Fase 3.
+1. **Corregir Formulario de Creación de Perfil**:
+   - En [ManagePerfilPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ManagePerfilPage.tsx), hacer que el envío del formulario llame a `createPerfilEntidad` (`POST /api/v1/perfiles`) cuando no se disponga de un `perfilInicial`, en lugar de llamar a `updatePerfilEntidad` con ID vacío.
+   - Añadir un selector para especificar el campo obligatorio `tipo` (`ARTISTA` | `LUGAR`) durante el modo de creación de perfil.
+2. **Flujo de Moderación/Aprobación de Reclamos**:
+   - Establecer cómo el administrador autoriza y valida un reclamo de perfil.
+3. **Dashboard de Entidades**:
+   - Construcción del panel de control para que la entidad gestione sus publicaciones de eventos específicos.

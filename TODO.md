@@ -96,9 +96,11 @@ Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
 
 - Objetivo: perfiles reclamables y panel personal para entidades.
 - Tareas:
-  - Crear entidad `PERFIL_ENTIDAD` (unificada para artistas y lugares) con CRUD mínimo.
-  - Implementar flujo de reclamo de perfil y verificación por admin.
-  - Dashboard personal: listar eventos propios y editar perfil.
+  - [x] Crear endpoints backend para reclamos (`POST /:id/reclamar`) y actualizaciones (`PATCH /:id`) de perfiles.
+  - [/] Diseñar la interfaz de usuario en el cliente para crear/editar perfil de entidad (`ManagePerfilPage.tsx`) (creación requiere corrección).
+  - [ ] Implementar la lógica de creación completa de perfiles en el cliente (POST a la API y selector de `tipo` de entidad).
+  - [ ] Flujo de verificación de perfiles por parte del administrador.
+  - [ ] Dashboard personal de entidades: listar eventos propios y editar perfil.
   - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
 
 Fase 4 — Votaciones, Seguimiento y Duplicados (Opcional)
