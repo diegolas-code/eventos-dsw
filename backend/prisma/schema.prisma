@@ -57,7 +57,7 @@ model Usuario {
   rol               RolUsuario        @default(miembro)
   creado_en         DateTime          @default(now())
   actualizado_en    DateTime          @updatedAt
-
+ 
   // Relaciones
   eventos_creados   Evento[]          @relation("EventosCreados")
   comentarios       Comentario[]
@@ -123,6 +123,7 @@ model Evento {
   artistas              EventoArtista[]
   acciones_moderacion   AccionModeracion[]
   imagenes              EventoImagen[]
+
   @@index([estado])
   @@index([inicia_en])
   @@index([creado_por_usuario_id])
@@ -160,6 +161,10 @@ model EventoArtista {
   @@id([evento_id, artista_id])
   @@index([artista_id])
 }
+
+
+
+
 
 /**
  * Modelo de Comentario.
@@ -205,3 +210,4 @@ model AccionModeracion {
   @@index([evento_id])
   @@index([moderador_id])
 }
+

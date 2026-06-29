@@ -104,7 +104,7 @@ const eventosFiltrados = data?.filter(
           (c) => c.toUpperCase()
         )}
     </button>
-  ))};
+  ))}
 
 </div>
       {isLoading && (
