@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { ReactNode } from 'react';
 
 interface ProtectedRouteProps {
@@ -14,13 +14,14 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const token = localStorage.getItem('token');
   const userRole = localStorage.getItem('demo_session_rol');
+  const location = useLocation();
 
   if (!token) {
     return <Navigate to="/perfil" replace />;
   }
 
   if (allowedRoles && (!userRole || !allowedRoles.includes(userRole))) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/perfil" state={{ emitirRegistroEntidad: true }} replace />;
   }
 
   return <>{children}</>;

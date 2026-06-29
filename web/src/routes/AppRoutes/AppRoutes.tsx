@@ -16,7 +16,7 @@ export default function AppRoutes() {
         <Route
           path="/crear-evento"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['artista', 'lugar', 'admin']}>
               <CreateEventPage />
             </ProtectedRoute>
           }

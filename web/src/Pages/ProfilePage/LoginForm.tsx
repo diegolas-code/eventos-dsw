@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { login } from '../../services/authService';
 
 interface LoginFormProps {
-  onLoginSuccess: (email: string, token: string, rol: string) => void;
+  onLoginSuccess: (id: string, email: string, token: string, rol: string) => void;
   onSwitchToRegister: () => void;
 }
 
@@ -22,7 +22,7 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
       setLoading(true);
       setError(null);
       const data = await login({ email, password });
-      onLoginSuccess(data.user.email, data.token, data.user.rol);
+      onLoginSuccess(data.user.id, data.user.email, data.token, data.user.rol);
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.error ?? 'Error al iniciar sesión. Comprobá tus credenciales.');
