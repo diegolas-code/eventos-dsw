@@ -8,27 +8,31 @@ El desarrollo consiste en una aplicación web para publicar y consumir eventos l
 
 [Especificaciones](./spec.md) | [TODO](./TODO.md)
 
-## Estado Actual (Fase 1 Completada - Autenticación JWT Lista)
+## Estado Actual (Fase 2 y Fase 2.5 Completadas)
 
-Actualmente, el proyecto ha completado exitosamente la **Fase 1 (Autenticación y Roles)**:
+Actualmente, el proyecto ha completado exitosamente la **Fase 2 (Pool de Publicaciones y Moderación)** y la **Fase 2.5 (Filtros, Galería de Imágenes y Navegación Responsive)**:
 
 - **Backend:** API REST robusta con **Node.js + Express**, **Prisma** y **PostgreSQL**.
   - Autenticación real con JWT (`jsonwebtoken`) y cifrado de contraseñas (`bcryptjs`).
   - Middlewares de autenticación y protección de rutas según rol del usuario.
   - Endpoints de autenticación operativos (`POST /api/v1/auth/register` y `POST /api/v1/auth/login`).
-  - Carga de posters de eventos implementada con **Cloudinary** ([cloudinary.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/config/cloudinary.ts)).
+  - Carga de posters de eventos y múltiples imágenes adicionales (galería) implementada con **Cloudinary**.
+  - Flujo de moderación con auditoría transaccional (`AccionModeracion`) y protección de accesos.
+  - Categorización de eventos mediante el enum `CategoriaEvento`.
 - **Frontend:**
   - **Autenticación real integrada:** Formularios de Login, Registro y Perfil conectados al backend, almacenando el JWT localmente.
   - **Axios Interceptor:** Interceptor configurado en [api.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/services/api.ts) para adjuntar el token de forma automática en cabeceras de peticiones autorizadas.
-  - **Navegación & Seguridad:** Rutas protegidas (`ProtectedRoute`) basadas en la existencia del JWT local.
-  - **Eventos:** Formulario de creación (`CreateEventPage`) moderno, con widget de previsualización y subida directa de imágenes.
+  - **Navegación & Seguridad:** Rutas protegidas (`ProtectedRoute`) y barra de navegación responsive y glassmorphic con menú hamburguesa adaptado a móviles.
+  - **Panel de Moderación:** Dashboard completo y visual en `/moderacion` para aprobaciones y auditorías de eventos.
+  - **Eventos:** Formulario de creación (`CreateEventPage`) moderno que permite seleccionar categorías y subir fotos secundarias con previsualizaciones.
+  - **Filtros e Imágenes:** Página de inicio con buscador textual global y botones interactivos de categoría. Detalles del evento en [EventPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/EventPage/EventPage.tsx) con carrusel dinámico usando `Swiper`.
 - **Estabilidad:** Scripts de test de integración de API ([test-auth.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/scripts/test-auth.ts)) agregados y pasando exitosamente.
 
-### Próximos pasos (Fase 2):
+### Próximos pasos (Fase 3):
 
-- **Estados de Publicación:** Añadir estados a eventos (`PENDIENTE`, `PUBLICADO`, `RECHAZADO`, `ARCHIVADO`).
-- **Endpoints de Moderación:** Rutas especiales para listar y accionar sobre eventos pendientes.
-- **Panel del Moderador:** Interfaz del frontend para que moderadores/admin aprueben o rechacen eventos con comentarios de auditoría.
+- **Perfiles de Entidades:** Implementación de entidad `PERFIL_ENTIDAD` para artistas y lugares de forma unificada.
+- **Flujo de Reclamación:** Flujo para que usuarios autorizados reclamen el control de una entidad y verificación por administrador.
+- **Dashboard Personal:** Panel de control propio para entidades donde gestionar sus publicaciones y perfiles.
 
 ---
 

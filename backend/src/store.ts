@@ -160,21 +160,34 @@ const mapPerfilEntidad = (p: any): PerfilEntidad => ({
 // --- MÉTODOS DE EVENTOS ---
 
 /** Lista todos los eventos registrados con sus artistas */
-export const listEventos = async (): Promise<Evento[]> => {
+export const listEventos = async (usuarioId?: string): Promise<Evento[]> => {
   const data = await prisma.evento.findMany({
     where: { estado: 'PUBLICADO' },
     include: {
       artistas: {
-        include: { artista: true ,
+        include: { artista: true },
       },
-    },
-imagenes: true,
+      imagenes: true,
+
+      asistentes: usuarioId
+        ? {
+            where: {
+              usuario_id: usuarioId,
+            },
+            select: {
+              usuario_id: true,
+            },
+          }
+        : false,
     },
     orderBy: { inicia_en: 'asc' },
   });
-  return data.map(mapEvento);
-};
 
+  return data.map((e) => ({
+    ...mapEvento(e),
+    isAsistiendo: usuarioId ? e.asistentes.length > 0 : false,
+  }));
+};
 /** Obtiene un evento específico por su ID */
 export const getEvento = async (eventoId: string): Promise<Evento | null> => {
 const data = await prisma.evento.findUnique({
@@ -507,3 +520,102 @@ export const seedDemoData = async (): Promise<void> => {
 
   console.log('✅ Datos iniciales sembrados con éxito.');
 };
+
+
+
+/**
+ * Marca asistencia a un evento.
+ */
+export async function asistirEvento(usuarioId: string, eventoId: string) {
+  return prisma.usuarioEvento.upsert({
+    where: {
+      usuario_id_evento_id: {
+        usuario_id: usuarioId,
+        evento_id: eventoId,
+      },
+    },
+    update: {},
+    create: {
+      usuario_id: usuarioId,
+      evento_id: eventoId,
+    },
+  });
+}
+/**
+ * Cancela asistencia.
+ */
+export async function cancelarAsistencia(
+  usuarioId: string,
+  eventoId: string
+) {
+  return prisma.usuarioEvento.delete({
+    where: {
+      usuario_id_evento_id: {
+        usuario_id: usuarioId,
+        evento_id: eventoId,
+      },
+    },
+  });
+}
+
+/**
+ * Obtiene todos los eventos a los que asistirá un usuario.
+ */
+export async function obtenerEventosAsistire(
+  usuarioId: string
+) {
+  return prisma.usuarioEvento.findMany({
+    where: {
+      usuario_id: usuarioId,
+    },
+    include: {
+      evento: {
+        include: {
+          imagenes: true,
+          artistas: {
+            include: {
+              artista: true,
+            },
+          },
+          lugar: true,
+        },
+      },
+    },
+    orderBy: {
+      creado_en: "desc",
+    },
+  });
+}
+
+/**
+ * Verifica si un usuario asistirá a un evento.
+ */
+export async function usuarioAsistiraEvento(
+  usuarioId: string,
+  eventoId: string
+) {
+  const asistencia =
+    await prisma.usuarioEvento.findUnique({
+      where: {
+        usuario_id_evento_id: {
+          usuario_id: usuarioId,
+          evento_id: eventoId,
+        },
+      },
+    });
+
+  return !!asistencia;
+}
+
+/**
+ * Cantidad de asistentes de un evento.
+ */
+export async function contarAsistentes(
+  eventoId: string
+) {
+  return prisma.usuarioEvento.count({
+    where: {
+      evento_id: eventoId,
+    },
+  });
+}

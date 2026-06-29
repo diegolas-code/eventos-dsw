@@ -23,6 +23,7 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
       setError(null);
       const data = await login({ email, password });
       onLoginSuccess(data.user.email, data.token, data.user.rol);
+      localStorage.setItem('token', data.token);   
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.error ?? 'Error al iniciar sesión. Comprobá tus credenciales.');

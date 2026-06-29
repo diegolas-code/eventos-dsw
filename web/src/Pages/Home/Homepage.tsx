@@ -1,112 +1,117 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
-import MainLayout from "../../Components/layout/MainLayout";
-import { useState } from "react";
-import EventGrid from "../../Pages/EventPage/EventGrid";
-import HeroSection from "../Home/HeroSection";
-import { getCategorias } from "../../services/eventService";
-import { getEvents } from "../../services/eventService";
+import MainLayout from '../../Components/layout/MainLayout';
+import EventGrid from '../../Pages/EventPage/EventGrid';
+import HeroSection from '../Home/HeroSection';
+
+import {
+  getCategorias,
+  getEvents,
+} from '../../services/eventService';
 
 export default function HomePage() {
-  const {
-    data,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["events"],
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['events'],
     queryFn: getEvents,
   });
 
-const [categoriaSeleccionada, setCategoriaSeleccionada] =
-  useState("TODOS");
-const [search, setSearch] = useState("");
+  const { data: categorias } = useQuery({
+    queryKey: ['categorias'],
+    queryFn: getCategorias,
+  });
 
-const { data: categorias } = useQuery({
-  queryKey: ["categorias"],
-  queryFn: getCategorias,
-});
+  const [categoriaSeleccionada, setCategoriaSeleccionada] =
+    useState('TODOS');
 
-const eventosFiltrados = data?.filter(
-  (evento: any) => {
-    const coincideCategoria =
-      categoriaSeleccionada === "TODOS" ||
-      evento.categoria ===
-        categoriaSeleccionada;
+  const [search, setSearch] = useState('');
 
-    const texto =
-      search.toLowerCase();
+  const eventosFiltrados = data?.filter(
+    (evento: any) => {
+      const coincideCategoria =
+        categoriaSeleccionada === 'TODOS' ||
+        evento.categoria === categoriaSeleccionada;
 
-    const coincideBusqueda =
-      texto === "" ||
-      evento.titulo
-        ?.toLowerCase()
-        .includes(texto) ||
+      const texto = search.toLowerCase();
 
-      evento.descripcion
-        ?.toLowerCase()
-        .includes(texto) ||
+      const coincideBusqueda =
+        texto === '' ||
+        evento.titulo
+          ?.toLowerCase()
+          .includes(texto) ||
+        evento.descripcion
+          ?.toLowerCase()
+          .includes(texto) ||
+        evento.lugar
+          ?.toLowerCase()
+          .includes(texto) ||
+        evento.artistas?.some(
+          (artista: any) =>
+            artista.nombre
+              .toLowerCase()
+              .includes(texto)
+        );
 
-      evento.lugar
-        ?.toLowerCase()
-        .includes(texto) ||
-
-      evento.artistas?.some(
-        (artista: any) =>
-          artista.nombre
-            .toLowerCase()
-            .includes(texto)
+      return (
+        coincideCategoria &&
+        coincideBusqueda
       );
-
-    return (
-      coincideCategoria &&
-      coincideBusqueda
-    );
-  }
-);
+    }
+  );
 
   return (
     <MainLayout>
-      <HeroSection  search={search}
-  setSearch={setSearch} />
-      
-<div className="mb-8 flex gap-3 flex-wrap">
-  <button
-    onClick={() =>
-      setCategoriaSeleccionada("TODOS")
-    }
-    className={
-      categoriaSeleccionada === "TODOS"
-        ? "bg-violet-600 text-white px-4 py-2 rounded-full"
-        : "bg-white px-4 py-2 rounded-full"
-    }
-  >
-    Todos
-  </button>
+      <HeroSection
+        search={search}
+        setSearch={setSearch}
+      />
 
- {
-  categorias?.map((categoria: string) => (
-    <button
-      key={categoria}
-      onClick={() =>
-        setCategoriaSeleccionada(categoria)
-      }
-      className={
-        categoriaSeleccionada === categoria
-          ? "bg-violet-600 text-white px-4 py-2 rounded-full"
-          : "bg-white border border-zinc-200 px-4 py-2 rounded-full"
-      }
-    >
-      {categoria
-        .toLowerCase()
-        .replace("_", " ")
-        .replace(
-          /^\w/,
-          (c) => c.toUpperCase()
+      <div className="mb-8 flex gap-3 flex-wrap">
+        <button
+          onClick={() =>
+            setCategoriaSeleccionada(
+              'TODOS'
+            )
+          }
+          className={
+            categoriaSeleccionada ===
+            'TODOS'
+              ? 'bg-violet-600 text-white px-4 py-2 rounded-full'
+              : 'bg-white border border-zinc-200 px-4 py-2 rounded-full'
+          }
+        >
+          Todos
+        </button>
+
+        {categorias?.map(
+          (categoria: string) => (
+            <button
+              key={categoria}
+              onClick={() =>
+                setCategoriaSeleccionada(
+                  categoria
+                )
+              }
+              className={
+                categoriaSeleccionada ===
+                categoria
+                  ? 'bg-violet-600 text-white px-4 py-2 rounded-full'
+                  : 'bg-white border border-zinc-200 px-4 py-2 rounded-full'
+              }
+            >
+              {categoria
+                .toLowerCase()
+                .replace('_', ' ')
+                .replace(
+                  /^\w/,
+                  c =>
+                    c.toUpperCase()
+                )}
+            </button>
+          )
         )}
-    </button>
-  ))}
+      </div>
 
-</div>
       {isLoading && (
         <p>Cargando eventos...</p>
       )}
@@ -117,41 +122,47 @@ const eventosFiltrados = data?.filter(
         </p>
       )}
 
-      {data && <EventGrid events={eventosFiltrados ?? []} />}
+      {data && (
+        <EventGrid
+          events={
+            eventosFiltrados ?? []
+          }
+        />
+      )}
+
       <div
-  className="
-    mt-20
-    bg-white
-    rounded-3xl
-    p-10
-    text-center
-  "
->
-  <h2 className="text-4xl font-bold mb-4">
-    ¿Organizás eventos?
-  </h2>
+        className="
+          mt-20
+          bg-white
+          rounded-3xl
+          p-10
+          text-center
+        "
+      >
+        <h2 className="text-4xl font-bold mb-4">
+          ¿Organizás eventos?
+        </h2>
 
-  <p className="text-zinc-600 mb-6">
-    Publicá recitales, talleres,
-    exposiciones y actividades.
-  </p>
+        <p className="text-zinc-600 mb-6">
+          Publicá recitales,
+          talleres, exposiciones y
+          actividades.
+        </p>
 
-  <button
-    className="
-      bg-violet-600
-      text-white
-      px-6
-      py-3
-      rounded-xl
-      hover:bg-violet-700
-      transition
-    "
-  >
-    Publicar evento
-  </button>
-</div>
+        <button
+          className="
+            bg-violet-600
+            text-white
+            px-6
+            py-3
+            rounded-xl
+            hover:bg-violet-700
+            transition
+          "
+        >
+          Publicar evento
+        </button>
+      </div>
     </MainLayout>
-
-
   );
 }

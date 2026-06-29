@@ -5,19 +5,16 @@ import { useQuery } from '@tanstack/react-query';
 
 export default function CreateEventPage() {
   const [titulo, setTitulo] = useState('');
-  const [categoria, setCategoria] =
-  useState("OTRO");
+  const [categoria, setCategoria] = useState('OTRO');
   const [descripcion, setDescripcion] = useState('');
   const [iniciaEn, setIniciaEn] = useState('');
   const [lugar, setLugar] = useState('');
   const [entidadLugarId, setEntidadLugarId] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [gallery, setGallery] = useState<File[]>([]);
-const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
+  const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -26,24 +23,13 @@ const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleGalleryChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-   ) => {
-    const files = Array.from(
-     e.target.files || []
-    );
+  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
 
-  setGallery(files);
+    setGallery(files);
 
-  setGalleryPreview(
-    files.map((file) =>
-      URL.createObjectURL(file)
-    )
-  );
-};
-
-
-
+    setGalleryPreview(files.map(file => URL.createObjectURL(file)));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +43,7 @@ const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
 
       const formData = new FormData();
       formData.append('titulo', titulo.trim());
-      formData.append("categoria", categoria);
+      formData.append('categoria', categoria);
       formData.append('descripcion', descripcion.trim());
       formData.append('iniciaEn', new Date(iniciaEn).toISOString());
 
@@ -71,13 +57,10 @@ const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
         formData.append('image', image);
       }
 
-      gallery.forEach((file) => {
-       formData.append(
-       'gallery',
-        file
-     );
-   });
-         
+      gallery.forEach(file => {
+        formData.append('gallery', file);
+      });
+
       await createEvent(formData);
 
       alert('¡Evento creado con éxito!');
@@ -96,19 +79,19 @@ const [galleryPreview, setGalleryPreview] = useState<string[]>([]);
     }
   };
 
-const { data: categorias } = useQuery({
-  queryKey: ["categorias"],
-  queryFn: getCategorias,
-});
+  const { data: categorias } = useQuery({
+    queryKey: ['categorias'],
+    queryFn: getCategorias,
+  });
 
-const categoriaLabels: Record<string, string> = {
-  CONCIERTO: "Concierto",
-  EXPOSICION: "Exposición",
-  TALLER: "Taller",
-  FERIA: "Feria",
-  TEATRO: "Teatro",
-  OTRO: "Otro",
-};
+  const categoriaLabels: Record<string, string> = {
+    CONCIERTO: 'Concierto',
+    EXPOSICION: 'Exposición',
+    TALLER: 'Taller',
+    FERIA: 'Feria',
+    TEATRO: 'Teatro',
+    OTRO: 'Otro',
+  };
   return (
     <MainLayout>
       <div className="max-w-2xl w-full mx-auto bg-white border border-zinc-200 p-8 rounded-[32px] shadow-md my-10">
@@ -133,34 +116,25 @@ const categoriaLabels: Record<string, string> = {
               required
             />
           </div>
-<div>
-  <label className="block mb-2 font-medium">
-    Categoría
-  </label>
-<select
-  value={categoria}
-  onChange={(e) =>
-    setCategoria(e.target.value)
-  }
-  className="
+          <div>
+            <label className="block mb-2 font-medium">Categoría</label>
+            <select
+              value={categoria}
+              onChange={e => setCategoria(e.target.value)}
+              className="
     w-full
     border
     rounded-xl
     p-3
   "
->
-  {categorias?.map((cat: string) => (
-    <option
-      key={cat}
-      value={cat}
-    >
-      {categoriaLabels[cat] ?? cat}
-    </option>
-  ))}
-</select>
-  
-</div>
-
+            >
+              {categorias?.map((cat: string) => (
+                <option key={cat} value={cat}>
+                  {categoriaLabels[cat] ?? cat}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Descripcion */}
           <div>
@@ -235,16 +209,14 @@ const categoriaLabels: Record<string, string> = {
           </div>
 
           <div>
-  <label className="block text-sm font-medium text-zinc-700 mb-2">
-    Galería de Fotos
-  </label>
+            <label className="block text-sm font-medium text-zinc-700 mb-2">Galería de Fotos</label>
 
-  <input
-    type="file"
-    accept="image/*"
-    multiple
-    onChange={handleGalleryChange}
-    className="
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleGalleryChange}
+              className="
       w-full
       px-5
       py-3
@@ -252,36 +224,34 @@ const categoriaLabels: Record<string, string> = {
       border-zinc-300
       rounded-2xl
     "
-  />
+            />
 
-  {galleryPreview.length > 0 && (
-    <div
-      className="
+            {galleryPreview.length > 0 && (
+              <div
+                className="
         mt-4
         grid
         grid-cols-2
         md:grid-cols-3
         gap-3
       "
-    >
-      {galleryPreview.map(
-        (img, index) => (
-          <img
-            key={index}
-            src={img}
-            alt=""
-            className="
+              >
+                {galleryPreview.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt=""
+                    className="
               h-32
               w-full
               object-cover
               rounded-xl
             "
-          />
-        )
-      )}
-    </div>
-  )}
-</div>
+                  />
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Botón de Enviar */}
           <button

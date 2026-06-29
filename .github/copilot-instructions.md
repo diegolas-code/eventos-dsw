@@ -60,7 +60,7 @@ All protected routes must use a centralized middleware that:
 - **EVENTO**: creado_por_usuario_id, titulo, descripcion, inicia_en, termina_en, estado (Enum), entidad_lugar_id (FK al local), posible_duplicado.
 - **EVENTO_ARTISTA**: tabla intermedia para vincular múltiples artistas a un evento.
 - **COMENTARIO**: evento_id, usuario_id, padre_id (relación recursiva), cuerpo.
-- **Interactions**: FAVORITO, SEGUIMIENTO, VOTO_EVENTO, VOTO_COMENTARIO.
+- **Interactions**: FAVORITO, SEGUIMIENTO, VOTO_EVENTO.
 
 ## 5. Development Workflow
 

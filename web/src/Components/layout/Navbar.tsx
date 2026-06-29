@@ -1,16 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
-
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   const role = localStorage.getItem('demo_session_rol');
 
-  const isModeratorOrAdmin =
-    role === 'moderador' ||
-    role === 'admin';
+  const isModeratorOrAdmin = role === 'moderador' || role === 'admin';
 
   return (
     <nav
@@ -112,19 +109,8 @@ export default function Navbar() {
             )}
 
             <Link
+           
               to="/perfil"
-              className="
-                text-zinc-700
-                hover:text-violet-600
-                transition
-                font-medium
-              "
-            >
-              Perfil
-            </Link>
-
-            <Link
-              to="/"
               className="
                 bg-violet-600
                 hover:bg-violet-700
@@ -136,15 +122,14 @@ export default function Navbar() {
                 font-semibold
               "
             >
-              Explorar
+              Perfil
             </Link>
+
           </div>
 
           {/* Mobile Button */}
           <button
-            onClick={() =>
-              setOpen(!open)
-            }
+            onClick={() => setOpen(!open)}
             className="
               md:hidden
               p-2
@@ -152,11 +137,7 @@ export default function Navbar() {
               hover:bg-zinc-100
             "
           >
-            {open ? (
-              <X size={28} />
-            ) : (
-              <Menu size={28} />
-            )}
+            {open ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
 
@@ -167,11 +148,7 @@ export default function Navbar() {
             overflow-hidden
             transition-all
             duration-300
-            ${
-              open
-                ? "max-h-[500px] opacity-100 mt-5"
-                : "max-h-0 opacity-0"
-            }
+            ${open ? 'max-h-[500px] opacity-100 mt-5' : 'max-h-0 opacity-0'}
           `}
         >
           <div
@@ -182,12 +159,12 @@ export default function Navbar() {
               pb-4
             "
           >
-           <Link
-  to="/"
-  onClick={() => {
-    setOpen(false);
-    window.scrollTo(0, 0);
-  }}
+            <Link
+              to="/"
+              onClick={() => {
+                setOpen(false);
+                window.scrollTo(0, 0);
+              }}
               className="
                 p-3
                 rounded-xl
@@ -199,9 +176,7 @@ export default function Navbar() {
 
             <Link
               to="/crear-evento"
-              onClick={() =>
-                setOpen(false)
-              }
+              onClick={() => setOpen(false)}
               className="
                 p-3
                 rounded-xl
@@ -214,9 +189,7 @@ export default function Navbar() {
             {isModeratorOrAdmin && (
               <Link
                 to="/moderacion"
-                onClick={() =>
-                  setOpen(false)
-                }
+                onClick={() => setOpen(false)}
                 className="
                   p-3
                   rounded-xl
@@ -231,9 +204,7 @@ export default function Navbar() {
 
             <Link
               to="/perfil"
-              onClick={() =>
-                setOpen(false)
-              }
+              onClick={() => setOpen(false)}
               className="
                 p-3
                 rounded-xl
@@ -245,9 +216,7 @@ export default function Navbar() {
 
             <Link
               to="/"
-              onClick={() =>
-                setOpen(false)
-              }
+              onClick={() => setOpen(false)}
               className="
                 mt-2
                 bg-violet-600
