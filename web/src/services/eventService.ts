@@ -1,4 +1,4 @@
-import { api } from './api';
+import api from './api';
 
 export async function getEvents() {
   const response = await api.get('/eventos');
@@ -21,9 +21,7 @@ export async function createEvent(formData: FormData) {
 }
 
 export async function getCategorias() {
-  const response = await api.get(
-    "/eventos/categorias/listado"
-  );
+  const response = await api.get('/eventos/categorias/listado');
 
   return response.data.data;
 }

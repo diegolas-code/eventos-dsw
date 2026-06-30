@@ -57,16 +57,25 @@ model Usuario {
   rol               RolUsuario        @default(miembro)
   creado_en         DateTime          @default(now())
   actualizado_en    DateTime          @updatedAt
-
+ 
   // Relaciones
   eventos_creados   Evento[]          @relation("EventosCreados")
   comentarios       Comentario[]
   perfiles          PerfilEntidad[]
   acciones_moderacion AccionModeracion[]
-
+  asistencias         UsuarioEvento[]
   @@index([rol])
 }
+model UsuarioEvento {
+  usuario_id String
+  evento_id String
+  creado_en DateTime @default(now())
 
+  usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  evento Evento @relation(fields: [evento_id], references: [id], onDelete: Cascade)
+
+  @@id([usuario_id, evento_id])
+}
 /**
  * Modelo de Perfil de Entidad.
  * Permite que un usuario tenga múltiples identidades (Artista, Lugar, etc).
@@ -123,6 +132,7 @@ model Evento {
   artistas              EventoArtista[]
   acciones_moderacion   AccionModeracion[]
   imagenes              EventoImagen[]
+  asistentes            UsuarioEvento[]
   @@index([estado])
   @@index([inicia_en])
   @@index([creado_por_usuario_id])
@@ -160,6 +170,10 @@ model EventoArtista {
   @@id([evento_id, artista_id])
   @@index([artista_id])
 }
+
+
+
+
 
 /**
  * Modelo de Comentario.
@@ -205,3 +219,4 @@ model AccionModeracion {
   @@index([evento_id])
   @@index([moderador_id])
 }
+

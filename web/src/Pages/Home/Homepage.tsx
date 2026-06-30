@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
 import MainLayout from '../../Components/layout/MainLayout';
-import { useState } from 'react';
 import EventGrid from '../../Pages/EventPage/EventGrid';
 import HeroSection from '../Home/HeroSection';
-import { getCategorias } from '../../services/eventService';
-import { getEvents } from '../../services/eventService';
+
+import { getCategorias, getEvents } from '../../services/eventService';
 
 export default function HomePage() {
   const { data, isLoading, error } = useQuery({
@@ -13,13 +13,14 @@ export default function HomePage() {
     queryFn: getEvents,
   });
 
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('TODOS');
-  const [search, setSearch] = useState('');
-
   const { data: categorias } = useQuery({
     queryKey: ['categorias'],
     queryFn: getCategorias,
   });
+
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('TODOS');
+
+  const [search, setSearch] = useState('');
 
   const eventosFiltrados = data?.filter((evento: any) => {
     const coincideCategoria =
@@ -40,13 +41,14 @@ export default function HomePage() {
   return (
     <MainLayout>
       <HeroSection search={search} setSearch={setSearch} />
+
       <div className="mb-8 flex gap-3 flex-wrap">
         <button
           onClick={() => setCategoriaSeleccionada('TODOS')}
           className={
             categoriaSeleccionada === 'TODOS'
               ? 'bg-violet-600 text-white px-4 py-2 rounded-full'
-              : 'bg-white px-4 py-2 rounded-full'
+              : 'bg-white border border-zinc-200 px-4 py-2 rounded-full'
           }
         >
           Todos
@@ -69,19 +71,21 @@ export default function HomePage() {
           </button>
         ))}
       </div>
+
       {isLoading && <p>Cargando eventos...</p>}
 
       {error && <p className="text-red-500">Error cargando eventos</p>}
 
       {data && <EventGrid events={eventosFiltrados ?? []} />}
+
       <div
         className="
-    mt-20
-    bg-white
-    rounded-3xl
-    p-10
-    text-center
-  "
+          mt-20
+          bg-white
+          rounded-3xl
+          p-10
+          text-center
+        "
       >
         <h2 className="text-4xl font-bold mb-4">¿Organizás eventos?</h2>
 
@@ -91,14 +95,14 @@ export default function HomePage() {
 
         <button
           className="
-      bg-violet-600
-      text-white
-      px-6
-      py-3
-      rounded-xl
-      hover:bg-violet-700
-      transition
-    "
+            bg-violet-600
+            text-white
+            px-6
+            py-3
+            rounded-xl
+            hover:bg-violet-700
+            transition
+          "
         >
           Publicar evento
         </button>

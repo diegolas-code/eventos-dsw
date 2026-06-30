@@ -4,7 +4,13 @@
  * Este archivo centraliza el acceso a la base de Datos (PostgreSQL) a través de Prisma.
  * Actualizado para Phase 0.5 con Enums y relaciones M:N.
  */
-import { PrismaClient, RolUsuario, EstadoEvento, TipoEntidad, CategoriaEvento } from '@prisma/client';
+import {
+  PrismaClient,
+  RolUsuario,
+  EstadoEvento,
+  TipoEntidad,
+  CategoriaEvento,
+} from '@prisma/client';
 import type {
   CreateEventoInput,
   CreateComentarioInput,
@@ -27,7 +33,7 @@ export interface Evento {
   titulo: string;
   descripcion: string | null;
   iniciaEn: string;
-    categoria: string;
+  categoria: string;
   terminaEn: string | null;
   estado: EstadoEvento;
   entidadLugarId: string | null;
@@ -38,7 +44,7 @@ export interface Evento {
   lugar: string | null;
   // Incluimos artistas si vienen en la query
   artistas?: PerfilEntidadBrief[];
-   imagenes?: EventoImagen[];
+  imagenes?: EventoImagen[];
 }
 
 export interface EventoImagen {
@@ -160,36 +166,49 @@ const mapPerfilEntidad = (p: any): PerfilEntidad => ({
 // --- MÉTODOS DE EVENTOS ---
 
 /** Lista todos los eventos registrados con sus artistas */
-export const listEventos = async (): Promise<Evento[]> => {
+export const listEventos = async (usuarioId?: string): Promise<Evento[]> => {
   const data = await prisma.evento.findMany({
     where: { estado: 'PUBLICADO' },
     include: {
       artistas: {
-        include: { artista: true ,
+        include: { artista: true },
       },
-    },
-imagenes: true,
+      imagenes: true,
+
+      asistentes: usuarioId
+        ? {
+            where: {
+              usuario_id: usuarioId,
+            },
+            select: {
+              usuario_id: true,
+            },
+          }
+        : false,
     },
     orderBy: { inicia_en: 'asc' },
   });
-  return data.map(mapEvento);
-};
 
+  return data.map(e => ({
+    ...mapEvento(e),
+    isAsistiendo: usuarioId ? e.asistentes.length > 0 : false,
+  }));
+};
 /** Obtiene un evento específico por su ID */
 export const getEvento = async (eventoId: string): Promise<Evento | null> => {
-const data = await prisma.evento.findUnique({
-  where: { id: eventoId },
+  const data = await prisma.evento.findUnique({
+    where: { id: eventoId },
 
-  include: {
-    artistas: {
-      include: {
-        artista: true,
+    include: {
+      artistas: {
+        include: {
+          artista: true,
+        },
       },
-    },
 
-    imagenes: true,
-  },
-});
+      imagenes: true,
+    },
+  });
   return data ? mapEvento(data) : null;
 };
 
@@ -208,35 +227,27 @@ export const createEvento = async (
       lugar_manual: input.lugar ?? null,
       categoria: input.categoria ?? CategoriaEvento.OTRO,
       inicia_en: new Date(input.iniciaEn),
-      termina_en: input.terminaEn
-        ? new Date(input.terminaEn)
-        : null,
-      entidad_lugar_id:
-        input.entidadLugarId ?? null,
-      creado_por_usuario_id:
-        input.creadoPorUsuarioId ?? null,
+      termina_en: input.terminaEn ? new Date(input.terminaEn) : null,
+      entidad_lugar_id: input.entidadLugarId ?? null,
+      creado_por_usuario_id: input.creadoPorUsuarioId ?? null,
       estado: EstadoEvento.PENDIENTE,
 
       artistas: input.artistasIds
         ? {
-            create: input.artistasIds.map(
-              (id) => ({
-                artista: {
-                  connect: { id },
-                },
-              })
-            ),
+            create: input.artistasIds.map(id => ({
+              artista: {
+                connect: { id },
+              },
+            })),
           }
         : undefined,
 
       imagenes: input.galeria?.length
         ? {
-            create: input.galeria.map(
-              (url, index) => ({
-                url,
-                orden: index,
-              })
-            ),
+            create: input.galeria.map((url, index) => ({
+              url,
+              orden: index,
+            })),
           }
         : undefined,
     },
@@ -507,3 +518,89 @@ export const seedDemoData = async (): Promise<void> => {
 
   console.log('✅ Datos iniciales sembrados con éxito.');
 };
+
+/**
+ * Marca asistencia a un evento.
+ */
+export async function asistirEvento(usuarioId: string, eventoId: string) {
+  return prisma.usuarioEvento.upsert({
+    where: {
+      usuario_id_evento_id: {
+        usuario_id: usuarioId,
+        evento_id: eventoId,
+      },
+    },
+    update: {},
+    create: {
+      usuario_id: usuarioId,
+      evento_id: eventoId,
+    },
+  });
+}
+/**
+ * Cancela asistencia.
+ */
+export async function cancelarAsistencia(usuarioId: string, eventoId: string) {
+  return prisma.usuarioEvento.delete({
+    where: {
+      usuario_id_evento_id: {
+        usuario_id: usuarioId,
+        evento_id: eventoId,
+      },
+    },
+  });
+}
+
+/**
+ * Obtiene todos los eventos a los que asistirá un usuario.
+ */
+export async function obtenerEventosAsistire(usuarioId: string) {
+  return prisma.usuarioEvento.findMany({
+    where: {
+      usuario_id: usuarioId,
+    },
+    include: {
+      evento: {
+        include: {
+          imagenes: true,
+          artistas: {
+            include: {
+              artista: true,
+            },
+          },
+          lugar: true,
+        },
+      },
+    },
+    orderBy: {
+      creado_en: 'desc',
+    },
+  });
+}
+
+/**
+ * Verifica si un usuario asistirá a un evento.
+ */
+export async function usuarioAsistiraEvento(usuarioId: string, eventoId: string) {
+  const asistencia = await prisma.usuarioEvento.findUnique({
+    where: {
+      usuario_id_evento_id: {
+        usuario_id: usuarioId,
+        evento_id: eventoId,
+      },
+    },
+  });
+
+  return !!asistencia;
+}
+
+/**
+ * Cantidad de asistentes de un evento.
+ */
+export async function contarAsistentes(eventoId: string) {
+  return prisma.usuarioEvento.count({
+    where: {
+      evento_id: eventoId,
+    },
+  });
+}

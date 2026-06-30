@@ -8,6 +8,7 @@ import perfilesRouter from './routes/perfiles.js';
 import authRouter from './routes/auth.js';
 import moderacionRouter from './routes/moderacion.js';
 import { seedDemoData } from './store.js';
+import asistenciasRouter from './routes/asistencia.js';
 
 export const createApp = () => {
   // Inicializamos datos de prueba de forma asíncrona (no bloqueamos el arranque)
@@ -36,6 +37,7 @@ export const createApp = () => {
   app.use('/api/v1/perfiles', perfilesRouter);
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/moderacion', moderacionRouter);
+  app.use('/api/v1/asistencias', asistenciasRouter);
 
   app.use((_request: Request, response: Response) => {
     response.status(404).json({ error: 'La ruta solicitada no existe' });

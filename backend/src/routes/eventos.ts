@@ -4,7 +4,7 @@
  */
 import { Router } from 'express';
 import type { Request as ExRequest } from 'express-serve-static-core';
-
+import { requireAuth } from '../middleware/auth.js';
 import type { CreateEventoInput, CreateComentarioInput } from '../dtos.js';
 import upload from '../middleware/upload.js';
 import cloudinary from '../config/cloudinary.js';
@@ -38,10 +38,13 @@ const router = Router();
  * GET /api/v1/eventos
  * Retorna la lista de todos los eventos.
  */
-router.get('/', async (_request: Req, response: ExpressResponse) => {
-  response.json({ data: await listEventos() });
-});
+router.get('/', requireAuth, async (request: any, response: ExpressResponse) => {
+  const usuarioId = request.user!.id;
 
+  const eventos = await listEventos(usuarioId);
+
+  response.json({ data: eventos });
+});
 /**
  * POST /api/v1/eventos
  * Crea un nuevo evento. Valida campos obligatorios básicos.

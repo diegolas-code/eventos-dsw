@@ -111,18 +111,6 @@ export default function Navbar() {
             <Link
               to="/perfil"
               className="
-                text-zinc-700
-                hover:text-violet-600
-                transition
-                font-medium
-              "
-            >
-              Perfil
-            </Link>
-
-            <Link
-              to="/"
-              className="
                 bg-violet-600
                 hover:bg-violet-700
                 transition
@@ -133,7 +121,7 @@ export default function Navbar() {
                 font-semibold
               "
             >
-              Explorar
+              Perfil
             </Link>
           </div>
 
