@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updatePerfilEntidad } from '../../services/perfilService';
+import { createPerfilEntidad, updatePerfilEntidad } from '../../services/perfilService';
 
 interface ManagePerfilPageProps {
   perfilInicial?: {
@@ -24,15 +24,28 @@ export default function ManagePerfilPage({ perfilInicial, onBack }: ManagePerfil
   const [imagenUrl, setImagenUrl] = useState(perfilInicial?.imagenUrl ?? '');
 
   const mutation = useMutation({
-    mutationFn: (data: any) => updatePerfilEntidad(perfilInicial?.id ?? '', data),
+    mutationFn: (data: any) => {
+      if (perfilInicial?.id) {
+        return updatePerfilEntidad(perfilInicial?.id, data);
+      } else {
+        return createPerfilEntidad({
+          nombre: data.nombre,
+          tipo: data.tipo,
+          descripcion: data.descripcion,
+          direccion: data.direccion,
+          gmapsUrl: data.gmapsUrl,
+          imagenUrl: data.imagenUrl,
+        });
+      }
+    },
     onSuccess: () => {
       //Invalida consultas para refrescar datos publicos en app
-      queryClient.invalidateQueries({ queryKey: ['perfil', perfilInicial?.id] });
-      alert('Perfil actualizado con éxito!');
+      queryClient.invalidateQueries({ queryKey: ['usuario-actual'] });
+      alert(perfilInicial ? '¡Perfil actualizado con éxito!' : '¡Perfil creado con éxito!');
       onBack();
     },
     onError: () => {
-      alert('Hubo un error al guardar los cambios del perfil');
+      alert('Hubo un error al guardar los cambios del perfil.');
     },
   });
 
