@@ -4,7 +4,7 @@
  */
 import { Router } from 'express';
 import type { Request as ExRequest } from 'express-serve-static-core';
-import { requireAuth } from '../middleware/auth.js';
+import { optionalAuth } from '../middleware/auth.js';
 import type { CreateEventoInput, CreateComentarioInput } from '../dtos.js';
 import upload from '../middleware/upload.js';
 import cloudinary from '../config/cloudinary.js';
@@ -38,8 +38,8 @@ const router = Router();
  * GET /api/v1/eventos
  * Retorna la lista de todos los eventos.
  */
-router.get('/', requireAuth, async (request: any, response: ExpressResponse) => {
-  const usuarioId = request.user!.id;
+router.get('/', optionalAuth, async (request: any, response: ExpressResponse) => {
+  const usuarioId = request.user?.id;
   const entidadId = request.query.entidadId as string | undefined;
 
   const eventos = await listEventos(usuarioId, entidadId);

@@ -43,6 +43,32 @@ export function requireAuth(req: ExRequest, res: Response, next: NextFunction): 
 }
 
 /**
+ * Middleware que procesa el token JWT si está presente, pero no bloquea la petición
+ * si no hay token o es inválido (permitiendo acceso a usuarios invitados).
+ */
+export function optionalAuth(req: ExRequest, res: Response, next: NextFunction): void {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    next();
+    return;
+  }
+
+  const token = authHeader.split(' ')[1];
+  const payload = verifyJwt(token, JWT_SECRET);
+
+  if (payload) {
+    (req as any).user = {
+      id: payload.id,
+      email: payload.email,
+      rol: payload.rol as RolUsuario,
+    };
+  }
+
+  next();
+}
+
+/**
  * Middleware para restringir acceso a ciertos roles.
  * Debe ejecutarse después de requireAuth.
  *
