@@ -426,7 +426,8 @@ export const updateUsuario = async (usuarioId: string, patch: any): Promise<Usua
       },
     });
     return mapUsuario(data);
-  } catch {
+  } catch (error) {
+    console.error('Error in updateUsuario:', error);
     return null;
   }
 };

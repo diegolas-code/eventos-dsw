@@ -104,7 +104,7 @@ export default function ProfileView({
                     type="button"
                     onClick={() => {
                       setIsEditing(false);
-                      setNombre(usuarioData?.nombre_mostrar || usuarioData?.nombre || '');
+                      setNombre(usuarioData?.nombreMostrar || '');
                     }}
                     className="bg-zinc-200 hover:bg-zinc-300 text-zinc-700 font-medium text-xs px-4 py-2 rounded-lg transition-colors"
                   >

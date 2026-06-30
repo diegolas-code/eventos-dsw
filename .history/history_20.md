@@ -56,6 +56,16 @@
 - **Problema (Identificador de Usuario nulo tras Login):** Al iniciar sesión en la misma pestaña, `handleLoginSuccess` en [ProfilePage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ProfilePage.tsx) guardaba el ID en `localStorage` pero omitía llamar a `setUserId(id)`. Como consecuencia, la consulta de datos del usuario permanecía deshabilitada o retornaba datos vacíos sin actualizar la agenda.
   - _Solución:_ Se agregó `setUserId(id)` en el callback de login.
 
+### 6. Depuración del Panel de Usuario y Nombre Completo
+
+- **Problema (Reversión de nombre en Cancelar):** Al cancelar la edición de nombre en [ProfileView.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ProfileView.tsx), se reseteaba el estado usando campos desactualizados de la firma anterior (`nombre_mostrar` y `nombre`). Esto dejaba el input del formulario vacío.
+  - _Solución:_ Se alineó para usar el campo mapeado `nombreMostrar`.
+- **Problema (Compatibilidad del Interceptor de Axios):** El interceptor de requests en [api.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/services/api.ts) dependía del método `.set` para asignar el Header de autorización, que podía fallar en algunas versiones de Axios si `headers` es un objeto plano.
+  - _Solución:_ Se simplificó la inyección utilizando la asignación directa de clave estándar `config.headers['Authorization']`.
+- **Problema (Seguridad contra referencias nulas de Eventos):** En el listado del panel de control de usuario ([DashboardView.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/DashboardView.tsx)), si un evento agendado por el usuario era eliminado de la base de datos, el mapeo de `item.evento.id` lanzaba una excepción de referencia nula, rompiendo toda la carga del dashboard.
+  - _Solución:_ Se añadió un filtro defensivo `.filter((item: any) => item && item.evento)` antes del mapeo.
+- **Instrumentación de Diagnóstico (Consola):** Se añadieron `console.log` explicativos en la query del dashboard del perfil para facilitar la visibilidad en tiempo de ejecución del navegador de los payloads recuperados de `/usuarios/:id` y `/asistencias/mis-eventos`.
+
 ---
 
 ## 🏁 Estado del Repositorio

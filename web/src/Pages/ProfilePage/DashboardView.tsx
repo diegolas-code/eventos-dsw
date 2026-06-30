@@ -19,26 +19,48 @@ export default function DashboardView({ usuarioData, onEditarPerfilClick }: Dash
   } = useQuery({
     queryKey: ['dashboard-eventos', usuarioData?.id],
     queryFn: async () => {
-      if (esEntidad) {
-        // Es artista/lugar: traer eventos creados por esta entidad
-        const response = await api.get('/eventos', {
-          params: { entidadId: perfilId },
-        });
-        return (response.data.data || []).map((e: any) => ({
-          id: e.id,
-          titulo: e.titulo,
-          imagen_url: e.imagenUrl || e.imagen_url || '',
-          inicia_en: e.iniciaEn || e.inicia_en,
-        }));
-      } else {
-        // Si es usuario común, traer eventos a los que marcó asistir
-        const response = await api.get('/asistencias/mis-eventos');
-        return (response.data.data || []).map((item: any) => ({
-          id: item.evento.id,
-          titulo: item.evento.titulo,
-          imagen_url: item.evento.imagen_url || item.evento.imagenUrl || '',
-          inicia_en: item.evento.inicia_en || item.evento.iniciaEn,
-        }));
+      console.log(
+        'DashboardView queryFn starting. esEntidad:',
+        esEntidad,
+        'usuarioData:',
+        usuarioData
+      );
+      try {
+        if (esEntidad) {
+          // Es artista/lugar: traer eventos creados por esta entidad
+          console.log('Fetching entity events for perfilId:', perfilId);
+          const response = await api.get('/eventos', {
+            params: { entidadId: perfilId },
+          });
+          console.log('Entity events response:', response.data);
+          return (response.data.data || []).map((e: any) => ({
+            id: e.id,
+            titulo: e.titulo,
+            imagen_url: e.imagenUrl || e.imagen_url || '',
+            inicia_en: e.iniciaEn || e.inicia_en,
+          }));
+        } else {
+          // Si es usuario común, traer eventos a los que marcó asistir
+          console.log('Fetching RSVP events for user');
+          const response = await api.get('/asistencias/mis-eventos');
+          console.log('RSVP events response:', response.data);
+          const mapped = (response.data.data || [])
+            .filter((item: any) => item && item.evento)
+            .map((item: any) => {
+              console.log('Mapping RSVP item:', item);
+              return {
+                id: item.evento.id,
+                titulo: item.evento.titulo,
+                imagen_url: item.evento.imagen_url || item.evento.imagenUrl || '',
+                inicia_en: item.evento.inicia_en || item.evento.iniciaEn,
+              };
+            });
+          console.log('Mapped RSVP events:', mapped);
+          return mapped;
+        }
+      } catch (err) {
+        console.error('Error fetching dashboard events:', err);
+        throw err;
       }
     },
     enabled: !!usuarioData?.id,
