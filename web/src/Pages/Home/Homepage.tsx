@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import MainLayout from '../../Components/layout/MainLayout';
 import EventGrid from '../../Pages/EventPage/EventGrid';
@@ -93,19 +94,43 @@ export default function HomePage() {
           Publicá recitales, talleres, exposiciones y actividades.
         </p>
 
-        <button
-          className="
-            bg-violet-600
-            text-white
-            px-6
-            py-3
-            rounded-xl
-            hover:bg-violet-700
-            transition
-          "
-        >
-          Publicar evento
-        </button>
+        {!localStorage.getItem('token') ? (
+          <button
+            disabled
+            className="
+              bg-zinc-100
+              border
+              border-zinc-200
+              text-zinc-400
+              px-6
+              py-3
+              rounded-xl
+              cursor-not-allowed
+              opacity-75
+              font-semibold
+            "
+            title="Iniciá sesión para publicar un evento"
+          >
+            Inicia sesión para publicar un evento
+          </button>
+        ) : (
+          <Link to="/crear-evento">
+            <button
+              className="
+                bg-violet-600
+                text-white
+                px-6
+                py-3
+                rounded-xl
+                hover:bg-violet-700
+                transition
+                font-semibold
+              "
+            >
+              Publicar evento
+            </button>
+          </Link>
+        )}
       </div>
     </MainLayout>
   );

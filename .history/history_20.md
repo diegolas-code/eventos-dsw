@@ -77,6 +77,8 @@
   - _Solución:_ Se diseñó un middleware `optionalAuth` en [auth.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/middleware/auth.ts) que procesa el token JWT si está presente pero no bloquea la petición si no lo está. Se sustituyó `requireAuth` por `optionalAuth` en la ruta `GET /` de [eventos.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/routes/eventos.ts) y se corrigió `usuarioId = request.user?.id` de forma segura.
 - **Problema (Botón de Asistencia Visible para Invitados):** Los usuarios invitados (no logueados) veían el botón "Asistir" activo en las tarjetas. Al pulsarlo, se lanzaban mutaciones que fallaban con `401 Unauthorized` por falta de token.
   - _Solución:_ Se modificó [EventCard.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/EventPage/EventCard.tsx) para verificar la existencia del token en `localStorage`. Si está ausente, se renderiza un botón deshabilitado que dice "Iniciá sesión para asistir" con un tooltip explicativo.
+- **Problema (Botón de Publicar Evento inactivo en Homepage):** En [Homepage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/Home/Homepage.tsx), la sección "¿Organizás eventos?" tenía un botón estático que no redirigía y permitía clics a invitados.
+  - _Solución:_ Se importó `Link` de `react-router-dom` para envolver el botón activo con destino a `/crear-evento`. Si el token no existe, se muestra deshabilitado con el texto "Inicia sesión para publicar un evento".
 
 ---
 
