@@ -166,9 +166,25 @@ const mapPerfilEntidad = (p: any): PerfilEntidad => ({
 // --- MÉTODOS DE EVENTOS ---
 
 /** Lista todos los eventos registrados con sus artistas */
-export const listEventos = async (usuarioId?: string): Promise<Evento[]> => {
+export const listEventos = async (usuarioId?: string, entidadId?: string): Promise<Evento[]> => {
   const data = await prisma.evento.findMany({
-    where: { estado: 'PUBLICADO' },
+    where: {
+      estado: 'PUBLICADO',
+      ...(entidadId
+        ? {
+            OR: [
+              { entidad_lugar_id: entidadId },
+              {
+                artistas: {
+                  some: {
+                    artista_id: entidadId,
+                  },
+                },
+              },
+            ],
+          }
+        : {}),
+    },
     include: {
       artistas: {
         include: { artista: true },
@@ -445,6 +461,7 @@ export const CreatePerfilEntidad = async (
       direccion: input.direccion ?? null,
       gmaps_url: input.gmapsUrl ?? null,
       imagen_url: input.imagenUrl ?? null,
+      reclamado: !!input.usuarioId,
     },
   });
   return mapPerfilEntidad(data);

@@ -1,4 +1,4 @@
-import { api } from './api';
+import api from './api';
 
 /** Obtiene todos los comentarios de un evento específico */
 export async function getComentariosByEvento(eventoId: string) {

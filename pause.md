@@ -26,21 +26,23 @@ Este documento confirma que el proyecto ha completado exitosamente la **Fase 2 (
 
 ---
 
-## ⏸️ Estado de Pausa Actual (Integración Realizada en `dev`)
+## ⏸️ Estado de Pausa Actual (Integración Realizada en `merge-victor-meli`)
 
-Actualmente nos encontramos posicionados en la rama principal de desarrollo **`dev`**, habiendo integrado exitosamente todo el código de `meli-part` (perfiles de entidades) y `victor-part` (buscador, galerías y usabilidad).
+Actualmente nos encontramos posicionados en la rama de integración **`merge-victor-meli`**, habiendo consolidado exitosamente el trabajo de `meli-part` (perfiles y dashboard) y `victor-part` (asistencia y backend), y resuelto todos los desajustes de API e importaciones.
 
 ### **Estado de la Integración**
 
-- **Conflictos Resueltos**: Se unificaron las píldoras de categorías y los filtros de búsqueda textual en [Homepage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/Home/Homepage.tsx) sin perder la reactividad de la sección Hero.
-- **Estabilidad del Proyecto**: Los tests de integración y la compilación general del cliente (`npm run build`) y servidor (`npm run typecheck`) están pasando de forma 100% limpia.
+- **Conflictos Resueltos**: Se corrigió el callback de login en [LoginForm.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/LoginForm.tsx) para inicializar correctamente el panel de usuario.
+- **Importación de Axios unificada**: Todos los componentes y servicios fueron convertidos a la importación por defecto de `api`.
+- **Lógica de Perfiles Completada**: El formulario [ManagePerfilPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ManagePerfilPage.tsx) ahora cuenta con selector de tipo (`ARTISTA` | `LUGAR`) y envía correctamente el payload de creación junto al ID de usuario propietario. El backend marca el perfil como `reclamado` de forma automática.
+- **Dashboard y Agenda Alineados**: [DashboardView.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/DashboardView.tsx) obtiene la agenda personal mediante el endpoint real de asistencia de Victor y los eventos creados por entidad mediante un parámetro de filtrado REST implementado en el backend.
+- **Estabilidad del Proyecto**: El cliente de Prisma se regeneró y el backend y frontend compilan limpiamente (`npm run build`).
 
 ### **Pendientes Inmediatos (Próxima tarea)**
 
-1. **Corregir Formulario de Creación de Perfil**:
-   - En [ManagePerfilPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ManagePerfilPage.tsx), hacer que el envío del formulario llame a `createPerfilEntidad` (`POST /api/v1/perfiles`) cuando no se disponga de un `perfilInicial`, en lugar de llamar a `updatePerfilEntidad` con ID vacío.
-   - Añadir un selector para especificar el campo obligatorio `tipo` (`ARTISTA` | `LUGAR`) durante el modo de creación de perfil.
-2. **Flujo de Moderación/Aprobación de Reclamos**:
+1. **Flujo de Moderación/Aprobación de Reclamos**:
    - Establecer cómo el administrador autoriza y valida un reclamo de perfil.
-3. **Dashboard de Entidades**:
-   - Construcción del panel de control para que la entidad gestione sus publicaciones de eventos específicos.
+2. **Dashboard de Entidades (Edición de Eventos)**:
+   - Implementar el formulario de edición de eventos específicos publicados por la entidad.
+3. **Sección de Alertas y Notificaciones**:
+   - Construcción del sistema de notificaciones.

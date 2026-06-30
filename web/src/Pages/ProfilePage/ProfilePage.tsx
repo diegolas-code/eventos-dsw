@@ -6,7 +6,7 @@ import ProfileView from './ProfileView';
 import ManagePerfilPage from './ManagePerfilPage';
 import DashboardView from './DashboardView';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../services/api';
+import api from '../../services/api';
 import { useLocation } from 'react-router-dom';
 
 export default function ProfilePage() {
@@ -104,7 +104,10 @@ export default function ProfilePage() {
           isLoading ? (
             <p className="text-zinc-500">Cargando datos de tu cuenta...</p>
           ) : isManagingPerfil ? (
-            <ManagePerfilPage onBack={handlePerfilActualizado} />
+            <ManagePerfilPage
+              perfilInicial={usuario?.perfiles?.[0]}
+              onBack={handlePerfilActualizado}
+            />
           ) : (
             //Vista perfil y Agenda/Dashboard
             <div className="w-full max-w-4xl space-y-6">

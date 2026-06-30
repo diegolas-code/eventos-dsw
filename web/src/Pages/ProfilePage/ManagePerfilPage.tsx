@@ -10,6 +10,7 @@ interface ManagePerfilPageProps {
     direccion?: string;
     gmapsUrl?: string;
     imagenUrl?: string;
+    tipo?: 'ARTISTA' | 'LUGAR';
   };
   onBack: () => void;
 }
@@ -18,10 +19,13 @@ export default function ManagePerfilPage({ perfilInicial, onBack }: ManagePerfil
   const queryClient = useQueryClient();
 
   const [nombre, setNombre] = useState(perfilInicial?.nombre ?? '');
+  const [tipo, setTipo] = useState<'ARTISTA' | 'LUGAR'>(perfilInicial?.tipo ?? 'ARTISTA');
   const [descripcion, setDescripcion] = useState(perfilInicial?.descripcion ?? '');
   const [direccion, setDireccion] = useState(perfilInicial?.direccion ?? '');
   const [gmapsUrl, setGmapsUrl] = useState(perfilInicial?.gmapsUrl ?? '');
   const [imagenUrl, setImagenUrl] = useState(perfilInicial?.imagenUrl ?? '');
+
+  const usuarioId = localStorage.getItem('demo_session_id') || undefined;
 
   const mutation = useMutation({
     mutationFn: (data: any) => {
@@ -29,6 +33,7 @@ export default function ManagePerfilPage({ perfilInicial, onBack }: ManagePerfil
         return updatePerfilEntidad(perfilInicial?.id, data);
       } else {
         return createPerfilEntidad({
+          usuarioId,
           nombre: data.nombre,
           tipo: data.tipo,
           descripcion: data.descripcion,
@@ -55,6 +60,7 @@ export default function ManagePerfilPage({ perfilInicial, onBack }: ManagePerfil
 
     mutation.mutate({
       nombre,
+      tipo,
       descripcion,
       direccion,
       gmapsUrl,
@@ -77,6 +83,23 @@ export default function ManagePerfilPage({ perfilInicial, onBack }: ManagePerfil
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {!perfilInicial && (
+          <div>
+            <label className="block text-sm font-semibold text-zinc-700 mb-1">
+              Tipo de Entidad *
+            </label>
+            <select
+              value={tipo}
+              onChange={e => setTipo(e.target.value as 'ARTISTA' | 'LUGAR')}
+              className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-violet-500 text-zinc-900 bg-white"
+              required
+            >
+              <option value="ARTISTA">Artista / Banda</option>
+              <option value="LUGAR">Lugar / Centro Cultural / Teatro</option>
+            </select>
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-semibold text-zinc-700 mb-1">
             Nombre de la Entidad *

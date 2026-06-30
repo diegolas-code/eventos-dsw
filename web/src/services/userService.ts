@@ -1,4 +1,4 @@
-import { api } from './api';
+import api from './api';
 
 /** Obtiene los datos de un usuario específico por su ID */
 export async function getUsuarioById(id: string) {

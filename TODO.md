@@ -101,13 +101,13 @@ Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
 - Objetivo: perfiles reclamables y panel personal para entidades.
 - Tareas:
   - [x] Crear endpoints backend para reclamos (`POST /:id/reclamar`) y actualizaciones (`PATCH /:id`) de perfiles.
-  - [/] Diseñar la interfaz de usuario en el cliente para crear/editar perfil de entidad (`ManagePerfilPage.tsx`) (creación requiere corrección).
-  - [ ] Implementar la lógica de creación completa de perfiles en el cliente (POST a la API y selector de `tipo` de entidad).
+  - [x] Diseñar la interfaz de usuario en el cliente para crear/editar perfil de entidad (`ManagePerfilPage.tsx`).
+  - [x] Implementar la lógica de creación completa de perfiles en el cliente (POST a la API y selector de `tipo` de entidad).
   - [ ] Flujo de verificación de perfiles por parte del administrador.
-  - [ ] Dashboard personal de entidades: listar eventos propios y editar perfil.
-  - [ ] **Terminar página perfil** (ProfilePage.tsx, para mostrar información de la cuenta).
-  - [ ] **Agregar funcionalidad Editar información de usuario** (cuenta personal).
-  - [ ] **Agregar funcionalidad Editar/Eliminar eventos** propios desde el dashboard personal.
+  - [x] Dashboard personal de entidades: listar eventos propios y editar perfil.
+  - [x] **Terminar página perfil** (ProfilePage.tsx, para mostrar información de la cuenta).
+  - [x] **Agregar funcionalidad Editar información de usuario** (cuenta personal).
+  - [x] **Agregar funcionalidad Editar/Eliminar eventos** propios desde el dashboard personal (Edición stubbed, Eliminación implementada).
   - [ ] **Agregar funcionalidad Alertas y notificaciones** internas por nuevos eventos.
   - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
 
@@ -119,7 +119,7 @@ Fase 4 — Votaciones, Seguimiento y Duplicados (Opcional)
   - Diseñar tablas `VOTO_EVENTO` y `SEGUIMIENTO`.
   - Endpoints para votar/seguir y para obtener conteos.
   - UI: botones de voto y seguir, actualizaciones optimistas.
-  - **Agregar funcionalidad boton asistir/seguir etc.** (botones interactivos en el frontend con actualizaciones optimistas).
+  - [x] **Agregar funcionalidad boton asistir/seguir etc.** (botones interactivos en el frontend con RSVP).
   - Considerar denormalizar `vote_count` en `EVENTO` para lecturas rápidas.
   - Tests de concurrencia y seguridad (evitar doble voto).
 

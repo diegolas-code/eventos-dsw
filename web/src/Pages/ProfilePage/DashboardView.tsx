@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { api } from '../../services/api';
+import api from '../../services/api';
 
 interface DashboardViewProps {
   usuarioData: any;
@@ -20,13 +20,25 @@ export default function DashboardView({ usuarioData, onEditarPerfilClick }: Dash
     queryKey: ['dashboard-eventos', usuarioData?.id],
     queryFn: async () => {
       if (esEntidad) {
-        // Es artista: trae eventos creados
-        const response = await api.get(`/eventos/propicios?.entidadId=${perfilId}`);
-        return response.data.data;
+        // Es artista/lugar: traer eventos creados por esta entidad
+        const response = await api.get('/eventos', {
+          params: { entidadId: perfilId },
+        });
+        return (response.data.data || []).map((e: any) => ({
+          id: e.id,
+          titulo: e.titulo,
+          imagen_url: e.imagenUrl || e.imagen_url || '',
+          inicia_en: e.iniciaEn || e.inicia_en,
+        }));
       } else {
-        // Si es usuario comun, trae eventos a los que marcó asistir
-        const response = await api.get(`/usuarios/${usuarioData?.id}/asistencias`);
-        return response.data.data;
+        // Si es usuario común, traer eventos a los que marcó asistir
+        const response = await api.get('/asistencias/mis-eventos');
+        return (response.data.data || []).map((item: any) => ({
+          id: item.evento.id,
+          titulo: item.evento.titulo,
+          imagen_url: item.evento.imagen_url || item.evento.imagenUrl || '',
+          inicia_en: item.evento.inicia_en || item.evento.iniciaEn,
+        }));
       }
     },
     enabled: !!usuarioData?.id,

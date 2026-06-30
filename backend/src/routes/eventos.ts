@@ -40,8 +40,9 @@ const router = Router();
  */
 router.get('/', requireAuth, async (request: any, response: ExpressResponse) => {
   const usuarioId = request.user!.id;
+  const entidadId = request.query.entidadId as string | undefined;
 
-  const eventos = await listEventos(usuarioId);
+  const eventos = await listEventos(usuarioId, entidadId);
 
   response.json({ data: eventos });
 });
