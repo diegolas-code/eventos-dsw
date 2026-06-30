@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { asistirEvento, cancelarAsistencia } from '../../services/asistenciaService';
@@ -17,11 +18,21 @@ type EventCardProps = {
 
 export default function EventCard({ event }: EventCardProps) {
   const queryClient = useQueryClient();
+  const [isAsistiendoLocal, setIsAsistiendoLocal] = useState(!!event.isAsistiendo);
+
+  useEffect(() => {
+    setIsAsistiendoLocal(!!event.isAsistiendo);
+  }, [event.isAsistiendo]);
 
   const asistir = useMutation({
     mutationFn: asistirEvento,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['event'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-eventos'] });
+    },
+    onError: () => {
+      setIsAsistiendoLocal(false);
     },
   });
 
@@ -29,6 +40,11 @@ export default function EventCard({ event }: EventCardProps) {
     mutationFn: cancelarAsistencia,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['event'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-eventos'] });
+    },
+    onError: () => {
+      setIsAsistiendoLocal(true);
     },
   });
 
@@ -36,7 +52,11 @@ export default function EventCard({ event }: EventCardProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    if (event.isAsistiendo) {
+    // Toggle local state immediately for optimistic UI feel
+    const targetState = !isAsistiendoLocal;
+    setIsAsistiendoLocal(targetState);
+
+    if (isAsistiendoLocal) {
       cancelar.mutate(event.id);
     } else {
       asistir.mutate(event.id);
@@ -82,7 +102,7 @@ export default function EventCard({ event }: EventCardProps) {
     duration-200
     border
     ${
-      event.isAsistiendo
+      isAsistiendoLocal
         ? 'bg-red-500 text-white border-red-500 hover:bg-red-600'
         : 'bg-white text-green-600 border-green-500 hover:bg-green-50'
     }
@@ -90,11 +110,7 @@ export default function EventCard({ event }: EventCardProps) {
     disabled:cursor-not-allowed
   `}
         >
-          {asistir.isPending || cancelar.isPending
-            ? 'Procesando...'
-            : event.isAsistiendo
-              ? 'Cancelar asistencia'
-              : 'Asistir'}
+          {isAsistiendoLocal ? 'Cancelar asistencia' : 'Asistir'}
         </button>
       </div>
     </Link>

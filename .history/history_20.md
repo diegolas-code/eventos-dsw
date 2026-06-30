@@ -41,6 +41,14 @@
 - **Problema (Edición bloqueada):** Al hacer clic en "Editar Datos del Perfil" en el Dashboard, la UI se abría en modo creación porque no se le pasaba el prop `perfilInicial` en [ProfilePage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ProfilePage.tsx).
   - _Solución:_ Se pasó `perfilInicial={usuario?.perfiles?.[0]}` en la renderización condicional de la página de perfil.
 
+### 4. Parpadeo y Falta de Sincronización en Asistencia (Agenda)
+
+- **Problema (Retraso visual del Botón):** Al marcar asistencia, la mutación finalizaba (`isPending` se volvía falso), pero la consulta de lista de eventos (`['events']`) tardaba unos segundos en refrescarse en segundo plano. Esto ocasionaba que el botón volviera a su estado inicial de "Asistir" momentáneamente antes de cambiar permanentemente a "Cancelar asistencia", provocando un parpadeo.
+- **Problema (Dashboard desactualizado):** Al marcar asistencia en una tarjeta de evento, el dashboard de perfiles no mostraba el cambio porque la mutación solo invalidaba la clave de query `['events']`, omitiendo `['dashboard-eventos']` y `['event']`.
+- **Solución:**
+  - Se implementó una **Actualización Optimista** mediante un estado local `isAsistiendoLocal` en [EventCard.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/EventPage/EventCard.tsx) que cambia instantáneamente el estilo y texto visual del botón al hacer clic. El botón se deshabilita mientras la petición está en curso, pero retiene el valor objetivo.
+  - Se ampliaron las invalidaciones de caché en las mutaciones de éxito para limpiar las queries de `['events']`, `['event']` y `['dashboard-eventos']` de forma simultánea, logrando una sincronización inmediata en toda la aplicación.
+
 ---
 
 ## 🏁 Estado del Repositorio
