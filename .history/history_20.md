@@ -49,6 +49,13 @@
   - Se implementó una **Actualización Optimista** mediante un estado local `isAsistiendoLocal` en [EventCard.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/EventPage/EventCard.tsx) que cambia instantáneamente el estilo y texto visual del botón al hacer clic. El botón se deshabilita mientras la petición está en curso, pero retiene el valor objetivo.
   - Se ampliaron las invalidaciones de caché en las mutaciones de éxito para limpiar las queries de `['events']`, `['event']` y `['dashboard-eventos']` de forma simultánea, logrando una sincronización inmediata en toda la aplicación.
 
+### 5. Carga de Agenda e Identificación de Perfiles (Dashboard Vacío)
+
+- **Problema (Perfil de Entidad no cargado):** La función `getUsuario` en el backend ([store.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/store.ts)) no incluía la relación `perfiles` en la consulta Prisma. Esto hacía que `usuario.perfiles` fuera `undefined` en el frontend, impidiendo al panel determinar si el usuario era una entidad (`esEntidad` siempre evaluaba a `false`).
+  - _Solución:_ Se actualizó `getUsuario` para incluir `{ perfiles: true }` y se modificó `mapUsuario` para mapear los perfiles de la entidad si están presentes.
+- **Problema (Identificador de Usuario nulo tras Login):** Al iniciar sesión en la misma pestaña, `handleLoginSuccess` en [ProfilePage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ProfilePage.tsx) guardaba el ID en `localStorage` pero omitía llamar a `setUserId(id)`. Como consecuencia, la consulta de datos del usuario permanecía deshabilitada o retornaba datos vacíos sin actualizar la agenda.
+  - _Solución:_ Se agregó `setUserId(id)` en el callback de login.
+
 ---
 
 ## 🏁 Estado del Repositorio

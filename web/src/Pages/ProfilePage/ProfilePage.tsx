@@ -78,6 +78,7 @@ export default function ProfilePage() {
     localStorage.setItem('demo_session_id', id);
     localStorage.setItem('demo_session_email', email);
     localStorage.setItem('demo_session_rol', rol);
+    setUserId(id);
     setUserEmail(email);
   };
 

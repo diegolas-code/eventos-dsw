@@ -86,6 +86,7 @@ export interface Usuario {
   rol: RolUsuario;
   creadoEn: string;
   actualizadoEn: string;
+  perfiles?: PerfilEntidad[];
 }
 
 export interface PerfilEntidad {
@@ -147,6 +148,7 @@ const mapUsuario = (u: any): Usuario => ({
   rol: u.rol as RolUsuario,
   creadoEn: u.creado_en.toISOString(),
   actualizadoEn: u.actualizado_en.toISOString(),
+  perfiles: u.perfiles ? u.perfiles.map(mapPerfilEntidad) : undefined,
 });
 
 const mapPerfilEntidad = (p: any): PerfilEntidad => ({
@@ -396,6 +398,7 @@ export const listUsuarios = async (): Promise<Usuario[]> => {
 export const getUsuario = async (usuarioId: string): Promise<Usuario | null> => {
   const data = await prisma.usuario.findUnique({
     where: { id: usuarioId },
+    include: { perfiles: true },
   });
   return data ? mapUsuario(data) : null;
 };
