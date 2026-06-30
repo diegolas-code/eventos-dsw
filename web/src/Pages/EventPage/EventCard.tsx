@@ -88,10 +88,19 @@ export default function EventCard({ event }: EventCardProps) {
 
         {/* BOTÓN */}
 
-        <button
-          onClick={handleAsistencia}
-          disabled={asistir.isPending || cancelar.isPending}
-          className={`
+        {!localStorage.getItem('token') ? (
+          <button
+            disabled
+            className="mt-4 px-4 py-2 rounded-full text-xs font-semibold border border-zinc-200 bg-zinc-50 text-zinc-400 cursor-not-allowed opacity-75"
+            title="Iniciá sesión para confirmar tu asistencia"
+          >
+            Iniciá sesión para asistir
+          </button>
+        ) : (
+          <button
+            onClick={handleAsistencia}
+            disabled={asistir.isPending || cancelar.isPending}
+            className={`
     mt-4
     px-4
     py-2
@@ -109,9 +118,10 @@ export default function EventCard({ event }: EventCardProps) {
     disabled:opacity-50
     disabled:cursor-not-allowed
   `}
-        >
-          {isAsistiendoLocal ? 'Cancelar asistencia' : 'Asistir'}
-        </button>
+          >
+            {isAsistiendoLocal ? 'Cancelar asistencia' : 'Asistir'}
+          </button>
+        )}
       </div>
     </Link>
   );

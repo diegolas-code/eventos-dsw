@@ -73,10 +73,10 @@
 - **Problema (Cierre de Sesión Automático al Detectar ID Inexistente):** Si la base de datos se borraba o se reiniciaba, el navegador del usuario retenía un `demo_session_id` desactualizado en `localStorage`. La consulta para obtener el usuario actual retornaba `404`, dejando la query `usuario-actual` fallida, la interfaz en un estado intermedio roto (con campos vacíos y botones de guardado llamando a `/usuarios/undefined`), y la agenda sin cargar.
   - _Solución:_ Se agregó un control de errores mediante `useEffect` en [ProfilePage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ProfilePage.tsx) para ejecutar un `handleLogout()` automático e inmediato si la consulta `/usuarios/:id` falla, forzando a re-iniciar sesión con credenciales válidas y regenerar el ID en la BD.
 
-### 8. Autenticación Opcional en el Listado Público de Eventos
-
 - **Problema (Bloqueo de Página Principal para Usuarios Invitados / Deslogueados):** Se había añadido la protección `requireAuth` al endpoint del listado público de eventos `GET /api/v1/eventos` para poder asociar si el usuario logueado marcó asistencia (`isAsistiendo`). Sin embargo, esto causaba que los usuarios deslogueados o aquellos con tokens ausentes recibieran `401 Unauthorized`, dejando la página principal en blanco.
   - _Solución:_ Se diseñó un middleware `optionalAuth` en [auth.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/middleware/auth.ts) que procesa el token JWT si está presente pero no bloquea la petición si no lo está. Se sustituyó `requireAuth` por `optionalAuth` en la ruta `GET /` de [eventos.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/routes/eventos.ts) y se corrigió `usuarioId = request.user?.id` de forma segura.
+- **Problema (Botón de Asistencia Visible para Invitados):** Los usuarios invitados (no logueados) veían el botón "Asistir" activo en las tarjetas. Al pulsarlo, se lanzaban mutaciones que fallaban con `401 Unauthorized` por falta de token.
+  - _Solución:_ Se modificó [EventCard.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/EventPage/EventCard.tsx) para verificar la existencia del token en `localStorage`. Si está ausente, se renderiza un botón deshabilitado que dice "Iniciá sesión para asistir" con un tooltip explicativo.
 
 ---
 
