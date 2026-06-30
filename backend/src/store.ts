@@ -427,7 +427,14 @@ export const updateUsuario = async (usuarioId: string, patch: any): Promise<Usua
     });
     return mapUsuario(data);
   } catch (error) {
-    console.error('Error in updateUsuario:', error);
+    console.error(
+      'Error in updateUsuario for ID:',
+      usuarioId,
+      'with patch:',
+      patch,
+      'Error details:',
+      error
+    );
     return null;
   }
 };

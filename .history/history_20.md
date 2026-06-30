@@ -66,6 +66,13 @@
   - _Solución:_ Se añadió un filtro defensivo `.filter((item: any) => item && item.evento)` antes del mapeo.
 - **Instrumentación de Diagnóstico (Consola):** Se añadieron `console.log` explicativos en la query del dashboard del perfil para facilitar la visibilidad en tiempo de ejecución del navegador de los payloads recuperados de `/usuarios/:id` y `/asistencias/mis-eventos`.
 
+### 7. Manejo de Sesiones Caducas y Errores de Base de Datos
+
+- **Problema (Excepciones Silenciadas en Backend):** El bloque `try-catch` en `updateUsuario` de [store.ts](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/backend/src/store.ts) silenciaba las excepciones. Al arrojar un error Prisma P2025 (Registro no encontrado), se retornaba `null` sin logs de diagnóstico, complicando la depuración de peticiones inválidas.
+  - _Solución:_ Se expandió el log para imprimir la excepción de Prisma junto con el `usuarioId` y el payload `patch` en consola.
+- **Problema (Cierre de Sesión Automático al Detectar ID Inexistente):** Si la base de datos se borraba o se reiniciaba, el navegador del usuario retenía un `demo_session_id` desactualizado en `localStorage`. La consulta para obtener el usuario actual retornaba `404`, dejando la query `usuario-actual` fallida, la interfaz en un estado intermedio roto (con campos vacíos y botones de guardado llamando a `/usuarios/undefined`), y la agenda sin cargar.
+  - _Solución:_ Se agregó un control de errores mediante `useEffect` en [ProfilePage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ProfilePage.tsx) para ejecutar un `handleLogout()` automático e inmediato si la consulta `/usuarios/:id` falla, forzando a re-iniciar sesión con credenciales válidas y regenerar el ID en la BD.
+
 ---
 
 ## 🏁 Estado del Repositorio

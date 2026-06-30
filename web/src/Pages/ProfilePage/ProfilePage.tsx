@@ -43,6 +43,7 @@ export default function ProfilePage() {
   const {
     data: usuario,
     isLoading,
+    error,
     refetch,
   } = useQuery({
     queryKey: ['usuario-actual', userId],
@@ -58,6 +59,14 @@ export default function ProfilePage() {
     enabled: !!userEmail,
     retry: false,
   });
+
+  // Si falla la consulta del usuario actual (ej. ID inexistente en la BD por reset), forzar deslogueo
+  useEffect(() => {
+    if (error) {
+      console.error('Sesión inválida o usuario inexistente. Forzando cierre de sesión.', error);
+      handleLogout();
+    }
+  }, [error]);
 
   // DATOS MOCKEADOS TEMPORALES PARA PRUEBA
   const usuarioMock = {
