@@ -12,6 +12,9 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [modoOlvido, setModoOlvido] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
@@ -21,11 +24,20 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
     try {
       setLoading(true);
       setError(null);
-      const data = await login({ email, password });
-      onLoginSuccess(data.user.id, data.user.email, data.token, data.user.rol);
+      setSuccessMsg(null);
+
+      if (modoOlvido) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setSuccessMsg('¡Contraseña restablecida con éxito! Ya podés ingresar.');
+        setModoOlvido(false);
+        setPassword('');
+      } else {
+        const data = await login({ email, password });
+        onLoginSuccess(data.user.id, data.user.email, data.token, data.user.rol);
+      }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.error ?? 'Error al iniciar sesión. Comprobá tus credenciales.');
+      setError(err.response?.data?.error ?? 'Error al iniciar sesión. Comprobá los datos.');
     } finally {
       setLoading(false);
     }
@@ -33,11 +45,13 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
 
   return (
     <div className="max-w-md w-full mx-auto bg-white border border-zinc-200 p-8 rounded-[32px] shadow-md">
-      <h2 className="text-3xl font-bold text-zinc-900 mb-6 text-center">Iniciar Sesión</h2>
+      <h2 className="text-3xl font-bold text-zinc-900 mb-6 text-center">
+        {modoOlvido ? 'Restablecer Clave' : 'Iniciar Sesión'}
+      </h2>
 
-      {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-sm mb-4 border border-red-100">
-          {error}
+      {successMsg && (
+        <div className="bg-green-50 text-green-700 p-4 rounded-2xl text-sm mb-4 border border-green-100">
+          {successMsg}
         </div>
       )}
 
@@ -57,15 +71,30 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-zinc-600 mb-2 font-semibold">
-            Contraseña
-          </label>
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-sm font-medium text-zinc-600 font-semibold">
+              {modoOlvido ? 'Nueva Contraseña' : 'Contraseña'}
+            </label>
+
+            <button
+              type="button"
+              onClick={() => {
+                setError(null);
+                setSuccessMsg(null);
+                setModoOlvido(!modoOlvido);
+              }}
+              className="text-xs text-violet-600 hover:underline font-medium"
+              disabled={loading}
+            >
+              {modoOlvido ? 'Volver al login' : '¿Olvidaste la contraseña?'}
+            </button>
+          </div>
           <input
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
-            placeholder="••••••••"
+            placeholder={modoOlvido ? 'Ingresá tu nueva clave' : '••••••••'}
             disabled={loading}
           />
         </div>
@@ -75,20 +104,22 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
           disabled={loading}
           className="w-full bg-gradient-to-r from-violet-600 to-pink-500 hover:opacity-90 text-white font-medium py-3 rounded-2xl transition-opacity mt-4 shadow-sm disabled:opacity-50"
         >
-          {loading ? 'Ingresando...' : 'Ingresar'}
+          {loading ? 'Procesando...' : modoOlvido ? 'Cambiar Contraseña' : 'Ingresar'}
         </button>
       </form>
 
-      <p className="text-sm text-zinc-500 mt-6 text-center">
-        ¿No tenés cuenta?{' '}
-        <button
-          onClick={onSwitchToRegister}
-          className="text-violet-600 hover:underline font-semibold"
-          disabled={loading}
-        >
-          Registrate acá
-        </button>
-      </p>
+      {!modoOlvido && (
+        <p className="text-sm text-zinc-500 mt-6 text-center">
+          ¿No tenés cuenta?{' '}
+          <button
+            onClick={onSwitchToRegister}
+            className="text-violet-600 hover:underline font-semibold"
+            disabled={loading}
+          >
+            Registrate acá
+          </button>
+        </p>
+      )}
     </div>
   );
 }

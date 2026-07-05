@@ -193,23 +193,26 @@ export const listEventos = async (usuarioId?: string, entidadId?: string): Promi
       },
       imagenes: true,
 
-      asistentes: usuarioId
+      ...(usuarioId
         ? {
-            where: {
-              usuario_id: usuarioId,
-            },
-            select: {
-              usuario_id: true,
+            asistentes: {
+              where: {
+                usuario_id: usuarioId,
+              },
+              select: {
+                usuario_id: true,
+              },
             },
           }
-        : false,
+        : {}),
     },
     orderBy: { inicia_en: 'asc' },
   });
 
-  return data.map(e => ({
+  return data.map((e: any) => ({
     ...mapEvento(e),
-    isAsistiendo: usuarioId ? e.asistentes.length > 0 : false,
+    // Verifica si el arreglo existe y tiene elementos
+    isAsistiendo: usuarioId && Array.isArray(e.asistentes) ? e.asistentes.length > 0 : false,
   }));
 };
 /** Obtiene un evento específico por su ID */
