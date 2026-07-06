@@ -111,6 +111,15 @@ Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
   - [ ] **Agregar funcionalidad Alertas y notificaciones** internas por nuevos eventos.
   - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
 
+Fase 3.5 — Funcionalidad de Comentarios Modulares (En Progreso) ⏳
+
+- Objetivo: Implementar sistema de comentarios auto-contenido en frontend y asociar identidades de usuario en backend.
+- Tareas:
+  - [ ] Actualizar modelos y mapeadores de comentarios en backend (`backend/src/store.ts`) para incluir relación `usuario`.
+  - [ ] Alinear payloads de creación de comentarios en el servicio frontend (`comentarioService.ts`) y añadir método de borrado.
+  - [ ] Crear el componente auto-contenido `<CommentsSection />` en frontend con estado, queries y mutaciones propias.
+  - [ ] Integrar el componente `<CommentsSection />` en la vista de detalle de eventos (`EventPage.tsx`) y validar el flujo localmente.
+
 Fase 4 — Votaciones, Seguimiento y Duplicados (Opcional)
 
 - Objetivo: añadir interactividad y detección de duplicados simple.
