@@ -74,6 +74,10 @@ export interface Comentario {
   cuerpo: string;
   creadoEn: string;
   actualizadoEn: string;
+  usuario?: {
+    id: string;
+    nombreMostrar: string;
+  } | null;
 }
 
 /**
@@ -139,6 +143,12 @@ const mapComentario = (c: any): Comentario => ({
   cuerpo: c.cuerpo,
   creadoEn: c.creado_en.toISOString(),
   actualizadoEn: c.actualizado_en.toISOString(),
+  usuario: c.usuario
+    ? {
+        id: c.usuario.id,
+        nombreMostrar: c.usuario.nombre_mostrar,
+      }
+    : null,
 });
 
 const mapUsuario = (u: any): Usuario => ({
@@ -325,6 +335,7 @@ export const deleteEvento = async (eventoId: string): Promise<boolean> => {
 export const listComentariosByEvento = async (eventoId: string): Promise<Comentario[]> => {
   const data = await prisma.comentario.findMany({
     where: { evento_id: eventoId },
+    include: { usuario: true },
     orderBy: { creado_en: 'asc' },
   });
   return data.map(mapComentario);
@@ -351,6 +362,7 @@ export const createComentario = async (
         usuario_id: input.usuarioId ?? null,
         padre_id: input.padreId ?? null,
       },
+      include: { usuario: true },
     });
     return mapComentario(data);
   } catch {
