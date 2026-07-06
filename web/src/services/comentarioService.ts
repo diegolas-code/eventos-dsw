@@ -6,15 +6,20 @@ export async function getComentariosByEvento(eventoId: string) {
   return response.data.data;
 }
 
-/** Publica un comentario en un evento (soporta respuestas recursivas si se envía padreId) */
+/** Publica un comentario en un evento */
 export async function createComentario(
   eventoId: string,
-  comentarioData: { contenido: string; usuarioId: string; padreId?: string }
+  comentarioData: { cuerpo: string; usuarioId: string; padreId?: string }
 ) {
   const response = await api.post(`/eventos/${eventoId}/comentarios`, {
-    contenido: comentarioData.contenido,
-    usuario_id: comentarioData.usuarioId,
-    padre_id: comentarioData.padreId || null,
+    cuerpo: comentarioData.cuerpo,
+    usuarioId: comentarioData.usuarioId,
+    padreId: comentarioData.padreId || null,
   });
   return response.data.data;
+}
+
+/** Elimina un comentario por su ID */
+export async function deleteComentario(id: string) {
+  await api.delete(`/comentarios/${id}`);
 }
