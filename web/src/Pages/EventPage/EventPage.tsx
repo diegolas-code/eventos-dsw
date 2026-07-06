@@ -1,37 +1,28 @@
-import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 
-import MainLayout from "../../Components/layout/MainLayout";
-import { getEventById } from "../../services/eventService";
+import MainLayout from '../../Components/layout/MainLayout';
+import { getEventById } from '../../services/eventService';
+import CommentsSection from '../../Components/events/CommentsSection';
 
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-import {
-  Navigation,
-  Pagination,
-  Thumbs,
-  Autoplay,
-} from "swiper/modules";
+import { Navigation, Pagination, Thumbs, Autoplay } from 'swiper/modules';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/thumbs";
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/thumbs';
 
 export default function EventPage() {
   const { id } = useParams();
 
-  const [thumbsSwiper, setThumbsSwiper] =
-    useState<any>(null);
+  const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
 
-  const {
-    data,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["event", id],
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['event', id],
     queryFn: () => getEventById(id!),
     enabled: !!id,
   });
@@ -47,9 +38,7 @@ export default function EventPage() {
   if (error) {
     return (
       <MainLayout>
-        <p className="text-red-500">
-          Error cargando evento
-        </p>
+        <p className="text-red-500">Error cargando evento</p>
       </MainLayout>
     );
   }
@@ -66,7 +55,7 @@ export default function EventPage() {
     ...(data.imagenUrl
       ? [
           {
-            id: "principal",
+            id: 'principal',
             url: data.imagenUrl,
           },
         ]
@@ -88,12 +77,7 @@ export default function EventPage() {
         {images.length > 0 && (
           <div>
             <Swiper
-              modules={[
-                Navigation,
-                Pagination,
-                Thumbs,
-                Autoplay,
-              ]}
+              modules={[Navigation, Pagination, Thumbs, Autoplay]}
               navigation
               pagination={{
                 clickable: true,
@@ -102,20 +86,16 @@ export default function EventPage() {
                 delay: 10000,
               }}
               thumbs={{
-                swiper:
-                  thumbsSwiper &&
-                  !thumbsSwiper.destroyed
-                    ? thumbsSwiper
-                    : null,
+                swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
               }}
               className="w-full"
             >
               {images.map((img: any) => (
-              <SwiperSlide key={img.id}>
-  <img
-    src={img.url}
-    alt=""
-    className="
+                <SwiperSlide key={img.id}>
+                  <img
+                    src={img.url}
+                    alt=""
+                    className="
       w-full
      h-[220px]
 sm:h-[280px]
@@ -124,8 +104,8 @@ lg:h-[420px]
       object-cover
       rounded-2xl
     "
-  />
-</SwiperSlide>
+                  />
+                </SwiperSlide>
               ))}
             </Swiper>
 
@@ -171,9 +151,7 @@ lg:h-[420px]
         )}
 
         <div className="p-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            {data.titulo}
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{data.titulo}</h1>
 
           <div className="mb-5">
             <span
@@ -191,19 +169,10 @@ lg:h-[420px]
             </span>
           </div>
 
-          {data.lugar && (
-            <p className="text-zinc-600 mb-2">
-              📍 {data.lugar}
-            </p>
-          )}
+          {data.lugar && <p className="text-zinc-600 mb-2">📍 {data.lugar}</p>}
 
           {data.iniciaEn && (
-            <p className="text-zinc-600 mb-6">
-              📅{" "}
-              {new Date(
-                data.iniciaEn
-              ).toLocaleString()}
-            </p>
+            <p className="text-zinc-600 mb-6">📅 {new Date(data.iniciaEn).toLocaleString()}</p>
           )}
 
           <div
@@ -215,6 +184,8 @@ lg:h-[420px]
           >
             {data.descripcion}
           </div>
+
+          <CommentsSection eventId={data.id} />
         </div>
       </div>
     </MainLayout>
