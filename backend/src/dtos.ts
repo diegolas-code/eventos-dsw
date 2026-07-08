@@ -14,6 +14,7 @@ export type CreateEventoInput = {
   iniciaEn: string; // Se espera formato ISO 8601
   terminaEn?: string | null;
     categoria?: CategoriaEvento;
+    linkEntradas?: string;
   lugar?:string | null;
   entidadLugarId?: string | null;
   creadoPorUsuarioId?: string | null;

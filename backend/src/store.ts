@@ -18,6 +18,8 @@ import type {
   CreatePerfilEntidadInput,
 } from './dtos.js';
 
+import { asistenciaTemplate } from './templates/asistencia_template.js';
+import { enviarMail } from './services/email.service.js';
 // Instanciamos el cliente de Prisma
 const prisma = new PrismaClient();
 
@@ -34,6 +36,7 @@ export interface Evento {
   descripcion: string | null;
   iniciaEn: string;
   categoria: string;
+  linkEntradas: string | null;
   terminaEn: string | null;
   estado: EstadoEvento;
   entidadLugarId: string | null;
@@ -116,6 +119,7 @@ const mapEvento = (e: any): Evento => ({
   titulo: e.titulo,
   categoria: e.categoria,
   descripcion: e.descripcion,
+  linkEntradas: e.link_entradas,
   iniciaEn: e.inicia_en.toISOString(),
   terminaEn: e.termina_en ? e.termina_en.toISOString() : null,
   estado: e.estado as EstadoEvento,
@@ -254,6 +258,7 @@ export const createEvento = async (
       imagen_url: input.imagenUrl ?? null,
       lugar_manual: input.lugar ?? null,
       categoria: input.categoria ?? CategoriaEvento.OTRO,
+      link_entradas: input.linkEntradas ?? null,
       inicia_en: new Date(input.iniciaEn),
       termina_en: input.terminaEn ? new Date(input.terminaEn) : null,
       entidad_lugar_id: input.entidadLugarId ?? null,
@@ -563,7 +568,7 @@ export const seedDemoData = async (): Promise<void> => {
  * Marca asistencia a un evento.
  */
 export async function asistirEvento(usuarioId: string, eventoId: string) {
-  return prisma.usuarioEvento.upsert({
+  const asistencia = await prisma.usuarioEvento.upsert({
     where: {
       usuario_id_evento_id: {
         usuario_id: usuarioId,
@@ -576,7 +581,37 @@ export async function asistirEvento(usuarioId: string, eventoId: string) {
       evento_id: eventoId,
     },
   });
+
+  const usuario = await prisma.usuario.findUnique({
+    where: {
+      id: usuarioId,
+    },
+  });
+
+  const evento = await prisma.evento.findUnique({
+    where: {
+      id: eventoId,
+    },
+  });
+
+  if (usuario && evento) {
+    await enviarMail({
+      to: usuario.email,
+      subject: `Confirmaste tu asistencia a ${evento.titulo}`,
+      html: asistenciaTemplate({
+        titulo: evento.titulo,
+        imagenUrl: evento.imagen_url ?? undefined,
+        iniciaEn: evento.inicia_en,
+        lugar: evento.lugar_manual ?? undefined,
+        linkEntradas: evento.link_entradas ?? undefined,
+      }),
+    });
+  }
+
+  return asistencia;
 }
+
+
 /**
  * Cancela asistencia.
  */

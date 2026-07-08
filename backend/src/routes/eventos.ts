@@ -132,6 +132,7 @@ router.post(
         creadoPorUsuarioId: body.creadoPorUsuarioId,
         artistasIds: body.artistasIds,
         imagenUrl,
+         linkEntradas: body.linkEntradas,
         galeria: galeriaUrls,
       });
 

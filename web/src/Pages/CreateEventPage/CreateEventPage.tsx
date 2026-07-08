@@ -7,6 +7,7 @@ export default function CreateEventPage() {
   const [titulo, setTitulo] = useState('');
   const [categoria, setCategoria] = useState('OTRO');
   const [descripcion, setDescripcion] = useState('');
+  const [linkEntradas, setLinkEntradas] = useState('');
   const [iniciaEn, setIniciaEn] = useState('');
   const [lugar, setLugar] = useState('');
   const [entidadLugarId, setEntidadLugarId] = useState('');
@@ -37,13 +38,14 @@ export default function CreateEventPage() {
     if (!titulo.trim() || !iniciaEn) {
       return alert('Por favor, completá los campos obligatorios (Título y Fecha/Hora).');
     }
-
+   
     try {
       setLoading(true);
 
       const formData = new FormData();
       formData.append('titulo', titulo.trim());
       formData.append('categoria', categoria);
+      formData.append('linkEntradas', linkEntradas.trim());
       formData.append('descripcion', descripcion.trim());
       formData.append('iniciaEn', new Date(iniciaEn).toISOString());
 
@@ -68,6 +70,7 @@ export default function CreateEventPage() {
       setDescripcion('');
       setIniciaEn('');
       setLugar('');
+      setLinkEntradas('');
       setEntidadLugarId('');
       setImage(null);
       setPreview(null);
@@ -147,6 +150,25 @@ export default function CreateEventPage() {
               placeholder="Contanos de qué trata el evento..."
             />
           </div>
+           
+         <div>
+  <label className="block text-sm font-medium text-zinc-700 mb-2">
+    Link de Entradas o Información
+  </label>
+
+  <input
+    type="url"
+    value={linkEntradas}
+    onChange={e => setLinkEntradas(e.target.value)}
+    placeholder="https://..."
+    className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
+  />
+
+  <p className="text-xs text-zinc-500 mt-1">
+    Este enlace aparecerá en el evento y será enviado por correo a quienes confirmen asistencia.
+  </p>
+  </div>
+
 
           {/* Fecha y hora */}
           <div>

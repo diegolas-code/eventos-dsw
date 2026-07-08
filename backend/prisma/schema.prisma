@@ -70,7 +70,7 @@ model UsuarioEvento {
   usuario_id String
   evento_id String
   creado_en DateTime @default(now())
-
+    recordatorio_enviado Boolean @default(false)
   usuario Usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
   evento Evento @relation(fields: [evento_id], references: [id], onDelete: Cascade)
 
@@ -121,6 +121,7 @@ model Evento {
   categoria             CategoriaEvento     @default(OTRO)
   entidad_lugar_id      String?
   lugar                 PerfilEntidad?      @relation("EventosEnLugar", fields: [entidad_lugar_id], references: [id], onDelete: SetNull)
+  link_entradas         String?
 
   posible_duplicado     Boolean             @default(false)
   imagen_url            String?

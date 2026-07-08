@@ -8,6 +8,7 @@ type EventCardProps = {
     id: string;
     titulo: string;
     descripcion?: string;
+    linkEntradas?: string;
     iniciaEn?: string;
     imagenUrl?: string;
     categoria?: string;
@@ -85,6 +86,12 @@ export default function EventCard({ event }: EventCardProps) {
         {event.iniciaEn && (
           <p className="text-sm text-zinc-500">📅 {new Date(event.iniciaEn).toLocaleString()}</p>
         )}
+         
+        {event.linkEntradas && (
+  <p className="mt-2 text-sm font-medium text-violet-600">
+    🎟 Entradas disponibles
+  </p>
+    )}
 
         {/* BOTÓN */}
 

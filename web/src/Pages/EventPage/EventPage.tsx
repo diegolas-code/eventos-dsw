@@ -175,6 +175,30 @@ lg:h-[420px]
             <p className="text-zinc-600 mb-6">📅 {new Date(data.iniciaEn).toLocaleString()}</p>
           )}
 
+            {data.linkEntradas && (
+  <div className="mb-6">
+    <a
+      href={data.linkEntradas}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="
+        inline-flex
+        items-center
+        gap-2
+        bg-violet-600
+        hover:bg-violet-700
+        text-white
+        px-5
+        py-3
+        rounded-xl
+        transition
+      "
+    >
+      🎟 Comprar entradas / Más información
+    </a>
+  </div>
+)}
+
           <div
             className="
               prose
