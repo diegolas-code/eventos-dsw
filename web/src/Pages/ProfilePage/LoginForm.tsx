@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { login } from '../../services/authService';
+import api from '../../services/api';
 
 interface LoginFormProps {
   onLoginSuccess: (id: string, email: string, token: string, rol: string) => void;
@@ -17,8 +18,14 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      return setError('Por favor, ingresá tu email y contraseña');
+    if (modoOlvido) {
+      if (!email.trim()) {
+        return setError('Por favor, ingresá tu correo electrónico');
+      }
+    } else {
+      if (!email.trim() || !password.trim()) {
+        return setError('Por favor, ingresá tu email y contraseña');
+      }
     }
 
     try {
@@ -27,17 +34,16 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
       setSuccessMsg(null);
 
       if (modoOlvido) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setSuccessMsg('¡Contraseña restablecida con éxito! Ya podés ingresar.');
+        const response = await api.post('/auth/forgot-password', { email });
+        setSuccessMsg(response.data.message || 'Enlace de recuperación enviado.');
         setModoOlvido(false);
-        setPassword('');
       } else {
         const data = await login({ email, password });
         onLoginSuccess(data.user.id, data.user.email, data.token, data.user.rol);
       }
     } catch (err: any) {
       console.error(err);
-      setError(err.response?.data?.error ?? 'Error al iniciar sesión. Comprobá los datos.');
+      setError(err.response?.data?.error ?? 'Error al procesar la solicitud.');
     } finally {
       setLoading(false);
     }
@@ -70,41 +76,56 @@ export default function LoginForm({ onLoginSuccess, onSwitchToRegister }: LoginF
           />
         </div>
 
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-medium text-zinc-600 font-semibold">
-              {modoOlvido ? 'Nueva Contraseña' : 'Contraseña'}
-            </label>
+        {!modoOlvido ? (
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <label className="text-sm font-medium text-zinc-600 font-semibold">Contraseña</label>
 
+              <button
+                type="button"
+                onClick={() => {
+                  setError(null);
+                  setSuccessMsg(null);
+                  setModoOlvido(true);
+                }}
+                className="text-xs text-violet-600 hover:underline font-medium"
+                disabled={loading}
+              >
+                ¿Olvidaste la contraseña?
+              </button>
+            </div>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
+              placeholder="••••••••"
+              disabled={loading}
+            />
+          </div>
+        ) : (
+          <div className="flex justify-end">
             <button
               type="button"
               onClick={() => {
                 setError(null);
                 setSuccessMsg(null);
-                setModoOlvido(!modoOlvido);
+                setModoOlvido(false);
               }}
               className="text-xs text-violet-600 hover:underline font-medium"
               disabled={loading}
             >
-              {modoOlvido ? 'Volver al login' : '¿Olvidaste la contraseña?'}
+              Volver al login
             </button>
           </div>
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
-            placeholder={modoOlvido ? 'Ingresá tu nueva clave' : '••••••••'}
-            disabled={loading}
-          />
-        </div>
+        )}
 
         <button
           type="submit"
           disabled={loading}
           className="w-full bg-gradient-to-r from-violet-600 to-pink-500 hover:opacity-90 text-white font-medium py-3 rounded-2xl transition-opacity mt-4 shadow-sm disabled:opacity-50"
         >
-          {loading ? 'Procesando...' : modoOlvido ? 'Cambiar Contraseña' : 'Ingresar'}
+          {loading ? 'Procesando...' : modoOlvido ? 'Enviar enlace de recuperación' : 'Ingresar'}
         </button>
       </form>
 

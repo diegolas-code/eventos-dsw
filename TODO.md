@@ -59,7 +59,7 @@ Fase 1 — Autenticación y roles
   - [ ] **Agregar funcionalidad Recuperar contraseña** (restablecimiento de credenciales locales).
     - [x] Actualizar modelo `Usuario` en `schema.prisma` con campos de token.
     - [x] Implementar endpoints `POST /forgot-password` y `POST /reset-password` en backend.
-    - [ ] Conectar flujo de olvido de contraseña en `LoginForm.tsx`.
+    - [x] Conectar flujo de olvido de contraseña en `LoginForm.tsx`.
     - [ ] Crear página de formulario de restablecimiento `ResetPasswordPage.tsx` y registrar su ruta.
   - [ ] **Agregar funcionalidad Asignar roles** (interfaz para administradores).
 
