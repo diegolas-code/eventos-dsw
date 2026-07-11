@@ -10,7 +10,6 @@
   "dependencies": {
     "@tanstack/react-query": "^5.100.10",
     "axios": "^1.16.1",
-    "eventos-dsw": "file:..",
     "lucide-react": "^1.16.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
