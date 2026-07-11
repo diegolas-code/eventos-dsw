@@ -57,6 +57,9 @@ model Usuario {
   rol               RolUsuario        @default(miembro)
   creado_en         DateTime          @default(now())
   actualizado_en    DateTime          @updatedAt
+
+  token_recuperacion        String?
+  token_recuperacion_expira DateTime?
  
   // Relaciones
   eventos_creados   Evento[]          @relation("EventosCreados")
