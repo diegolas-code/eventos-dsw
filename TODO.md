@@ -57,6 +57,10 @@ Fase 1 — Autenticación y roles
   - [x] Implementar soporte para ubicación manual (campo `lugar_manual` en BD y API).
   - [x] Añadir tests básicos de integración para auth y permisos.
   - [ ] **Agregar funcionalidad Recuperar contraseña** (restablecimiento de credenciales locales).
+    - [ ] Actualizar modelo `Usuario` en `schema.prisma` con campos de token.
+    - [ ] Implementar endpoints `POST /forgot-password` y `POST /reset-password` en backend.
+    - [ ] Conectar flujo de olvido de contraseña en `LoginForm.tsx`.
+    - [ ] Crear página de formulario de restablecimiento `ResetPasswordPage.tsx` y registrar su ruta.
   - [ ] **Agregar funcionalidad Asignar roles** (interfaz para administradores).
 
 Fase 2 — Pool de publicaciones y moderación
