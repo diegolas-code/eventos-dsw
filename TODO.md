@@ -56,11 +56,11 @@ Fase 1 — Autenticación y roles
   - [x] Integrar carga de imágenes (posters) usando Cloudinary en el backend y previsualización en frontend.
   - [x] Implementar soporte para ubicación manual (campo `lugar_manual` en BD y API).
   - [x] Añadir tests básicos de integración para auth y permisos.
-  - [ ] **Agregar funcionalidad Recuperar contraseña** (restablecimiento de credenciales locales).
+  - [x] **Agregar funcionalidad Recuperar contraseña** (restablecimiento de credenciales locales).
     - [x] Actualizar modelo `Usuario` en `schema.prisma` con campos de token.
     - [x] Implementar endpoints `POST /forgot-password` y `POST /reset-password` en backend.
     - [x] Conectar flujo de olvido de contraseña en `LoginForm.tsx`.
-    - [ ] Crear página de formulario de restablecimiento `ResetPasswordPage.tsx` y registrar su ruta.
+    - [x] Crear página de formulario de restablecimiento `ResetPasswordPage.tsx` y registrar su ruta.
   - [ ] **Agregar funcionalidad Asignar roles** (interfaz para administradores).
 
 Fase 2 — Pool de publicaciones y moderación

@@ -5,6 +5,7 @@ import EventPage from '../../Pages/EventPage/EventPage';
 import CreateEventPage from '../../Pages/CreateEventPage/CreateEventPage';
 import ProfilePage from '../../Pages/ProfilePage/ProfilePage';
 import ModerationPage from '../../Pages/ModerationPage/ModerationPage';
+import ResetPasswordPage from '../../Pages/ProfilePage/ResetPasswordPage';
 import ProtectedRoute from './ProtectedRoute';
 
 export default function AppRoutes() {
@@ -30,6 +31,7 @@ export default function AppRoutes() {
           }
         />
         <Route path="/perfil" element={<ProfilePage />} />
+        <Route path="/restablecer-clave" element={<ResetPasswordPage />} />
       </Routes>
     </BrowserRouter>
   );
