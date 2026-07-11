@@ -121,16 +121,26 @@ export default function DashboardView({
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (nuevaClave.length < 6) {
+      setPasswordMsg({ tipo: 'error', texto: 'La nueva clave debe tener al menos 6 caracteres.' });
+      return;
+    }
     setPasswordLoading(true);
     setPasswordMsg(null);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await api.post(`/usuarios/${usuarioData.id}/cambiar-clave`, {
+        claveActual,
+        nuevaClave,
+      });
       setPasswordMsg({ tipo: 'ok', texto: 'Contraseña actualizada correctamente.' });
       setClaveActual('');
       setNuevaClave('');
-    } catch (err) {
-      setPasswordMsg({ tipo: 'error', texto: 'Ocurrió un error al intentar cambiar la clave.' });
+    } catch (err: any) {
+      console.error(err);
+      const errorMsg =
+        err.response?.data?.error || 'Ocurrió un error al intentar cambiar la clave.';
+      setPasswordMsg({ tipo: 'error', texto: errorMsg });
     } finally {
       setPasswordLoading(false);
     }
