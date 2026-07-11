@@ -1,11 +1,11 @@
-import cron from "node-cron";
+import cron from 'node-cron';
 
-import { enviarMail } from "../services/email.service.js";
-import { asistenciaTemplate } from "../templates/asistencia_template.js"
-import { PrismaClient } from "@prisma/client";
+import { enviarMail } from '../services/email.service.js';
+import { asistenciaTemplate } from '../templates/asistencia_template.js';
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-cron.schedule("0 9 * * *", async () => {
-  console.log("Buscando recordatorios...");
+cron.schedule('0 9 * * *', async () => {
+  console.log('Buscando recordatorios...');
 
   const hoy = new Date();
 
