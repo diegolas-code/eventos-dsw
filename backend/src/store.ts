@@ -20,6 +20,7 @@ import type {
 
 import { asistenciaTemplate } from './templates/asistencia_template.js';
 import { enviarMail } from './services/email.service.js';
+import { comparePassword, hashPassword } from './utils/auth.js';
 // Instanciamos el cliente de Prisma
 const prisma = new PrismaClient();
 
@@ -681,3 +682,30 @@ export async function contarAsistentes(eventoId: string) {
     },
   });
 }
+
+/**
+ * Actualiza la contraseña del usuario tras verificar la clave actual.
+ */
+export const cambiarClaveUsuario = async (
+  usuarioId: string,
+  claveActual: string,
+  nuevaClave: string
+): Promise<boolean> => {
+  const usuario = await prisma.usuario.findUnique({ where: { id: usuarioId } });
+  if (!usuario || !usuario.contrasena_hash) {
+    return false;
+  }
+
+  const matches = await comparePassword(claveActual, usuario.contrasena_hash);
+  if (!matches) {
+    return false;
+  }
+
+  const nuevoHash = await hashPassword(nuevaClave);
+  await prisma.usuario.update({
+    where: { id: usuarioId },
+    data: { contrasena_hash: nuevoHash },
+  });
+
+  return true;
+};
