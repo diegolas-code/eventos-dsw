@@ -7,7 +7,15 @@ import type { Request as ExRequest } from 'express-serve-static-core';
 import type { Response as ExpressResponse } from 'express';
 import { RolUsuario } from '@prisma/client';
 import type { CreateUsuarioInput, PatchUsuarioInput } from '../dtos.js';
-import { listUsuarios, getUsuario, createUsuario, updateUsuario, deleteUsuario } from '../store.js';
+import { requireAuth } from '../middleware/auth.js';
+import {
+  listUsuarios,
+  getUsuario,
+  createUsuario,
+  updateUsuario,
+  deleteUsuario,
+  cambiarClaveUsuario,
+} from '../store.js';
 
 // Tipado básico para las peticiones de la API
 type Req = ExRequest<any, any, any>;
@@ -84,6 +92,43 @@ router.delete('/:id', async (request: Req, response: ExpressResponse) => {
     return;
   }
   response.json({ message: 'Usuario eliminado correctamente' });
+});
+
+/** POST /api/v1/usuarios/:id/cambiar-clave - Cambiar contraseña del usuario */
+router.post('/:id/cambiar-clave', requireAuth, async (request: Req, response: ExpressResponse) => {
+  const { id } = request.params;
+  const { claveActual, nuevaClave } = request.body ?? {};
+
+  // Validar que el usuario autenticado sólo pueda cambiarse la clave a sí mismo
+  const authUser = (request as any).user;
+  if (authUser.id !== id) {
+    response.status(403).json({ error: 'Prohibido. No podés cambiar la clave de otro usuario.' });
+    return;
+  }
+
+  if (!claveActual || !nuevaClave) {
+    response.status(400).json({ error: 'La clave actual y la nueva clave son obligatorias.' });
+    return;
+  }
+
+  if (nuevaClave.length < 6) {
+    response.status(400).json({ error: 'La nueva clave debe tener al menos 6 caracteres.' });
+    return;
+  }
+
+  try {
+    const exito = await cambiarClaveUsuario(id, claveActual, nuevaClave);
+    if (!exito) {
+      response.status(400).json({ error: 'La clave actual ingresada es incorrecta.' });
+      return;
+    }
+    response.json({ message: 'Contraseña actualizada correctamente.' });
+  } catch (error) {
+    console.error('Error en endpoint cambiar-clave:', error);
+    response
+      .status(500)
+      .json({ error: 'Error interno del servidor al procesar la actualización.' });
+  }
 });
 
 export default router;
