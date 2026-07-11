@@ -138,7 +138,7 @@ Operaciones transversales (siempre)
 
 - Configuración de CI: GitHub Actions para lint, test y build.
   - [x] **Corregir punto y coma** en `backend/src/jobs/eventReminder.ts`.
-  - [ ] **Corregir pipeline de CI** en `.github/workflows/ci.yml` para instalar dependencias de subcarpetas y compilar Prisma.
+  - [x] **Corregir pipeline de CI** en `.github/workflows/ci.yml` para instalar dependencias de subcarpetas y compilar Prisma.
 - Documentación mínima: `README.md`, `CONTRIBUTING.md`, `TODO.md`, `CHANGELOG.md` por hitos.
 - Seguridad: mantener `.env` fuera del repositorio; guardar secrets en GitHub y en los paneles de hosting.
 - Monitoreo y logs: instrumentar logs básicos en backend (JSON) y errores centralizados si procede.
