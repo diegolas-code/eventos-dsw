@@ -135,6 +135,7 @@ export default function ProfilePage() {
                 usuarioData={usuario}
                 //usuarioData={usuarioMock}
                 onEditarPerfilClick={() => setIsManagingPerfil(true)}
+                onCerrarSesionClick={handleLogout}
               />
             </div>
           )
