@@ -108,6 +108,7 @@ Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
   - [x] **Terminar página perfil** (ProfilePage.tsx, para mostrar información de la cuenta).
   - [x] **Agregar funcionalidad Editar información de usuario** (cuenta personal).
   - [x] **Corregir bug de eliminación de cuenta** (limpieza de sesión local).
+  - [x] **Agregar funcionalidad Cambiar contraseña** (real, con validación de clave actual en backend).
   - [x] **Agregar funcionalidad Editar/Eliminar eventos** propios desde el dashboard personal (Edición stubbed, Eliminación implementada).
   - [ ] **Agregar funcionalidad Alertas y notificaciones** internas por nuevos eventos.
   - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
