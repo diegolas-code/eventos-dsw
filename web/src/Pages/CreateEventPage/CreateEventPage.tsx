@@ -157,7 +157,7 @@ export default function CreateEventPage() {
   </label>
 
   <input
-    type="url"
+    type="text"
     value={linkEntradas}
     onChange={e => setLinkEntradas(e.target.value)}
     placeholder="https://..."
