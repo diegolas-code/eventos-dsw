@@ -305,6 +305,7 @@ async function runTests() {
     );
 
     console.log('✅ All auth and moderation integration tests passed successfully!');
+    process.exit(0);
   } catch (err) {
     console.error('❌ Integration tests failed:', err);
     process.exit(1);

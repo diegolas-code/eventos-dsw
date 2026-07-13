@@ -255,6 +255,42 @@ export const createEvento = async (
     galeria?: string[];
   }
 ): Promise<Evento> => {
+  // Check for duplicate events before creating the new one
+  const startsAt = new Date(input.iniciaEn);
+  const startOfDay = new Date(startsAt.getFullYear(), startsAt.getMonth(), startsAt.getDate());
+  const endOfDay = new Date(
+    startsAt.getFullYear(),
+    startsAt.getMonth(),
+    startsAt.getDate(),
+    23,
+    59,
+    59
+  );
+
+  const duplicateCandidates = await prisma.evento.findFirst({
+    where: {
+      inicia_en: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+      OR: [
+        { entidad_lugar_id: input.entidadLugarId ?? undefined },
+        { lugar_manual: input.lugar ?? undefined },
+      ],
+      artistas: input.artistasIds?.length
+        ? {
+            some: {
+              artista_id: {
+                in: input.artistasIds,
+              },
+            },
+          }
+        : undefined,
+    },
+  });
+
+  const posibleDuplicado = !!duplicateCandidates;
+
   const data = await prisma.evento.create({
     data: {
       titulo: input.titulo,
@@ -268,6 +304,7 @@ export const createEvento = async (
       entidad_lugar_id: input.entidadLugarId ?? null,
       creado_por_usuario_id: input.creadoPorUsuarioId ?? null,
       estado: EstadoEvento.PENDIENTE,
+      posible_duplicado: posibleDuplicado,
 
       artistas: input.artistasIds
         ? {
