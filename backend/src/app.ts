@@ -9,6 +9,7 @@ import authRouter from './routes/auth.js';
 import moderacionRouter from './routes/moderacion.js';
 import { seedDemoData } from './store.js';
 import asistenciasRouter from './routes/asistencia.js';
+import './jobs/eventReminder.js';
 
 export const createApp = () => {
   // Inicializamos datos de prueba de forma asíncrona (no bloqueamos el arranque)

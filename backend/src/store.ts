@@ -599,7 +599,7 @@ export async function asistirEvento(usuarioId: string, eventoId: string) {
   });
 
   if (usuario && evento) {
-    await enviarMail({
+    enviarMail({
       to: usuario.email,
       subject: `Confirmaste tu asistencia a ${evento.titulo}`,
       html: asistenciaTemplate({
@@ -609,7 +609,7 @@ export async function asistirEvento(usuarioId: string, eventoId: string) {
         lugar: evento.lugar_manual ?? undefined,
         linkEntradas: evento.link_entradas ?? undefined,
       }),
-    });
+    }).catch(err => console.error('Failed to send email asynchronously:', err));
   }
 
   return asistencia;
