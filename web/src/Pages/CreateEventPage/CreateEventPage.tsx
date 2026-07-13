@@ -38,7 +38,7 @@ export default function CreateEventPage() {
     if (!titulo.trim() || !iniciaEn) {
       return alert('Por favor, completá los campos obligatorios (Título y Fecha/Hora).');
     }
-   
+
     try {
       setLoading(true);
 
@@ -52,10 +52,6 @@ export default function CreateEventPage() {
       if (lugar.trim()) {
         formData.append('lugar', lugar.trim());
       }
-    {/*
-      if (entidadLugarId.trim()) {
-        formData.append('entidadLugarId', entidadLugarId.trim());
-      } */}
       if (image) {
         formData.append('image', image);
       }
@@ -151,25 +147,25 @@ export default function CreateEventPage() {
               placeholder="Contanos de qué trata el evento..."
             />
           </div>
-           
-         <div>
-  <label className="block text-sm font-medium text-zinc-700 mb-2">
-    Link de Entradas o Información
-  </label>
 
-  <input
-    type="text"
-    value={linkEntradas}
-    onChange={e => setLinkEntradas(e.target.value)}
-    placeholder="https://..."
-    className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
-  />
+          <div>
+            <label className="block text-sm font-medium text-zinc-700 mb-2">
+              Link de Entradas o Información
+            </label>
 
-  <p className="text-xs text-zinc-500 mt-1">
-    Este enlace aparecerá en el evento y será enviado por correo a quienes confirmen asistencia.
-  </p>
-  </div>
+            <input
+              type="text"
+              value={linkEntradas}
+              onChange={e => setLinkEntradas(e.target.value)}
+              placeholder="https://..."
+              className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
+            />
 
+            <p className="text-xs text-zinc-500 mt-1">
+              Este enlace aparecerá en el evento y será enviado por correo a quienes confirmen
+              asistencia.
+            </p>
+          </div>
 
           {/* Fecha y hora */}
           <div>
@@ -196,22 +192,6 @@ export default function CreateEventPage() {
               placeholder="Ej: Teatro Colón o Centro Cultural"
             />
           </div>
-
-          {/* ID del lugar (opcional) */}
-        {/*  <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-2">
-              ID del lugar (opcional)
-            </label>
-            <input
-              type="text"
-              value={entidadLugarId}
-              onChange={e => setEntidadLugarId(e.target.value)}
-              className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
-              placeholder="UUID del establecimiento"
-            />
-
-          </div>
-          */}
 
           {/* Poster del evento */}
           <div>

@@ -14,8 +14,20 @@ export default function CommentsSection({ eventId }: CommentsSectionProps) {
   const queryClient = useQueryClient();
   const [cuerpo, setCuerpo] = useState('');
 
-  const currentUserId = localStorage.getItem('demo_session_id');
-  const isUserLoggedIn = !!localStorage.getItem('token') && !!currentUserId;
+  const getUserIdFromToken = (): string | null => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(window.atob(base64));
+      return payload.id;
+    } catch {
+      return null;
+    }
+  };
+  const currentUserId = getUserIdFromToken();
+  const isUserLoggedIn = !!currentUserId;
 
   const {
     data: comments = [],

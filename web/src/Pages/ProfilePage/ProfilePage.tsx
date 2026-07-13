@@ -68,20 +68,6 @@ export default function ProfilePage() {
     }
   }, [error]);
 
-  // DATOS MOCKEADOS TEMPORALES PARA PRUEBA
-  const usuarioMock = {
-    id: 'user-id-real-o-falso',
-    email: userEmail ?? 'melisasofia16@hotmail.com',
-    nombre_mostrar: 'Melisa (Modo Test)',
-    perfiles: [
-      {
-        id: 'perfil-test-123',
-        nombre: 'Mi Banda de Post-Hardcore',
-        tipo: 'ARTISTA',
-      },
-    ],
-  };
-
   const handleLoginSuccess = (id: string, email: string, token: string, rol: string) => {
     localStorage.setItem('token', token);
     localStorage.setItem('demo_session_id', id);
@@ -115,6 +101,7 @@ export default function ProfilePage() {
             <p className="text-zinc-500">Cargando datos de tu cuenta...</p>
           ) : isManagingPerfil ? (
             <ManagePerfilPage
+              usuarioId={userId!}
               perfilInicial={usuario?.perfiles?.[0]}
               onBack={handlePerfilActualizado}
             />

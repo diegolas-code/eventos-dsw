@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPerfilEntidad, updatePerfilEntidad } from '../../services/perfilService';
 
 interface ManagePerfilPageProps {
+  usuarioId: string;
   perfilInicial?: {
     id: string;
     nombre: string;
@@ -15,7 +16,11 @@ interface ManagePerfilPageProps {
   onBack: () => void;
 }
 
-export default function ManagePerfilPage({ perfilInicial, onBack }: ManagePerfilPageProps) {
+export default function ManagePerfilPage({
+  usuarioId,
+  perfilInicial,
+  onBack,
+}: ManagePerfilPageProps) {
   const queryClient = useQueryClient();
 
   const [nombre, setNombre] = useState(perfilInicial?.nombre ?? '');
@@ -24,8 +29,6 @@ export default function ManagePerfilPage({ perfilInicial, onBack }: ManagePerfil
   const [direccion, setDireccion] = useState(perfilInicial?.direccion ?? '');
   const [gmapsUrl, setGmapsUrl] = useState(perfilInicial?.gmapsUrl ?? '');
   const [imagenUrl, setImagenUrl] = useState(perfilInicial?.imagenUrl ?? '');
-
-  const usuarioId = localStorage.getItem('demo_session_id') || undefined;
 
   const mutation = useMutation({
     mutationFn: (data: any) => {
