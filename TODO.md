@@ -113,27 +113,27 @@ Fase 3 — Perfiles de Entidades (Artistas/Lugares) y Dashboard
   - [x] **Agregar funcionalidad Editar información de usuario** (cuenta personal).
   - [x] **Corregir bug de eliminación de cuenta** (limpieza de sesión local).
   - [x] **Agregar funcionalidad Cambiar contraseña** (real, con validación de clave actual en backend).
-  - [x] **Agregar funcionalidad Editar/Eliminar eventos** propios desde el dashboard personal (Edición stubbed, Eliminación implementada).
+  - [x] **Agregar funcionalidad Editar/Eliminar eventos** propios desde el dashboard personal (Edición e inclinación implementada).
   - [ ] **Agregar funcionalidad Alertas y notificaciones** internas por nuevos eventos.
   - (Opcional/Postergado) Gestión de imágenes real (Cloudflare R2).
 
-Fase 3.5 — Funcionalidad de Comentarios Modulares (En Progreso) ⏳
+Fase 3.5 — Funcionalidad de Comentarios Modulares (Completada) ✅
 
 - Objetivo: Implementar sistema de comentarios auto-contenido en frontend y asociar identidades de usuario en backend.
 - Tareas:
-  - [ ] Actualizar modelos y mapeadores de comentarios en backend (`backend/src/store.ts`) para incluir relación `usuario`.
-  - [ ] Alinear payloads de creación de comentarios en el servicio frontend (`comentarioService.ts`) y añadir método de borrado.
-  - [ ] Crear el componente auto-contenido `<CommentsSection />` en frontend con estado, queries y mutaciones propias.
-  - [ ] Integrar el componente `<CommentsSection />` en la vista de detalle de eventos (`EventPage.tsx`) y validar el flujo localmente.
+  - [x] Actualizar modelos y mapeadores de comentarios en backend (`backend/src/store.ts`) para incluir relación `usuario`.
+  - [x] Alinear payloads de creación de comentarios en el servicio frontend (`comentarioService.ts`) y añadir método de borrado.
+  - [x] Crear el componente auto-contenido `<CommentsSection />` en frontend con estado, queries y mutaciones propias.
+  - [x] Integrar el componente `<CommentsSection />` en la vista de detalle de eventos (`EventPage.tsx`) y validar el flujo localmente.
 
-Fase 4 — Votaciones, Seguimiento y Duplicados (Opcional)
+Fase 4 — Votaciones, Seguimiento y Duplicados (En Progreso) ⏳
 
 - Objetivo: añadir interactividad y detección de duplicados simple.
 - Tareas:
-  - Implementar detección de duplicados básica (mismo lugar + mismo día + mismo artista).
-  - Diseñar tablas `VOTO_EVENTO` y `SEGUIMIENTO`.
-  - Endpoints para votar/seguir y para obtener conteos.
-  - UI: botones de voto y seguir, actualizaciones optimistas.
+  - [x] Implementar detección de duplicados básica (mismo lugar + mismo día + mismo artista).
+  - [x] Diseñar tablas `VOTO_EVENTO` y `FAVORITO`.
+  - [ ] Endpoints para votar/seguir y para obtener conteos.
+  - [ ] UI: botones de voto y seguir, actualizaciones optimistas.
   - [x] **Agregar funcionalidad boton asistir/seguir etc.** (botones interactivos en el frontend con RSVP).
   - Considerar denormalizar `vote_count` en `EVENTO` para lecturas rápidas.
   - Tests de concurrencia y seguridad (evitar doble voto).

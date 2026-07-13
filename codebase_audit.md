@@ -78,4 +78,27 @@ Se ha observado que la **Fase 3.5 — Funcionalidad de Comentarios Modulares** f
 - [x] El componente auto-contenido [CommentsSection.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Components/events/CommentsSection.tsx) está desarrollado con sus propios estados y mutaciones React Query.
 - [x] El componente está integrado con éxito en la vista detallada de eventos de [EventPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/EventPage/EventPage.tsx).
 
-_Se sugiere actualizar el checklist de `TODO.md` para reflejar con precisión el fin de este hito._
+_Se sugería actualizar el checklist de TODO.md para reflejar con precisión el fin de este hito._ (Actualizado en TODO.md)
+
+---
+
+## ✅ 5. Resoluciones de la Auditoría (Corregidas en la Rama `fix/codebase-audit-issues`)
+
+Todas las vulnerabilidades y fallos identificados en esta auditoría han sido completamente resueltos:
+
+1. **Seguridad y Permisos en API**:
+   - Se protegieron todas las rutas de mutación en `usuarios.ts`, `comentarios.ts`, `eventos.ts` y `perfiles.ts` exigiendo autenticación mediante `requireAuth`.
+   - Se implementaron verificaciones estrictas de pertenencia (autoría) y roles (`admin`/`moderador`) en `routes/comentarios.ts`, `routes/eventos.ts` y `routes/usuarios.ts`.
+   - Se centralizó la firma y verificación del token JWT usando una única clave `JWT_SECRET` en `utils/auth.ts` para evitar inconsistencias de firmas inválidas.
+2. **Optimización de Rendimiento**:
+   - El envío de correos en `asistirEvento` (`store.ts`) se hizo completamente asíncrono y no bloqueante mediante la remoción de `await` e incorporando gestión de errores (`.catch(...)`).
+   - Se importó `eventReminder.ts` en `app.ts`, activando la programación diaria de recordatorios mediante `node-cron`.
+   - Se corrigió la URL base en `api.ts` a `/api/v1` para aprovechar de manera transparente el proxy configurado en Vite.
+3. **Limpieza de Código y Sesión**:
+   - Se eliminaron las claves legacy `demo_session_*` del frontend y se reemplazaron con la decodificación en caliente del ID de usuario desde el payload del token JWT (`token`) en `CommentsSection.tsx` y se pasó como propiedad a `ManagePerfilPage.tsx`.
+   - Se eliminó el objeto redundante `usuarioMock` en `ProfilePage.tsx` y el código comentado de `entidadLugarId` en `CreateEventPage.tsx`.
+4. **Edición de Eventos**:
+   - Se desarrolló el componente funcional `EditEventModal.tsx` y se integró en el panel de control del usuario (`DashboardView.tsx`) para permitir actualizar dinámicamente títulos y descripciones de eventos propios.
+5. **Esquema de BD e Identificación de Duplicados**:
+   - Se agregaron las tablas `VotoEvento` y `Favorito` con sus índices y relaciones correspondientes en `schema.prisma`.
+   - Se implementó la lógica de detección automática de eventos duplicados en `createEvento` (`store.ts`) comparando proximidad del mismo día, lugar y artistas.
