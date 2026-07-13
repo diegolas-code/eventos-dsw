@@ -9,8 +9,13 @@ export interface PendingEvent {
   imagenUrl: string | null;
   lugar: string | null;
   creadoPorUsuarioId: string | null;
-}
 
+  imagenes: {
+    id: string;
+    url: string;
+    orden: number;
+  }[];
+}
 export async function getPendingEvents(): Promise<PendingEvent[]> {
   const response = await api.get('/moderacion/pendientes');
   return response.data.data;

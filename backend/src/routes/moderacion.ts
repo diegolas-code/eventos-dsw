@@ -14,13 +14,32 @@ router.get(
   async (req: Request, res: Response) => {
     try {
       const pendientes = await prisma.evento.findMany({
-        where: { estado: 'PENDIENTE' },
-        include: {
-          lugar: true,
-          artistas: { include: { artista: true } },
-        },
-      });
-      res.json({ data: pendientes });
+  where: {
+    estado: EstadoEvento.PENDIENTE,
+  },
+  include: {
+    lugar: true,
+    artistas: {
+      include: {
+        artista: true,
+      },
+    },
+    imagenes: true,
+  },
+});
+const data = pendientes.map(e => ({
+  id: e.id,
+  titulo: e.titulo,
+  descripcion: e.descripcion,
+  iniciaEn: e.inicia_en.toISOString(),
+  terminaEn: e.termina_en?.toISOString() ?? null,
+  imagenUrl: e.imagen_url,
+  lugar: e.lugar_manual,
+  creadoPorUsuarioId: e.creado_por_usuario_id,
+  imagenes: e.imagenes,
+}));
+
+res.json({ data });
     } catch (err) {
       console.error('Error al listar eventos pendientes:', err);
       res.status(500).json({ error: 'Error al listar eventos pendientes' });
