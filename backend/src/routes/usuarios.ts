@@ -7,7 +7,7 @@ import type { Request as ExRequest } from 'express-serve-static-core';
 import type { Response as ExpressResponse } from 'express';
 import { RolUsuario } from '@prisma/client';
 import type { CreateUsuarioInput, PatchUsuarioInput } from '../dtos.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, requireRole } from '../middleware/auth.js';
 import {
   listUsuarios,
   getUsuario,
@@ -28,16 +28,30 @@ const router = Router();
  * GET /api/v1/usuarios
  * Retorna la lista de todos los usuarios registrados.
  */
-router.get('/', async (_request: Req, response: ExpressResponse) => {
-  const usuarios = await listUsuarios();
-  response.json({ data: usuarios });
-});
+router.get(
+  '/',
+  requireAuth,
+  requireRole([RolUsuario.admin]),
+  async (_request: Req, response: ExpressResponse) => {
+    const usuarios = await listUsuarios();
+    response.json({ data: usuarios });
+  }
+);
 
 /**
  * GET /api/v1/usuarios/:id
  * Obtiene el detalle de un usuario específico por su ID.
  */
-router.get('/:id', async (request: Req, response: ExpressResponse) => {
+router.get('/:id', requireAuth, async (request: Req, response: ExpressResponse) => {
+  const authUser = (request as any).user;
+  if (
+    authUser.id !== request.params.id &&
+    authUser.rol !== RolUsuario.admin &&
+    authUser.rol !== RolUsuario.moderador
+  ) {
+    response.status(403).json({ error: 'Prohibido. No tienes permisos para ver este usuario.' });
+    return;
+  }
   const usuario = await getUsuario(request.params.id);
   if (!usuario) {
     response.status(404).json({ error: 'Usuario no encontrado' });
@@ -47,35 +61,47 @@ router.get('/:id', async (request: Req, response: ExpressResponse) => {
 });
 
 /** POST /api/v1/usuarios - Crear/Registrar */
-router.post('/', async (request: ReqPostUsuario, response: ExpressResponse) => {
-  const { email, nombreMostrar, rol } = request.body ?? ({} as CreateUsuarioInput);
-  if (
-    typeof email !== 'string' ||
-    email.trim().length === 0 ||
-    typeof nombreMostrar !== 'string' ||
-    nombreMostrar.trim().length === 0
-  ) {
-    response.status(400).json({ error: 'Email y nombreMostrar son obligatorios.' });
-    return;
+router.post(
+  '/',
+  requireAuth,
+  requireRole([RolUsuario.admin]),
+  async (request: ReqPostUsuario, response: ExpressResponse) => {
+    const { email, nombreMostrar, rol } = request.body ?? ({} as CreateUsuarioInput);
+    if (
+      typeof email !== 'string' ||
+      email.trim().length === 0 ||
+      typeof nombreMostrar !== 'string' ||
+      nombreMostrar.trim().length === 0
+    ) {
+      response.status(400).json({ error: 'Email y nombreMostrar son obligatorios.' });
+      return;
+    }
+
+    // Validación estricta del Enum de Roles
+    if (rol && !Object.values(RolUsuario).includes(rol)) {
+      response.status(400).json({ error: 'El rol proporcionado no es válido.' });
+      return;
+    }
+
+    const nuevoUsuario = await createUsuario({
+      email,
+      nombreMostrar,
+      rol: rol ?? RolUsuario.miembro,
+    });
+
+    response.status(201).json({ data: nuevoUsuario });
   }
-
-  // Validación estricta del Enum de Roles
-  if (rol && !Object.values(RolUsuario).includes(rol)) {
-    response.status(400).json({ error: 'El rol proporcionado no es válido.' });
-    return;
-  }
-
-  const nuevoUsuario = await createUsuario({
-    email,
-    nombreMostrar,
-    rol: rol ?? RolUsuario.miembro,
-  });
-
-  response.status(201).json({ data: nuevoUsuario });
-});
+);
 
 /** PATCH /api/v1/usuarios/:id - Modificar perfil */
-router.patch('/:id', async (request: ReqPatchUsuario, response: ExpressResponse) => {
+router.patch('/:id', requireAuth, async (request: ReqPatchUsuario, response: ExpressResponse) => {
+  const authUser = (request as any).user;
+  if (authUser.id !== request.params.id && authUser.rol !== RolUsuario.admin) {
+    response
+      .status(403)
+      .json({ error: 'Prohibido. No tienes permisos para actualizar este usuario.' });
+    return;
+  }
   const usuarioActualizado = await updateUsuario(request.params.id, request.body);
   if (!usuarioActualizado) {
     response.status(404).json({ error: 'Usuario no encontrado o error al actualizar' });
@@ -85,7 +111,14 @@ router.patch('/:id', async (request: ReqPatchUsuario, response: ExpressResponse)
 });
 
 /** DELETE /api/v1/usuarios/:id - Borrar usuario */
-router.delete('/:id', async (request: Req, response: ExpressResponse) => {
+router.delete('/:id', requireAuth, async (request: Req, response: ExpressResponse) => {
+  const authUser = (request as any).user;
+  if (authUser.id !== request.params.id && authUser.rol !== RolUsuario.admin) {
+    response
+      .status(403)
+      .json({ error: 'Prohibido. No tienes permisos para eliminar este usuario.' });
+    return;
+  }
   const exito = await deleteUsuario(request.params.id);
   if (!exito) {
     response.status(404).json({ error: 'Usuario no encontrado ' });

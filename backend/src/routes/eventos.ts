@@ -36,7 +36,6 @@ import {
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-
 const router = Router();
 
 /**
@@ -89,11 +88,11 @@ router.post(
     try {
       const usuario = request.user;
 
-const perfil = await prisma.perfilEntidad.findFirst({
-  where: {
-    usuario_id: usuario.id,
-  },
-});
+      const perfil = await prisma.perfilEntidad.findFirst({
+        where: {
+          usuario_id: usuario.id,
+        },
+      });
       const portada = request.files?.image?.[0];
 
       if (portada) {
@@ -133,7 +132,7 @@ const perfil = await prisma.perfilEntidad.findFirst({
 
         galeriaUrls.push(result.secure_url);
       }
-     
+
       const evento = await createEvento({
         titulo: body.titulo,
         descripcion: body.descripcion,
@@ -142,10 +141,10 @@ const perfil = await prisma.perfilEntidad.findFirst({
         categoria: body.categoria,
         terminaEn: body.terminaEn,
         creadoPorUsuarioId: usuario.id,
-        entidadLugarId: perfil?.id?? null,
+        entidadLugarId: perfil?.id ?? null,
         artistasIds: body.artistasIds,
         imagenUrl,
-         linkEntradas: body.linkEntradas,
+        linkEntradas: body.linkEntradas,
         galeria: galeriaUrls,
       });
 
@@ -180,14 +179,25 @@ router.get('/:id', async (request: Req, response: ExpressResponse) => {
  * PATCH /api/v1/eventos/:id
  * Actualización parcial de un evento.
  */
-router.patch('/:id', async (request: Req, response: ExpressResponse) => {
-  const patch = await updateEvento(request.params.id, request.body ?? {});
+router.patch('/:id', requireAuth, async (request: Req, response: ExpressResponse) => {
+  const authUser = (request as any).user;
+  const evento = await getEvento(request.params.id);
 
-  if (!patch) {
+  if (!evento) {
     response.status(404).json({ error: 'Evento no encontrado' });
     return;
   }
 
+  if (
+    evento.creadoPorUsuarioId !== authUser.id &&
+    authUser.rol !== 'admin' &&
+    authUser.rol !== 'moderador'
+  ) {
+    response.status(403).json({ error: 'Prohibido. No tenes permisos para editar este evento.' });
+    return;
+  }
+
+  const patch = await updateEvento(request.params.id, request.body ?? {});
   response.json({ data: patch });
 });
 
@@ -195,14 +205,25 @@ router.patch('/:id', async (request: Req, response: ExpressResponse) => {
  * DELETE /api/v1/eventos/:id
  * Elimina un evento.
  */
-router.delete('/:id', async (request: Req, response: ExpressResponse) => {
-  const deleted = await deleteEvento(request.params.id);
+router.delete('/:id', requireAuth, async (request: Req, response: ExpressResponse) => {
+  const authUser = (request as any).user;
+  const evento = await getEvento(request.params.id);
 
-  if (!deleted) {
+  if (!evento) {
     response.status(404).json({ error: 'Evento no encontrado' });
     return;
   }
 
+  if (
+    evento.creadoPorUsuarioId !== authUser.id &&
+    authUser.rol !== 'admin' &&
+    authUser.rol !== 'moderador'
+  ) {
+    response.status(403).json({ error: 'Prohibido. No tenes permisos para eliminar este evento.' });
+    return;
+  }
+
+  await deleteEvento(request.params.id);
   response.status(204).send();
 });
 
@@ -220,26 +241,31 @@ router.get('/:id/comentarios', async (request: Req, response: ExpressResponse) =
  * POST /api/v1/eventos/:id/comentarios
  * Crea un comentario vinculado a un evento.
  */
-router.post('/:id/comentarios', async (request: ReqCreateComentario, response: ExpressResponse) => {
-  const { cuerpo, usuarioId, padreId } = request.body ?? ({} as CreateComentarioInput);
+router.post(
+  '/:id/comentarios',
+  requireAuth,
+  async (request: ReqCreateComentario, response: ExpressResponse) => {
+    const { cuerpo, padreId } = request.body ?? ({} as CreateComentarioInput);
+    const authUser = (request as any).user;
 
-  if (typeof cuerpo !== 'string' || cuerpo.trim().length === 0) {
-    response.status(400).json({ error: 'cuerpo es obligatorio' });
-    return;
+    if (typeof cuerpo !== 'string' || cuerpo.trim().length === 0) {
+      response.status(400).json({ error: 'cuerpo es obligatorio' });
+      return;
+    }
+
+    const comentario = await createComentario(request.params.id, {
+      cuerpo,
+      usuarioId: authUser.id,
+      padreId: typeof padreId === 'string' ? padreId : undefined,
+    });
+
+    if (!comentario) {
+      response.status(404).json({ error: 'Evento no encontrado' });
+      return;
+    }
+
+    response.status(201).json({ data: comentario });
   }
-
-  const comentario = await createComentario(request.params.id, {
-    cuerpo,
-    usuarioId: typeof usuarioId === 'string' ? usuarioId : undefined,
-    padreId: typeof padreId === 'string' ? padreId : undefined,
-  });
-
-  if (!comentario) {
-    response.status(404).json({ error: 'Evento no encontrado' });
-    return;
-  }
-
-  response.status(201).json({ data: comentario });
-});
+);
 
 export default router;

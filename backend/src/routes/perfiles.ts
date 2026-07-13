@@ -31,8 +31,9 @@ router.get('/usuario/:usuarioId', async (request: Req, response: ExpressResponse
 });
 
 /** POST /api/v1/perfiles - Crear un perfil de entidad */
-router.post('/', async (request: ReqPostPerfil, response: ExpressResponse) => {
+router.post('/', requireAuth, async (request: ReqPostPerfil, response: ExpressResponse) => {
   try {
+    const authUser = (request as any).user;
     const { nombre, tipo } = request.body ?? ({} as CreatePerfilEntidadInput);
 
     if (
@@ -44,7 +45,10 @@ router.post('/', async (request: ReqPostPerfil, response: ExpressResponse) => {
       return;
     }
 
-    const nuevoPerfil = await CreatePerfilEntidad(request.body);
+    const nuevoPerfil = await CreatePerfilEntidad({
+      ...request.body,
+      usuarioId: authUser.id,
+    });
     response.status(201).json({ data: nuevoPerfil });
   } catch {
     response.status(500).json({ error: 'Error al crear perfil' });

@@ -11,6 +11,7 @@ import type { PatchComentarioInput } from '../dtos.js';
 type Req = ExRequest<any, any, any>;
 type ReqPatchComentario = ExRequest<{ id: string }, any, PatchComentarioInput>;
 
+import { requireAuth } from '../middleware/auth.js';
 import { deleteComentario, updateComentario, getComentario } from '../store.js';
 
 const router = Router();
@@ -34,37 +35,62 @@ router.get('/:id', async (request: Req, response: ExpressResponse) => {
  * PATCH /api/v1/comentarios/:id
  * Permite editar el texto de un comentario.
  */
-router.patch('/:id', async (request: ReqPatchComentario, response: ExpressResponse) => {
-  const { cuerpo } = request.body ?? ({} as PatchComentarioInput);
+router.patch(
+  '/:id',
+  requireAuth,
+  async (request: ReqPatchComentario, response: ExpressResponse) => {
+    const { cuerpo } = request.body ?? ({} as PatchComentarioInput);
+    const authUser = (request as any).user;
 
-  // Validación: el cuerpo no puede estar vacío
-  if (typeof cuerpo !== 'string' || cuerpo.trim().length === 0) {
-    response.status(400).json({ error: 'cuerpo es obligatorio' });
-    return;
+    // Validación: el cuerpo no puede estar vacío
+    if (typeof cuerpo !== 'string' || cuerpo.trim().length === 0) {
+      response.status(400).json({ error: 'cuerpo es obligatorio' });
+      return;
+    }
+
+    const comentario = await getComentario(request.params.id);
+    if (!comentario) {
+      response.status(404).json({ error: 'Comentario no encontrado' });
+      return;
+    }
+
+    if (comentario.usuarioId !== authUser.id) {
+      response
+        .status(403)
+        .json({ error: 'Prohibido. No tenes permisos para editar este comentario.' });
+      return;
+    }
+
+    const actualizado = await updateComentario(request.params.id, cuerpo);
+    response.json({ data: actualizado });
   }
-
-  const comentario = await updateComentario(request.params.id, cuerpo);
-
-  if (!comentario) {
-    response.status(404).json({ error: 'Comentario no encontrado' });
-    return;
-  }
-
-  response.json({ data: comentario });
-});
+);
 
 /**
  * DELETE /api/v1/comentarios/:id
  * Elimina un comentario por su ID.
  */
-router.delete('/:id', async (request: Req, response: ExpressResponse) => {
-  const deleted = await deleteComentario(request.params.id);
+router.delete('/:id', requireAuth, async (request: Req, response: ExpressResponse) => {
+  const authUser = (request as any).user;
 
-  if (!deleted) {
+  const comentario = await getComentario(request.params.id);
+  if (!comentario) {
     response.status(404).json({ error: 'Comentario no encontrado' });
     return;
   }
 
+  if (
+    comentario.usuarioId !== authUser.id &&
+    authUser.rol !== 'admin' &&
+    authUser.rol !== 'moderador'
+  ) {
+    response
+      .status(403)
+      .json({ error: 'Prohibido. No tenes permisos para borrar este comentario.' });
+    return;
+  }
+
+  await deleteComentario(request.params.id);
   response.status(204).send();
 });
 

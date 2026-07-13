@@ -1,6 +1,6 @@
 import type { Request as ExRequest } from 'express-serve-static-core';
 import type { Response, NextFunction } from 'express';
-import { verifyJwt } from '../utils/auth.js';
+import { verifyJwt, JWT_SECRET } from '../utils/auth.js';
 import { RolUsuario } from '@prisma/client';
 
 export interface AuthenticatedRequest extends ExRequest {
@@ -10,8 +10,6 @@ export interface AuthenticatedRequest extends ExRequest {
     rol: RolUsuario;
   };
 }
-
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-me';
 
 /**
  * Middleware para validar el token JWT y autenticar la petición.

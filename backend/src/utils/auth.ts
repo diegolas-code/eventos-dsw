@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+export const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-me';
+
 /**
  * Genera un hash seguro de una contraseña utilizando bcryptjs.
  *
@@ -42,7 +44,8 @@ export function signJwt(payload: object, secret: string, expiresInSeconds: numbe
 export function verifyJwt(token: string, secret: string): any | null {
   try {
     return jwt.verify(token, secret);
-  } catch {
+  } catch (err) {
+    console.error('verifyJwt failed:', err);
     return null;
   }
 }

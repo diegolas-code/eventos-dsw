@@ -3,13 +3,12 @@ import type { Response as ExpressResponse } from 'express';
 import type { Request as ExRequest } from 'express-serve-static-core';
 import { PrismaClient } from '@prisma/client';
 import { randomUUID } from 'crypto';
-import { hashPassword, comparePassword, signJwt } from '../utils/auth.js';
+import { hashPassword, comparePassword, signJwt, JWT_SECRET } from '../utils/auth.js';
 import { enviarMail } from '../services/email.service.js';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-change-me';
 const JWT_EXPIRES_IN = 7 * 24 * 60 * 60; // 7 días en segundos
 
 interface RegisterBody {

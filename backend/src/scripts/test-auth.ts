@@ -53,6 +53,50 @@ async function runTests() {
     const loginData: any = await loginRes.json();
     assert.ok(loginData.data.token);
 
+    // 2b. Test Unauthorized Access (Security Checks)
+    console.log('Running security checks on unprotected endpoints...');
+    const testEventId = '39e9fc1f-0000-0000-0000-000000000000';
+
+    // DELETE /eventos/:id should require auth
+    const delEventRes = await fetch(`http://localhost:3333/api/v1/eventos/${testEventId}`, {
+      method: 'DELETE',
+    });
+    assert.strictEqual(delEventRes.status, 401, 'DELETE /eventos/:id should return 401');
+
+    // PATCH /eventos/:id should require auth
+    const patchEventRes = await fetch(`http://localhost:3333/api/v1/eventos/${testEventId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ titulo: 'Hack' }),
+    });
+    assert.strictEqual(patchEventRes.status, 401, 'PATCH /eventos/:id should return 401');
+
+    // GET /usuarios should require auth and admin role
+    const getUsersRes = await fetch('http://localhost:3333/api/v1/usuarios');
+    assert.strictEqual(getUsersRes.status, 401, 'GET /usuarios should return 401');
+
+    // POST /usuarios should require auth and admin role
+    const postUsersRes = await fetch('http://localhost:3333/api/v1/usuarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'hack@hack.com', nombreMostrar: 'hacker' }),
+    });
+    assert.strictEqual(postUsersRes.status, 401, 'POST /usuarios should return 401');
+
+    // PATCH /comentarios/:id should require auth
+    const patchCommentRes = await fetch('http://localhost:3333/api/v1/comentarios/some-id', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cuerpo: 'Hack' }),
+    });
+    assert.strictEqual(patchCommentRes.status, 401, 'PATCH /comentarios/:id should return 401');
+
+    // DELETE /comentarios/:id should require auth
+    const delCommentRes = await fetch('http://localhost:3333/api/v1/comentarios/some-id', {
+      method: 'DELETE',
+    });
+    assert.strictEqual(delCommentRes.status, 401, 'DELETE /comentarios/:id should return 401');
+
     console.log('✅ Auth endpoints tests passed successfully!');
 
     // 3. Register Moderator & Elevate Role in DB
@@ -93,7 +137,10 @@ async function runTests() {
     // 4. Create a PENDIENTE event
     const createEventRes = await fetch('http://localhost:3333/api/v1/eventos', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${miembroToken}`,
+      },
       body: JSON.stringify({
         titulo: 'Test Moderation Event Approved',
         iniciaEn: new Date(Date.now() + 86400000).toISOString(), // mañana
@@ -101,6 +148,9 @@ async function runTests() {
         creadoPorUsuarioId: regData.data.user.id,
       }),
     });
+    if (createEventRes.status !== 201) {
+      console.log('Error creating event:', await createEventRes.text());
+    }
     assert.strictEqual(createEventRes.status, 201);
     const createEventData: any = await createEventRes.json();
     const approvedEventoId = createEventData.data.id;
@@ -210,7 +260,10 @@ async function runTests() {
     // 10. Test Rejection flow
     const createEventRejectRes = await fetch('http://localhost:3333/api/v1/eventos', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${miembroToken}`,
+      },
       body: JSON.stringify({
         titulo: 'Test Moderation Event Rejected',
         iniciaEn: new Date(Date.now() + 86400000).toISOString(),
