@@ -38,11 +38,12 @@ El objetivo principal fue securizar la API pública eliminando accesos desautori
   - Se eliminó el objeto obsoleto `usuarioMock` en [ProfilePage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/ProfilePage.tsx).
   - Se removieron los inputs y campos comentados redundantes de `entidadLugarId` en [CreateEventPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/CreateEventPage/CreateEventPage.tsx).
 
-### 4. Frontend: Edición de Eventos y Alineación en Moderación 💻
+### 4. Frontend: Edición de Eventos, Alineación en Moderación y Botón de Entradas 💻
 
 - **Modal de Edición:** Se diseñó e implementó [EditEventModal.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/EditEventModal.tsx) como un componente premium con glassmorphism y micro-animaciones para modificar el título y la descripción.
 - **Integración:** Se conectó en [DashboardView.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ProfilePage/DashboardView.tsx) reemplazando la alerta provisional y refrescando la cartelera tras el guardado.
 - **Tarjetas de Moderación:** Se corrigieron las tarjetas del panel de moderación ([ModerationPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/ModerationPage/ModerationPage.tsx)) para apuntar y cargar directamente `event.imagenUrl`. Esto asegura la consistencia visual, mostrando exactamente la misma imagen de portada que se renderiza en la cartelera principal (FP cards) en lugar de alternar con otras imágenes secundarias de la galería.
+- **Botón de Compra de Entradas:** Se integró un botón premium de color violeta de "Comprar Entradas" en la vista de detalle individual del evento ([EventPage.tsx](file:///C:/Users/Diegolas/Code/Web/_insti/SITIO%20EVENTOS/eventos-dsw/web/src/Pages/EventPage/EventPage.tsx)), ubicado al lado del botón de asistencia y enlazado temporalmente a una ruta mock (`/evento/:id/comprar`).
 
 ### 5. Base de Datos y Prevención de Duplicados 🗄️
 
