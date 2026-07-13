@@ -163,18 +163,7 @@ export default function ModerationPage() {
             {pendingEvents?.map(event => {
               const isMutatingThis =
                 moderationMutation.isPending && moderationMutation.variables?.eventoId === event.id;
-const images = [
-  ...(event.imagenUrl
-    ? [
-        {
-          id: 'poster',
-          url: event.imagenUrl,
-        },
-      ]
-    : []),
 
-  ...(event.imagenes || []),
-];
               return (
                 <div
                   key={event.id}
@@ -189,41 +178,28 @@ const images = [
                   )}
 
                   {/* Left Column: Poster Image */}
-                <div className="w-full lg:w-1/3 min-h-[320px] bg-zinc-100 relative">
+                  <div className="w-full lg:w-1/3 min-h-[320px] bg-zinc-100 relative">
+                    {event.imagenUrl ? (
+                      <img
+                        src={event.imagenUrl}
+                        alt={event.titulo}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-violet-100 to-pink-50 flex items-center justify-center">
+                        <div className="text-center">
+                          <Clock className="w-12 h-12 text-violet-400 mx-auto mb-2 opacity-60" />
+                          <span className="text-sm font-semibold text-violet-600/70">
+                            Sin imagen
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-  {images.length > 0 ? (
-    <Swiper
-      modules={[Navigation, Pagination]}
-      navigation
-      pagination={{ clickable: true }}
-      className="h-full"
-    >
-      {images.map((img: any) => (
-        <SwiperSlide key={img.id}>
-          <img
-            src={img.url}
-            alt=""
-            className="w-full h-[320px] object-cover"
-          />
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  ) : (
-    <div className="w-full h-[320px] bg-gradient-to-br from-violet-100 to-pink-50 flex items-center justify-center">
-      <div className="text-center">
-        <Clock className="w-12 h-12 text-violet-400 mx-auto mb-2 opacity-60" />
-        <span className="text-sm font-semibold text-violet-600/70">
-          Sin imágenes
-        </span>
-      </div>
-    </div>
-  )}
-
-  <span className="absolute top-4 left-4 z-20 bg-zinc-900/80 text-white text-xs font-bold px-3 py-1 rounded-full">
-    Pendiente
-  </span>
-
-</div>
+                    <span className="absolute top-4 left-4 z-20 bg-zinc-900/80 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      Pendiente
+                    </span>
+                  </div>
 
                   {/* Right Column: Details & Actions */}
                   <div className="p-8 flex-1 flex flex-col justify-between">
