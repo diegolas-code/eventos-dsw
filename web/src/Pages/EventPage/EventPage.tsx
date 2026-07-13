@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { asistirEvento, cancelarAsistencia } from '../../services/asistenciaService';
@@ -22,8 +22,8 @@ export default function EventPage() {
   const { id } = useParams();
 
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
-const queryClient = useQueryClient();
-const [isAsistiendoLocal, setIsAsistiendoLocal] = useState(false);
+  const queryClient = useQueryClient();
+  const [isAsistiendoLocal, setIsAsistiendoLocal] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['event', id],
@@ -32,53 +32,45 @@ const [isAsistiendoLocal, setIsAsistiendoLocal] = useState(false);
   });
 
   const asistir = useMutation({
-  mutationFn: asistirEvento,
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['events'] });
-    queryClient.invalidateQueries({ queryKey: ['event', id] });
-    queryClient.invalidateQueries({ queryKey: ['dashboard-eventos'] });
-  },
-  onError: () => {
-    setIsAsistiendoLocal(false);
-  },
-});
+    mutationFn: asistirEvento,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-eventos'] });
+    },
+    onError: () => {
+      setIsAsistiendoLocal(false);
+    },
+  });
 
-const cancelar = useMutation({
-  mutationFn: cancelarAsistencia,
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['events'] });
-    queryClient.invalidateQueries({ queryKey: ['event', id] });
-    queryClient.invalidateQueries({ queryKey: ['dashboard-eventos'] });
-  },
-  onError: () => {
-    setIsAsistiendoLocal(true);
-  },
-})
+  const cancelar = useMutation({
+    mutationFn: cancelarAsistencia,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+      queryClient.invalidateQueries({ queryKey: ['event', id] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-eventos'] });
+    },
+    onError: () => {
+      setIsAsistiendoLocal(true);
+    },
+  });
 
-useEffect(() => {
-  if (data) {
-    setIsAsistiendoLocal(!!data.isAsistiendo);
-  }
+  useEffect(() => {
+    if (data) {
+      setIsAsistiendoLocal(!!data.isAsistiendo);
+    }
+  }, [data]);
+  const handleAsistencia = () => {
+    const nuevoEstado = !isAsistiendoLocal;
 
+    setIsAsistiendoLocal(nuevoEstado);
 
-
-
-
-
-}, [data]);
-const handleAsistencia = () => {
-  const nuevoEstado = !isAsistiendoLocal;
-
-  setIsAsistiendoLocal(nuevoEstado);
-
-  if (isAsistiendoLocal) {
-    cancelar.mutate(data.id);
-  } else {
-    asistir.mutate(data.id);
-  }
-};
-
-
+    if (isAsistiendoLocal) {
+      cancelar.mutate(data.id);
+    } else {
+      asistir.mutate(data.id);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -105,9 +97,9 @@ const handleAsistencia = () => {
   }
 
   const esLink =
-  data.linkEntradas?.startsWith('http://') ||
-  data.linkEntradas?.startsWith('https://') ||
-  data.linkEntradas?.startsWith('www.');
+    data.linkEntradas?.startsWith('http://') ||
+    data.linkEntradas?.startsWith('https://') ||
+    data.linkEntradas?.startsWith('www.');
 
   const images = [
     ...(data.imagenUrl
@@ -121,11 +113,6 @@ const handleAsistencia = () => {
 
     ...(data.imagenes || []),
   ];
-        
-
-
-
-
 
   return (
     <MainLayout>
@@ -237,63 +224,83 @@ lg:h-[420px]
           {data.iniciaEn && (
             <p className="text-zinc-600 mb-6">📅 {new Date(data.iniciaEn).toLocaleString()}</p>
           )}
-{!localStorage.getItem('token') ? (
-  <button
-    disabled
-    className="mt-4 px-4 py-2 rounded-full text-xs font-semibold border border-zinc-200 bg-zinc-50 text-zinc-400 cursor-not-allowed opacity-75"
-  >
-    Iniciá sesión para asistir
-  </button>
-) : (
-  <button
-    onClick={handleAsistencia}
-    disabled={asistir.isPending || cancelar.isPending}
-    className={`
-      mt-4
-      px-5
-      py-2
-      rounded-full
-      text-sm
-      font-medium
-      transition
-      border
-      ${
-        isAsistiendoLocal
-          ? 'bg-red-500 text-white border-red-500 hover:bg-red-600'
-          : 'bg-green-600 text-white border-green-600 hover:bg-green-700'
-      }
-      disabled:opacity-50
-      disabled:cursor-not-allowed
-    `}
-  >
-    {isAsistiendoLocal ? 'Cancelar asistencia' : 'Asistir'}
-  </button>
-)}
+          <div className="flex flex-wrap items-center gap-3 mt-4">
+            {!localStorage.getItem('token') ? (
+              <button
+                disabled
+                className="px-4 py-2 rounded-full text-xs font-semibold border border-zinc-200 bg-zinc-50 text-zinc-400 cursor-not-allowed opacity-75"
+              >
+                Iniciá sesión para asistir
+              </button>
+            ) : (
+              <button
+                onClick={handleAsistencia}
+                disabled={asistir.isPending || cancelar.isPending}
+                className={`
+                  px-5
+                  py-2
+                  rounded-full
+                  text-sm
+                  font-medium
+                  transition
+                  border
+                  ${
+                    isAsistiendoLocal
+                      ? 'bg-red-500 text-white border-red-500 hover:bg-red-600'
+                      : 'bg-green-600 text-white border-green-600 hover:bg-green-700'
+                  }
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
+                `}
+              >
+                {isAsistiendoLocal ? 'Cancelar asistencia' : 'Asistir'}
+              </button>
+            )}
 
-{data.linkEntradas && (
-  <div className="mt-6 p-4 bg-violet-50 rounded-2xl">
-    <h3 className="font-semibold text-lg mb-2">
-      Información / Entradas
-    </h3>
+            <Link
+              to={`/evento/${data.id}/comprar`}
+              className="inline-flex items-center gap-2 px-5 py-2 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm rounded-full transition-all shadow-md"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
+                />
+              </svg>
+              Comprar Entradas
+            </Link>
+          </div>
 
-    {esLink ? (
-      <a
-        href={
-          data.linkEntradas.startsWith('www.')
-            ? `https://${data.linkEntradas}`
-            : data.linkEntradas
-        }
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-violet-600 hover:text-violet-700 underline font-medium"
-      >
-         Comprar entradas 
-      </a>
-    ) : (
-      <p className="text-zinc-700">{data.linkEntradas}</p>
-    )}
-  </div>
-)}
+          {data.linkEntradas && (
+            <div className="mt-6 p-4 bg-violet-50 rounded-2xl">
+              <h3 className="font-semibold text-lg mb-2">Información / Entradas</h3>
+
+              {esLink ? (
+                <a
+                  href={
+                    data.linkEntradas.startsWith('www.')
+                      ? `https://${data.linkEntradas}`
+                      : data.linkEntradas
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-violet-600 hover:text-violet-700 underline font-medium"
+                >
+                  Comprar entradas
+                </a>
+              ) : (
+                <p className="text-zinc-700">{data.linkEntradas}</p>
+              )}
+            </div>
+          )}
 
           <div
             className="
