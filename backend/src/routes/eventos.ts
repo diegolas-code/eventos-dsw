@@ -10,8 +10,10 @@ import upload from '../middleware/upload.js';
 import cloudinary from '../config/cloudinary.js';
 import type { Request } from 'express';
 import type { Response as ExpressResponse } from 'express';
+import { requireAuth } from '../middleware/auth.js';
 import { CategoriaEvento } from '@prisma/client';
 interface MulterRequest extends Request {
+  user: any;
   files?: {
     image?: Express.Multer.File[];
     gallery?: Express.Multer.File[];
@@ -31,6 +33,9 @@ import {
   listEventos,
   updateEvento,
 } from '../store.js';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
 
 const router = Router();
 
@@ -58,6 +63,7 @@ router.get('/categorias/listado', (_req: Request, response: ExpressResponse) => 
 });
 router.post(
   '/',
+  requireAuth,
   upload.fields([
     {
       name: 'image',
@@ -81,6 +87,13 @@ router.post(
     const galeriaUrls: string[] = [];
 
     try {
+      const usuario = request.user;
+
+const perfil = await prisma.perfilEntidad.findFirst({
+  where: {
+    usuario_id: usuario.id,
+  },
+});
       const portada = request.files?.image?.[0];
 
       if (portada) {
@@ -120,7 +133,7 @@ router.post(
 
         galeriaUrls.push(result.secure_url);
       }
-
+     
       const evento = await createEvento({
         titulo: body.titulo,
         descripcion: body.descripcion,
@@ -128,8 +141,8 @@ router.post(
         lugar: body.lugar,
         categoria: body.categoria,
         terminaEn: body.terminaEn,
-        entidadLugarId: body.entidadLugarId,
-        creadoPorUsuarioId: body.creadoPorUsuarioId,
+        creadoPorUsuarioId: usuario.id,
+        entidadLugarId: perfil?.id?? null,
         artistasIds: body.artistasIds,
         imagenUrl,
          linkEntradas: body.linkEntradas,

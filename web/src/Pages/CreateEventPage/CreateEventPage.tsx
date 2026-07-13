@@ -52,9 +52,10 @@ export default function CreateEventPage() {
       if (lugar.trim()) {
         formData.append('lugar', lugar.trim());
       }
+    {/*
       if (entidadLugarId.trim()) {
         formData.append('entidadLugarId', entidadLugarId.trim());
-      }
+      } */}
       if (image) {
         formData.append('image', image);
       }
@@ -197,7 +198,7 @@ export default function CreateEventPage() {
           </div>
 
           {/* ID del lugar (opcional) */}
-          <div>
+        {/*  <div>
             <label className="block text-sm font-medium text-zinc-700 mb-2">
               ID del lugar (opcional)
             </label>
@@ -208,7 +209,9 @@ export default function CreateEventPage() {
               className="w-full px-5 py-3 border border-zinc-300 rounded-2xl text-black outline-none focus:border-violet-600 transition-colors"
               placeholder="UUID del establecimiento"
             />
+
           </div>
+          */}
 
           {/* Poster del evento */}
           <div>
