@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { cancelarAsistencia } from '../../services/asistenciaService';
+import EditEventModal from './EditEventModal';
 
 interface DashboardViewProps {
   usuarioData: any;
@@ -22,6 +23,7 @@ export default function DashboardView({
 
   // Control del acordeón colapsable para Seguridad
   const [seguridadAbierto, setSeguridadAbierto] = useState(false);
+  const [editingEvento, setEditingEvento] = useState<any | null>(null);
 
   // Estados locales para el Formulario de Contraseña
   const [claveActual, setClaveActual] = useState('');
@@ -248,7 +250,7 @@ export default function DashboardView({
                     {esEntidad ? (
                       <>
                         <button
-                          onClick={() => alert(`Redireccionar a edición de evento ${evento.id}`)}
+                          onClick={() => setEditingEvento(evento)}
                           className="bg-white hover:bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-semibold px-4 py-2 rounded-xl transition-colors"
                         >
                           Editar
@@ -373,6 +375,13 @@ export default function DashboardView({
           </div>
         )}
       </div>
+      {editingEvento && (
+        <EditEventModal
+          evento={editingEvento}
+          onClose={() => setEditingEvento(null)}
+          usuarioId={usuarioData.id}
+        />
+      )}
     </div>
   );
 }
